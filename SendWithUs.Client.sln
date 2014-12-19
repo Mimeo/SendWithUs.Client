@@ -10,21 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E293AC
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendWithUs.Client.Tests", "SendWithUs.Client.Tests\SendWithUs.Client.Tests.csproj", "{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}"
-EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://memtfs02.us.corp.mimeo.com:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = SendWithUs.Client\\SendWithUs.Client.csproj
-		SccProjectName1 = SendWithUs.Client
-		SccLocalPath1 = SendWithUs.Client
-		SccProjectUniqueName2 = SendWithUs.Client.Tests\\SendWithUs.Client.Tests.csproj
-		SccProjectName2 = SendWithUs.Client.Tests
-		SccLocalPath2 = SendWithUs.Client.Tests
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -34,10 +20,6 @@ Global
 		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
