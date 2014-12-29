@@ -20,13 +20,11 @@
 
 namespace SendWithUs.Client
 {
-    using System;
     using System.Net;
-    using Newtonsoft.Json.Linq;
 
-    public abstract class BaseResponse<T> : IResponse where T : JToken
+    public abstract class BaseResponse : IResponse
     {
-        protected abstract void Populate(T json);
+        protected abstract void Populate(dynamic data);
 
         #region IResponse members
 
@@ -34,17 +32,17 @@ namespace SendWithUs.Client
 
         public string ErrorMessage { get; set; }
 
-        public virtual IResponse Initialize(HttpStatusCode statusCode, JToken json)
+        public virtual IResponse Initialize(HttpStatusCode statusCode, dynamic data)
         {
             this.StatusCode = statusCode;
 
             if (this.IsSuccessStatusCode())
             {
-                this.Populate(json as T);
+                this.Populate(data);
             }
             else
             {
-                this.SetErrorMessage(json as JValue);
+                this.SetErrorMessage(data);
             }
 
             return this;
@@ -58,10 +56,10 @@ namespace SendWithUs.Client
             return codeValue >= 200 && codeValue <= 299;
         }
 
-        protected void SetErrorMessage(JValue json)
+        protected void SetErrorMessage(dynamic data)
         {
-            this.ErrorMessage = (json != null)
-                ? json.Value as String
+            this.ErrorMessage = (data != null)
+                ? data.Value as string
                 : this.StatusCode.ToString();
         }
     }

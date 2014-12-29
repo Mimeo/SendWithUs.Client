@@ -21,7 +21,6 @@
 namespace SendWithUs.Client
 {
     using System.Net;
-    using Newtonsoft.Json.Linq;
 
     public interface IResponse
     {
@@ -29,6 +28,6 @@ namespace SendWithUs.Client
 
         string ErrorMessage { get; }
 
-        IResponse Initialize(HttpStatusCode statusCode, JToken json);
+        IResponse Initialize(HttpStatusCode statusCode, dynamic responseData);
     }
 }

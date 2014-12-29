@@ -20,9 +20,8 @@
 
 namespace SendWithUs.Client
 {
-    using Newtonsoft.Json.Linq;
 
-    public class SendResponse : BaseResponse<JObject>, ISendResponse
+    public class SendResponse : BaseResponse, ISendResponse
     {
         public bool Success { get; set; }
 
@@ -36,23 +35,23 @@ namespace SendWithUs.Client
 
         #region Base class overrides 
 
-        protected override void Populate(JObject json)
+        protected override void Populate(dynamic data)
         {
-            if (json == null)
+            if (data == null)
             {
                 return;
             }
 
-            this.Success = json.Value<bool>("success");
-            this.Status = json.Value<string>("status");
-            this.ReceiptId = json.Value<string>("receipt_id");
+            this.Success = data.success;
+            this.Status = data.status;
+            this.ReceiptId = data.receipt_id;
 
-            var details = json.Property("email");
+            var details = data.email;
 
-            if (details != null && details.HasValues)
+            if (details != null)
             {
-                this.TemplateName = details.Value.Value<string>("name");
-                this.TemplateVersionId = details.Value.Value<string>("version_name");
+                this.TemplateName = details.name;
+                this.TemplateVersionId = details.version_name;
             }
         }
 

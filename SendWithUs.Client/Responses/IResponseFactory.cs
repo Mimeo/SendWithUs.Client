@@ -23,14 +23,13 @@ namespace SendWithUs.Client
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using Newtonsoft.Json.Linq;
 
     public interface IResponseFactory
     {
-        T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse;
+        T Create<T>(HttpStatusCode statusCode, dynamic responseData) where T : class, IResponse;
 
-        IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json);
+        IResponse Create(Type responseType, HttpStatusCode statusCode, dynamic responseData);
 
-        IBatchResponse Create(HttpStatusCode statusCode, JToken json, IEnumerable<Type> responseTypes);
+        IBatchResponse Create(HttpStatusCode statusCode, dynamic responseData, IEnumerable<Type> responseTypes);
     }
 }

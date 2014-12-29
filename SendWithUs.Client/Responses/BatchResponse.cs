@@ -24,9 +24,8 @@ namespace SendWithUs.Client
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Newtonsoft.Json.Linq;
 
-    public class BatchResponse : BaseResponse<JArray>, IBatchResponse
+    public class BatchResponse : BaseResponse, IBatchResponse
     {
         public IEnumerable<IResponse> Items { get; set; }
 
@@ -36,33 +35,45 @@ namespace SendWithUs.Client
 
         public BatchResponse(ResponseFactory responseFactory, IEnumerable<Type> responseTypes)
         {
-            this.ResponseFactory =responseFactory;
+            this.ResponseFactory = responseFactory;
             this.ResponseTypes = responseTypes;
         }
 
         #region Base class overrides
 
-        protected override void Populate(JArray json)
+        protected override void Populate(dynamic responseData)
         {
-            if (json == null)
+            if (responseData == null)
             {
                 return;
             }
 
-            this.Items = json.Zip(this.ResponseTypes, (jt, rt) => this.BuildResponse(jt as JObject, rt));
-        }
-        
-        protected IResponse BuildResponse(JObject batched, Type responseType)
-        {
-            if (batched == null || responseType == null)
+            IEnumerable<dynamic> responses = responseData as IEnumerable<dynamic>;
+
+            if (responses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentException("Expected data to be of type IEnumerable<dynamic>.", "responseData");
             }
 
-            var statusCode = (HttpStatusCode)batched.Value<int>("status_code");
-            var json = batched.GetValue("body") as JObject;
+            this.Items = responses.Zip(this.ResponseTypes, (d, rt) => (IResponse)this.BuildResponse(d, rt));
+        }
+        
+        protected IResponse BuildResponse(dynamic batched, Type responseType)
+        {
+            if (batched == null)
+            {
+                throw new ArgumentNullException("batched");
+            }
 
-            return this.ResponseFactory.Create(responseType, statusCode, json);
+            if (responseType == null)
+            {
+                throw new ArgumentNullException("responseType");
+            }
+
+            var statusCode = (HttpStatusCode)batched.status_code;
+            var body = batched.body;
+
+            return this.ResponseFactory.Create(responseType, statusCode, body);
         }
 
         #endregion

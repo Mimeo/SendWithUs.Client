@@ -25,16 +25,15 @@ namespace SendWithUs.Client
     using System.Globalization;
     using System.Net;
     using System.Reflection;
-    using Newtonsoft.Json.Linq;
 
     public class ResponseFactory : IResponseFactory
     {
-        public T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse
+        public T Create<T>(HttpStatusCode statusCode, dynamic responseData) where T : class, IResponse
         {
-            return this.Create(typeof(T), statusCode, json) as T;
+            return this.Create(typeof(T), statusCode, responseData) as T;
         }
 
-        public IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json)
+        public IResponse Create(Type responseType, HttpStatusCode statusCode, dynamic responseData)
         {
             if (!typeof(IResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
             {
@@ -42,12 +41,12 @@ namespace SendWithUs.Client
                     String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement IResponse.", responseType.FullName));
             }
 
-            return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, json);
+            return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, responseData);
         }
 
-        public IBatchResponse Create(HttpStatusCode statusCode, JToken json, IEnumerable<Type> responseTypes)
+        public IBatchResponse Create(HttpStatusCode statusCode, dynamic responseData, IEnumerable<Type> responseTypes)
         {
-            return new BatchResponse(this, responseTypes).Initialize(statusCode, json) as IBatchResponse;
+            return new BatchResponse(this, responseTypes).Initialize(statusCode, responseData) as IBatchResponse;
         }
     }
 }
