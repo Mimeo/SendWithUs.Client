@@ -24,6 +24,7 @@ namespace SendWithUs.Client
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Net.Http.Formatting;
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace SendWithUs.Client
         /// The base URI of the SendWithUs service.
         /// </summary>
         /// <remarks>MUST have a trailing slash.</remarks>
-        protected const string BaseUri = "https://api.sendwithus.com/api/v1/";
+        protected Uri SendWithUsApiBaseUri = new Uri("https://api.sendwithus.com/api/v1/");
 
         /// <summary>
         /// Gets or sets the API key to use when authenticating with SendWithUs.
@@ -100,11 +101,28 @@ namespace SendWithUs.Client
         /// <returns>The current instance.</returns>
         protected virtual SendWithUsClient Initialize(string apiKey, HttpClient worker, IResponseFactory responseFactory)
         {
+            if (apiKey == null)
+            {
+                throw new ArgumentNullException("apiKey");
+            }
+            
             this.ApiKey = apiKey;
+
+            if (worker == null)
+            {
+                throw new ArgumentNullException("worker");
+            }
+
             this.Worker = worker;
+
+            if (responseFactory == null)
+            {
+                throw new ArgumentNullException("responseFactory");
+            }
+
             this.ResponseFactory = responseFactory;
 
-            this.Worker.DefaultRequestHeaders.Authorization = 
+            this.Worker.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Basic", this.BuildAuthenticationToken(apiKey));
 
             return this;
@@ -127,8 +145,8 @@ namespace SendWithUs.Client
                 throw new ArgumentNullException("request");
             }
 
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate());
-            var json = await this.ParseJsonAsync(httpResponse);
+            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate()).ConfigureAwait(false);
+            var json = await this.ReadAsJTokenAsync(httpResponse);
             return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
         }
 
@@ -146,8 +164,8 @@ namespace SendWithUs.Client
             }
 
             var batchRequest = requests.Select(r => new BatchRequestWrapper(r));
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest);
-            var json = await this.ParseJsonAsync(httpResponse);
+            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest).ConfigureAwait(false);
+            var json = await this.ReadAsJTokenAsync(httpResponse);
             return this.ResponseFactory.Create(httpResponse.StatusCode, json, requests.Select(r => r.GetResponseType()));
         }
 
@@ -171,21 +189,20 @@ namespace SendWithUs.Client
         /// <param name="template">A URI template with positional parameters.</param>
         /// <param name="args">Arguments for the template.</param>
         /// <returns>The expanded template.</returns>
-        /// <remarks>The template MUST NOT begin with a slash.</remarks>
-        protected string BuildRequestUri(string template, params object[] args)
+        /// <remarks>The template path is relative to the API and <b>SHOULD NOT</b> begin with a slash.</remarks>
+        protected Uri BuildRequestUri(string template, params object[] args)
         {
-            return BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
+            return new Uri(SendWithUsApiBaseUri, (args.Length > 0 ? string.Format(template, args) : template));
         }
 
         /// <summary>
-        /// Parses the content of the given response as JSON.
+        /// Reads the content of the given response as a <see cref="JToken"/>.
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        protected async Task<JToken> ParseJsonAsync(HttpResponseMessage response)
+        protected async Task<JToken> ReadAsJTokenAsync(HttpResponseMessage response)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return JToken.Parse(content);
+            return await response.Content.ReadAsAsync<JToken>();
         }
 
         #endregion
