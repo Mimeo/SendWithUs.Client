@@ -25,7 +25,6 @@ namespace SendWithUs.Client
         None,
         MissingTemplateId,
         MissingRecipientAddress,
-        MissingSenderAddress,
-        NullInnerRequest
+        MissingSenderAddress
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,32 @@ namespace SendWithUs.Client
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Wraps an IRequest object for use in a batch request.
+    /// Provides a mockable proxy over JsonSerializer.
     /// </summary>
-    /// <remarks>This class MUST NOT implement IRequest.</remarks>
-    [JsonConverter(typeof(BatchRequestWrapperConverter))]
-    public class BatchRequestWrapper
+    public class SerializerProxy
     {
-        public virtual string Method
+        /// <summary>
+        /// Gets or sets the serializer implementation.
+        /// </summary>
+        protected JsonSerializer Implementation { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the SerializerProxy class.
+        /// </summary>
+        /// <param name="implementation">The serializer implementation.</param>
+        public SerializerProxy(JsonSerializer implementation)
         {
-            get { return this.InnerRequest.GetHttpMethod(); }
+            this.Implementation = implementation;
         }
 
-        public virtual string Path
+        /// <summary>
+        /// Serializes the specified object and writes the Json structure to a Stream using the specified JsonWriter.
+        /// </summary>
+        /// <param name="writer">The JsonWriter used to write the Json structure.</param>
+        /// <param name="value">The object to serialize.</param>
+        public virtual void Serialize(JsonWriter writer, object value)
         {
-            get { return this.InnerRequest.GetUriPath(); }
-        }
-
-        public virtual IRequest InnerRequest { get; protected set; }
-
-        public BatchRequestWrapper(IRequest innerRequest)
-        {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            this.InnerRequest = innerRequest;
+            this.Implementation.Serialize(writer, value);
         }
     }
 }

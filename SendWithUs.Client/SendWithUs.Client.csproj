@@ -40,6 +40,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Helpers\Attachment.cs" />
+    <Compile Include="Helpers\EnsureArgument.cs" />
+    <Compile Include="Helpers\SerializerProxy.cs" />
     <Compile Include="Helpers\ValidationException.cs" />
     <Compile Include="Requests\BatchRequestWrapper.cs" />
     <Compile Include="Requests\BatchRequestWrapperConverter.cs" />

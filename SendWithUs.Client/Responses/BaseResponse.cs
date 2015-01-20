@@ -26,13 +26,13 @@ namespace SendWithUs.Client
 
     public abstract class BaseResponse<T> : IResponse where T : JToken
     {
-        protected abstract void Populate(T json);
+        protected internal abstract void Populate(T json);
 
         #region IResponse members
 
-        public HttpStatusCode StatusCode { get; set; }
+        public virtual HttpStatusCode StatusCode { get; set; }
 
-        public string ErrorMessage { get; set; }
+        public virtual string ErrorMessage { get; set; }
 
         public virtual IResponse Initialize(HttpStatusCode statusCode, JToken json)
         {
@@ -52,17 +52,21 @@ namespace SendWithUs.Client
 
         #endregion
 
-        protected bool IsSuccessStatusCode()
+        #region Helpers
+
+        protected internal virtual bool IsSuccessStatusCode()
         {
             var codeValue = (int)this.StatusCode;
             return codeValue >= 200 && codeValue <= 299;
         }
 
-        protected void SetErrorMessage(JValue json)
+        protected internal virtual void SetErrorMessage(JValue json)
         {
             this.ErrorMessage = (json != null)
                 ? json.Value as String
                 : this.StatusCode.ToString();
         }
+
+        #endregion
     }
 }

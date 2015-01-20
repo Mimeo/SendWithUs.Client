@@ -27,6 +27,8 @@ have a `TemplateId` and a `RecipientAddress`. All other properties are optional.
 #### Minimal Example
 
 ```csharp
+using SendWithUs.Client;
+
 var request = new SendRequest("template123", "foo@example.com");
 var client = new SendWithUsClient("my-api-key");
 var response = await client.SendAsync(request);
@@ -34,12 +36,21 @@ var response = await client.SendAsync(request);
 
 #### More Realistic Example
 
+The data passed to SendRequest can be any CLR object, as long as it serializes as a JSON object.
+
 ```csharp
-var data = new Dictionary<string, string> { {"name", "Rosco P. Coltrane"}, {"title", "Sheriff"} };
-var request = new SendRequest("disciplinary-form", "rosco@hazzard.example.com", data)
+using SendWithUs.Client;
+
+var sheriff = new Person { ... };
+var wristslap = new Punishment { ... };
+var data = new Dictionary<string, object> { { "who", sheriff }, { "what", wristslap } };
+var request = new SendRequest
 {
+    TemplateId = "disciplinary-form",
     SenderName = "Boss Hogg",
-    SenderAddress = "j.d.hogg@hazzard.example.com"
+    SenderAddress = "j.d.hogg@hazzard.example.com",
+    RecipientAddress = "rosco@hazzard.example.com",
+    Data = data
 };
 var client = new SendWithUsClient("my-api-key");
 var response = await client.SendAsync(request);
@@ -53,6 +64,8 @@ of request object currently supported is `SendRequest`.)
 #### Example
 
 ```csharp
+using SendWithUs.Client;
+
 var request1 = new SendRequest("template123", "foo@example.com");
 var request2 = new SendRequest("template567", "bar@example.com");
 var client = new SendWithUsClient("my-api-key");

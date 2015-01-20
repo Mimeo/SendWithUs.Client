@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,43 @@
 
 namespace SendWithUs.Client
 {
-    using Newtonsoft.Json;
+    using System;
+    using System.Globalization;
 
-    /// <summary>
-    /// Wraps an IRequest object for use in a batch request.
-    /// </summary>
-    /// <remarks>This class MUST NOT implement IRequest.</remarks>
-    [JsonConverter(typeof(BatchRequestWrapperConverter))]
-    public class BatchRequestWrapper
+    public static class EnsureArgument
     {
-        public virtual string Method
+        public static void NotNull(object value, string paramName)
         {
-            get { return this.InnerRequest.GetHttpMethod(); }
+            if (value == null)
+            {
+                throw new ArgumentNullException(paramName);
+            }
         }
 
-        public virtual string Path
+        public static void NotNullOrEmpty(string value, string paramName)
         {
-            get { return this.InnerRequest.GetUriPath(); }
+            if (String.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException(paramName);
+            }
         }
 
-        public virtual IRequest InnerRequest { get; protected set; }
-
-        public BatchRequestWrapper(IRequest innerRequest)
+        public static T Of<T>(object value, string paramName) where T : class
         {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            this.InnerRequest = innerRequest;
+            return EnsureArgument.Of<T>(value, paramName, String.Format(CultureInfo.InvariantCulture, 
+                "The value of '{0}' must be of type '{1}'.", paramName, typeof(T)));
+        }
+
+        public static T Of<T>(object value, string paramName, string errorMessage) where T : class
+        {
+            var typedValue = value as T;
+
+            if (typedValue == null)
+            {
+                throw new ArgumentException(errorMessage, paramName);
+            }
+
+            return typedValue;
         }
     }
 }

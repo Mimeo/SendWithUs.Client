@@ -42,7 +42,7 @@ namespace SendWithUs.Client
 
         #region Base class overrides
 
-        protected override void Populate(JArray json)
+        protected internal override void Populate(JArray json)
         {
             if (json == null)
             {
@@ -51,13 +51,11 @@ namespace SendWithUs.Client
 
             this.Items = json.Zip(this.ResponseTypes, (jt, rt) => this.BuildResponse(jt as JObject, rt));
         }
-        
+
         protected IResponse BuildResponse(JObject batched, Type responseType)
         {
-            if (batched == null || responseType == null)
-            {
-                throw new ArgumentNullException();
-            }
+            EnsureArgument.NotNull(batched, "batched");
+            EnsureArgument.NotNull(responseType, "responseType");
 
             var statusCode = (HttpStatusCode)batched.Value<int>("status_code");
             var json = batched.GetValue("body") as JObject;

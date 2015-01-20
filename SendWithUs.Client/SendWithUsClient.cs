@@ -100,6 +100,10 @@ namespace SendWithUs.Client
         /// <returns>The current instance.</returns>
         protected virtual SendWithUsClient Initialize(string apiKey, HttpClient worker, IResponseFactory responseFactory)
         {
+            EnsureArgument.NotNull(apiKey, "apiKey");
+            EnsureArgument.NotNull(worker, "worker");
+            EnsureArgument.NotNull(responseFactory, "responseFactory");
+
             this.ApiKey = apiKey;
             this.Worker = worker;
             this.ResponseFactory = responseFactory;
@@ -122,13 +126,10 @@ namespace SendWithUs.Client
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
         public async Task<ISendResponse> SendAsync(ISendRequest request)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException("request");
-            }
+            EnsureArgument.NotNull(request, "request");
 
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate());
-            var json = await this.ParseJsonAsync(httpResponse);
+            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate()).ConfigureAwait(false);
+            var json = await this.ReadJsonAsync(httpResponse);
             return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
         }
 
@@ -140,15 +141,13 @@ namespace SendWithUs.Client
         /// <exception cref="System.ArgumentNullException">The requests argument was null.</exception>
         public async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
-            if (requests == null)
-            {
-                throw new ArgumentNullException("requests");
-            }
+            EnsureArgument.NotNull(requests, "requests");
 
-            var batchRequest = requests.Select(r => new BatchRequestWrapper(r));
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest);
-            var json = await this.ParseJsonAsync(httpResponse);
-            return this.ResponseFactory.Create(httpResponse.StatusCode, json, requests.Select(r => r.GetResponseType()));
+            var batchRequest = requests.Select(r => this.BuildBatchRequestWrapper(r));
+            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest).ConfigureAwait(false);
+            var json = await this.ReadJsonAsync(httpResponse);
+            var responseTypes = requests.Select(r => r.GetResponseType());
+            return this.ResponseFactory.Create(responseTypes, httpResponse.StatusCode, json);
         }
 
         #endregion
@@ -174,18 +173,23 @@ namespace SendWithUs.Client
         /// <remarks>The template MUST NOT begin with a slash.</remarks>
         protected string BuildRequestUri(string template, params object[] args)
         {
-            return BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
+            return SendWithUsClient.BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
         }
 
         /// <summary>
-        /// Parses the content of the given response as JSON.
+        /// Reads the content of the given response as a <see cref="Newtonsoft.Json.Linq.JToken"/>.
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        protected async Task<JToken> ParseJsonAsync(HttpResponseMessage response)
+        protected async Task<JToken> ReadJsonAsync(HttpResponseMessage response)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return JToken.Parse(content);
+            return await response.Content.ReadAsAsync<JToken>();
+        }
+
+        protected BatchRequestWrapper BuildBatchRequestWrapper(IRequest innerRequest)
+        {
+            EnsureArgument.NotNull(innerRequest, "innerRequest");
+            return new BatchRequestWrapper(innerRequest.Validate());
         }
 
         #endregion

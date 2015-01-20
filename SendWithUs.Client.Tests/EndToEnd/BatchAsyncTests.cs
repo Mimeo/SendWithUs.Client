@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,36 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SendWithUs.Client
+namespace SendWithUs.Client.Tests.EndToEnd
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
+    using System.Linq;
     using System.Net;
-    using System.Reflection;
-    using Newtonsoft.Json.Linq;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using SendWithUs.Client;
 
-    public class ResponseFactory : IResponseFactory
+    [TestClass]
+    public class BatchAsyncTests
     {
-        public T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse
+        [TestMethod]
+        public void BatchAsync_OneSendRequest_Succeeds()
         {
-            return this.Create(typeof(T), statusCode, json) as T;
-        }
+            var subject = "BatchAsync " + TestHelper.GetUniqueId();
+            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
+            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
+            var client = new SendWithUsClient(testData.ApiKey);
 
-        public IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json)
-        {
-            if (!typeof(IResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement IResponse.", responseType.FullName));
-            }
+            var batchResponse = client.BatchAsync(new List<IRequest> { request }).Result;
 
-            return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, json);
-        }
+            Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
+            Assert.AreEqual(1, batchResponse.Items.Count());
 
-        public IBatchResponse Create(IEnumerable<Type> responseTypes, HttpStatusCode statusCode, JToken json)
-        {
-            return new BatchResponse(this, responseTypes).Initialize(statusCode, json) as IBatchResponse;
+            var sendResponse = batchResponse.Items.First() as ISendResponse;
+            Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
+            Assert.AreEqual("OK", sendResponse.Status, true);
+            Assert.AreEqual(true, sendResponse.Success);
         }
     }
 }
