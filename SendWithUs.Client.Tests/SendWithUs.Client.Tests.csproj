@@ -94,12 +94,6 @@
     <Compile Include="Unit\SendWithUsClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EndToEnd\Data\SendRequest.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="EndToEnd\Data\mimeo-logo-black.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +102,9 @@
       <Name>SendWithUs.Client</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="EndToEnd\Data\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
