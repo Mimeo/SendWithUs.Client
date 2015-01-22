@@ -34,7 +34,7 @@ var client = new SendWithUsClient("my-api-key");
 var response = await client.SendAsync(request);
 ```
 
-#### More Realistic Example
+#### A More Realistic Example
 
 The data passed to SendRequest can be any CLR object, as long as it serializes as a JSON object.
 
@@ -58,9 +58,9 @@ var response = await client.SendAsync(request);
 
 #### Typed Request Data
 
-The type of the `Data` property on SendRequest is plain old object. If you want a strongly-typed Data property, use
-SendRequest<TData> in lieu of SendRequest. This is merely a developer convenience. SendRequest<TData> shadows the 
-Data property of SendRequest and casts it to the specified type.
+The type of the `Data` property on `SendRequest` is plain old object. If you want a strongly-typed `Data` property, use
+`SendRequest<TData>` in lieu of `SendRequest`. This is merely a developer convenience. `SendRequest<TData>` shadows the 
+`Data` property of `SendRequest` and casts it to the specified type.
 
 ### Batching
 
