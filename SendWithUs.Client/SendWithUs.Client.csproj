@@ -43,6 +43,7 @@
     <Compile Include="Helpers\EnsureArgument.cs" />
     <Compile Include="Helpers\SerializerProxy.cs" />
     <Compile Include="Helpers\ValidationException.cs" />
+    <Compile Include="ISendWithUsClient.cs" />
     <Compile Include="Requests\BatchRequestWrapper.cs" />
     <Compile Include="Requests\BatchRequestWrapperConverter.cs" />
     <Compile Include="Requests\ISendRequest.cs" />

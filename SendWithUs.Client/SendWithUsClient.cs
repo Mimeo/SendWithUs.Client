@@ -36,7 +36,7 @@ namespace SendWithUs.Client
     /// Currently, the client only covers a small portion of the API surface--namely, sending email and 
     /// batch operations. 
     /// </remarks>
-    public class SendWithUsClient
+    public class SendWithUsClient : ISendWithUsClient
     {
         #region State
 
@@ -124,7 +124,7 @@ namespace SendWithUs.Client
         /// <param name="request">A request object describing the email to be sent.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
-        public async Task<ISendResponse> SendAsync(ISendRequest request)
+        public virtual async Task<ISendResponse> SendAsync(ISendRequest request)
         {
             EnsureArgument.NotNull(request, "request");
 
@@ -139,7 +139,7 @@ namespace SendWithUs.Client
         /// <param name="requests">A set of request objects to be batched.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The requests argument was null.</exception>
-        public async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
+        public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
             EnsureArgument.NotNull(requests, "requests");
 
