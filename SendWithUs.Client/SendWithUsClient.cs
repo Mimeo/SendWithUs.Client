@@ -47,11 +47,6 @@ namespace SendWithUs.Client
         protected const string BaseUri = "https://api.sendwithus.com/api/v1/";
 
         /// <summary>
-        /// Gets or sets the API key to use when authenticating with SendWithUs.
-        /// </summary>
-        protected string ApiKey { get; set; }
-
-        /// <summary>
         /// Gets or sets the HTTP implementation.
         /// </summary>
         protected HttpClient Worker { get; set; }
@@ -100,11 +95,10 @@ namespace SendWithUs.Client
         /// <returns>The current instance.</returns>
         protected virtual SendWithUsClient Initialize(string apiKey, HttpClient worker, IResponseFactory responseFactory)
         {
-            EnsureArgument.NotNull(apiKey, "apiKey");
+            EnsureArgument.NotNullOrEmpty(apiKey, "apiKey");
             EnsureArgument.NotNull(worker, "worker");
             EnsureArgument.NotNull(responseFactory, "responseFactory");
 
-            this.ApiKey = apiKey;
             this.Worker = worker;
             this.ResponseFactory = responseFactory;
 
@@ -128,7 +122,7 @@ namespace SendWithUs.Client
         {
             EnsureArgument.NotNull(request, "request");
 
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate()).ConfigureAwait(false);
+            var httpResponse = await this.PostJsonAsync("send", request.Validate()).ConfigureAwait(false);
             var json = await this.ReadJsonAsync(httpResponse);
             return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
         }
@@ -141,10 +135,10 @@ namespace SendWithUs.Client
         /// <exception cref="System.ArgumentNullException">The requests argument was null.</exception>
         public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
-            EnsureArgument.NotNull(requests, "requests");
+            EnsureArgument.NotNullOrEmpty(requests, "requests", false);
 
-            var batchRequest = requests.Select(r => this.BuildBatchRequestWrapper(r));
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest).ConfigureAwait(false);
+            var batchRequest = requests.Select(r => new BatchRequestWrapper(r.Validate()));
+            var httpResponse = await this.PostJsonAsync("batch", batchRequest).ConfigureAwait(false);
             var json = await this.ReadJsonAsync(httpResponse);
             var responseTypes = requests.Select(r => r.GetResponseType());
             return this.ResponseFactory.Create(responseTypes, httpResponse.StatusCode, json);
@@ -177,19 +171,25 @@ namespace SendWithUs.Client
         }
 
         /// <summary>
-        /// Reads the content of the given response as a <see cref="Newtonsoft.Json.Linq.JToken"/>.
+        /// Posts to the specified URI path with the request serialized as JSON.
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        protected async Task<JToken> ReadJsonAsync(HttpResponseMessage response)
+        /// <typeparam name="TRequest">The  type of the request.</typeparam>
+        /// <param name="path">The path component of the request URI.</param>
+        /// <param name="request">The request object.</param>
+        /// <returns>A response message.</returns>
+        protected Task<HttpResponseMessage> PostJsonAsync<TRequest>(string path, TRequest request)
         {
-            return await response.Content.ReadAsAsync<JToken>();
+            return this.Worker.PostAsJsonAsync(this.BuildRequestUri(path), request);
         }
 
-        protected BatchRequestWrapper BuildBatchRequestWrapper(IRequest innerRequest)
+        /// <summary>
+        /// Reads the content of the given response as a <see cref="Newtonsoft.Json.Linq.JToken"/>.
+        /// </summary>
+        /// <param name="response">The response object to read.</param>
+        /// <returns>A JSON token.</returns>
+        protected Task<JToken> ReadJsonAsync(HttpResponseMessage response)
         {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            return new BatchRequestWrapper(innerRequest.Validate());
+            return response.Content.ReadAsAsync<JToken>();
         }
 
         #endregion

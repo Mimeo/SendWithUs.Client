@@ -21,7 +21,9 @@
 namespace SendWithUs.Client
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
 
     public static class EnsureArgument
     {
@@ -36,6 +38,14 @@ namespace SendWithUs.Client
         public static void NotNullOrEmpty(string value, string paramName)
         {
             if (String.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException(paramName);
+            }
+        }
+
+        public static void NotNullOrEmpty<TItem>(IEnumerable<TItem> value, string paramName, bool allowNullItems)
+        {
+            if (value == null || value.Count() == 0 || (!allowNullItems && value.Any(i => i == null)))
             {
                 throw new ArgumentNullException(paramName);
             }
