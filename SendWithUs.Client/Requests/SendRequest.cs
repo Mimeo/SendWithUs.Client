@@ -163,7 +163,7 @@ namespace SendWithUs.Client
         public SendRequest(string templateId, string recipientAddress) : base(templateId, recipientAddress)
         { }
 
-        public SendRequest(string templateId, string recipientAddress, object data) : base(templateId, recipientAddress, data)
+        public SendRequest(string templateId, string recipientAddress, TData data) : base(templateId, recipientAddress, data)
         { }
 
         #endregion

@@ -58,7 +58,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => client.BatchAsync(null));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
         }
 
         #endregion

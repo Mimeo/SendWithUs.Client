@@ -35,12 +35,12 @@ namespace SendWithUs.Client.Tests.Component
             var recipientAddress = TestHelper.GetUniqueId();
             var request = new SendRequest(templateId, recipientAddress);
             var wrapper = new BatchRequestWrapper(request);
-            var writer = JsonObjectWriter.Create();
+            var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
             var converter = new BatchRequestWrapperConverter();
 
             converter.WriteJson(writer, wrapper, serializer);
-            var jsonObject = writer.Get<JObject>();
+            var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
             var pathProperty = jsonObject.Property("path");

@@ -26,15 +26,7 @@ namespace SendWithUs.Client.Tests
     {
         public static IDictionary<TKey, TValue> Upsert<TKey, TValue>(this IDictionary<TKey, TValue> subject, TKey key, TValue value)
         {
-            if (subject.ContainsKey(key))
-            {
-                subject[key] = value;
-            }
-            else
-            {
-                subject.Add(key, value);
-            }
-
+            subject[key] = value;
             return subject;
         }
     }

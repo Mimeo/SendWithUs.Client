@@ -42,12 +42,12 @@ namespace SendWithUs.Client.Tests.Component
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
             var request = new SendRequest(templateId, recipientAddress);
-            var writer = JsonObjectWriter.Create();
+            var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
             var converter = new SendRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
-            var jsonObject = writer.Get<JObject>();
+            var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
             this.ValidateSendRequest(jsonObject, templateId, recipientAddress, false);
@@ -60,12 +60,12 @@ namespace SendWithUs.Client.Tests.Component
             var recipientAddress = TestHelper.GetUniqueId();
             var data = TestHelper.GetRandomData();
             var request = new SendRequest(templateId, recipientAddress, data);
-            var writer = JsonObjectWriter.Create();
+            var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
             var converter = new SendRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
-            var jsonObject = writer.Get<JObject>();
+            var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
             this.ValidateSendRequest(jsonObject, templateId, recipientAddress, true);

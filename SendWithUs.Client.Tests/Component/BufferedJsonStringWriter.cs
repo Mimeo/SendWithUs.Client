@@ -25,23 +25,23 @@ namespace SendWithUs.Client.Tests.Component
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class JsonObjectWriter : JsonTextWriter
+    public class BufferedJsonStringWriter : JsonTextWriter
     {
         protected StringWriter Buffer { get; set; }
 
-        protected JsonObjectWriter(StringWriter buffer) : base(buffer)
+        protected BufferedJsonStringWriter(StringWriter buffer) : base(buffer)
         { }
 
-        public static JsonObjectWriter Create()
+        public static BufferedJsonStringWriter Create()
         {
             var buffer = new StringWriter();
-            var instance = new JsonObjectWriter(buffer);
+            var instance = new BufferedJsonStringWriter(buffer);
 
             instance.Buffer = buffer;
             return instance;
         }
 
-        public T Get<T>() where T : JToken
+        public T GetBufferAs<T>() where T : JToken
         {
             return JToken.Parse(this.Buffer.ToString()) as T;
         }

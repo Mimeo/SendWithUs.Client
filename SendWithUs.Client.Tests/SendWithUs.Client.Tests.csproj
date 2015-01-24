@@ -78,7 +78,7 @@
     <Compile Include="Component\BatchRequestWrapperConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
-    <Compile Include="Component\JsonObjectWriter.cs" />
+    <Compile Include="Component\BufferedJsonStringWriter.cs" />
     <Compile Include="Component\SendRequestConverterTests.cs" />
     <Compile Include="EndToEnd\SendAsyncTests.cs" />
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />

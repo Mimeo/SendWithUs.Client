@@ -39,7 +39,7 @@ namespace SendWithUs.Client
         {
             if (String.IsNullOrEmpty(value))
             {
-                throw new ArgumentNullException(paramName);
+                throw new ArgumentException("Argument is null or empty.", paramName);
             }
         }
 
@@ -47,7 +47,8 @@ namespace SendWithUs.Client
         {
             if (value == null || value.Count() == 0 || (!allowNullItems && value.Any(i => i == null)))
             {
-                throw new ArgumentNullException(paramName);
+                var message = allowNullItems ? "Argument is null or empty." : "Argument is null, empty, or contains a null item.";
+                throw new ArgumentException(message, paramName);
             }
         }
 
