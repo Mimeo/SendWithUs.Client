@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,33 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SendWithUs.Client
+namespace SendWithUs.Client.Tests.Component
 {
+    using System;
+    using System.IO;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
-    /// <summary>
-    /// Wraps an IRequest object for use in a batch request.
-    /// </summary>
-    /// <remarks>This class MUST NOT implement IRequest.</remarks>
-    [JsonConverter(typeof(BatchRequestWrapperConverter))]
-    public class BatchRequestWrapper
+    public class BufferedJsonStringWriter : JsonTextWriter
     {
-        public virtual string Method
+        protected StringWriter Buffer { get; set; }
+
+        protected BufferedJsonStringWriter(StringWriter buffer) : base(buffer)
+        { }
+
+        public static BufferedJsonStringWriter Create()
         {
-            get { return this.InnerRequest.GetHttpMethod(); }
+            var buffer = new StringWriter();
+            var instance = new BufferedJsonStringWriter(buffer);
+
+            instance.Buffer = buffer;
+            return instance;
         }
 
-        public virtual string Path
+        public T GetBufferAs<T>() where T : JToken
         {
-            get { return this.InnerRequest.GetUriPath(); }
-        }
-
-        public virtual IRequest InnerRequest { get; protected set; }
-
-        public BatchRequestWrapper(IRequest innerRequest)
-        {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            this.InnerRequest = innerRequest;
+            return JToken.Parse(this.Buffer.ToString()) as T;
         }
     }
 }

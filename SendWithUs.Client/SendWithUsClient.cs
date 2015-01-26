@@ -36,7 +36,7 @@ namespace SendWithUs.Client
     /// Currently, the client only covers a small portion of the API surface--namely, sending email and 
     /// batch operations. 
     /// </remarks>
-    public class SendWithUsClient
+    public class SendWithUsClient : ISendWithUsClient
     {
         #region State
 
@@ -45,11 +45,6 @@ namespace SendWithUs.Client
         /// </summary>
         /// <remarks>MUST have a trailing slash.</remarks>
         protected const string BaseUri = "https://api.sendwithus.com/api/v1/";
-
-        /// <summary>
-        /// Gets or sets the API key to use when authenticating with SendWithUs.
-        /// </summary>
-        protected string ApiKey { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP implementation.
@@ -100,7 +95,10 @@ namespace SendWithUs.Client
         /// <returns>The current instance.</returns>
         protected virtual SendWithUsClient Initialize(string apiKey, HttpClient worker, IResponseFactory responseFactory)
         {
-            this.ApiKey = apiKey;
+            EnsureArgument.NotNullOrEmpty(apiKey, "apiKey");
+            EnsureArgument.NotNull(worker, "worker");
+            EnsureArgument.NotNull(responseFactory, "responseFactory");
+
             this.Worker = worker;
             this.ResponseFactory = responseFactory;
 
@@ -120,15 +118,12 @@ namespace SendWithUs.Client
         /// <param name="request">A request object describing the email to be sent.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
-        public async Task<ISendResponse> SendAsync(ISendRequest request)
+        public virtual async Task<ISendResponse> SendAsync(ISendRequest request)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException("request");
-            }
+            EnsureArgument.NotNull(request, "request");
 
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("send"), request.Validate());
-            var json = await this.ParseJsonAsync(httpResponse);
+            var httpResponse = await this.PostJsonAsync("send", request.Validate()).ConfigureAwait(false);
+            var json = await this.ReadJsonAsync(httpResponse);
             return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
         }
 
@@ -138,17 +133,15 @@ namespace SendWithUs.Client
         /// <param name="requests">A set of request objects to be batched.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The requests argument was null.</exception>
-        public async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
+        public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
-            if (requests == null)
-            {
-                throw new ArgumentNullException("requests");
-            }
+            EnsureArgument.NotNullOrEmpty(requests, "requests", false);
 
-            var batchRequest = requests.Select(r => new BatchRequestWrapper(r));
-            var httpResponse = await this.Worker.PostAsJsonAsync(this.BuildRequestUri("batch"), batchRequest);
-            var json = await this.ParseJsonAsync(httpResponse);
-            return this.ResponseFactory.Create(httpResponse.StatusCode, json, requests.Select(r => r.GetResponseType()));
+            var batchRequest = requests.Select(r => new BatchRequestWrapper(r.Validate()));
+            var httpResponse = await this.PostJsonAsync("batch", batchRequest).ConfigureAwait(false);
+            var json = await this.ReadJsonAsync(httpResponse);
+            var responseTypes = requests.Select(r => r.GetResponseType());
+            return this.ResponseFactory.Create(responseTypes, httpResponse.StatusCode, json);
         }
 
         #endregion
@@ -174,18 +167,29 @@ namespace SendWithUs.Client
         /// <remarks>The template MUST NOT begin with a slash.</remarks>
         protected string BuildRequestUri(string template, params object[] args)
         {
-            return BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
+            return SendWithUsClient.BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
         }
 
         /// <summary>
-        /// Parses the content of the given response as JSON.
+        /// Posts to the specified URI path with the request serialized as JSON.
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        protected async Task<JToken> ParseJsonAsync(HttpResponseMessage response)
+        /// <typeparam name="TRequest">The  type of the request.</typeparam>
+        /// <param name="path">The path component of the request URI.</param>
+        /// <param name="request">The request object.</param>
+        /// <returns>A response message.</returns>
+        protected Task<HttpResponseMessage> PostJsonAsync<TRequest>(string path, TRequest request)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return JToken.Parse(content);
+            return this.Worker.PostAsJsonAsync(this.BuildRequestUri(path), request);
+        }
+
+        /// <summary>
+        /// Reads the content of the given response as a <see cref="Newtonsoft.Json.Linq.JToken"/>.
+        /// </summary>
+        /// <param name="response">The response object to read.</param>
+        /// <returns>A JSON token.</returns>
+        protected Task<JToken> ReadJsonAsync(HttpResponseMessage response)
+        {
+            return response.Content.ReadAsAsync<JToken>();
         }
 
         #endregion

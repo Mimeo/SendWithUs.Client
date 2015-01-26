@@ -30,6 +30,24 @@ namespace SendWithUs.Client
     /// </summary>
     public class SendRequestConverter : JsonConverter
     {
+        public static class PropertyNames
+        {
+            public const string TemplateId = "email_id";
+            public const string ProviderId = "esp_account";
+            public const string TemplateVersionId = "version_name";
+            public const string Recipient = "recipient";
+            public const string Name = "name";
+            public const string Address = "address";
+            public const string Data = "email_data";
+            public const string CopyTo = "cc";
+            public const string BlindCopyTo = "bcc";
+            public const string Tags = "tags";
+            public const string InlineAttachment = "inline";
+            public const string FileAttachments = "files";
+            public const string AttachmentId = "id";
+            public const string AttachmentData = "data";
+        }
+
         public override bool CanRead
         {
             get { return false; }
@@ -42,7 +60,6 @@ namespace SendWithUs.Client
 
         public override bool CanConvert(Type objectType)
         {
-            //return objectType == typeof(ISendRequest);
             return typeof(ISendRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
@@ -53,18 +70,21 @@ namespace SendWithUs.Client
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var request = value as ISendRequest;
+            // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
+            // code (i.e., the proxy) merely to support unit testing.
+            this.WriteJson(writer, value, new SerializerProxy(serializer));
+        }
 
-            if (request == null)
-            {
-                return;
-            }
+        protected internal virtual void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
+        {
+            EnsureArgument.NotNull(writer, "writer");
+            EnsureArgument.NotNull(serializer, "serializer");
 
-            request.Validate();
+            var request = EnsureArgument.Of<ISendRequest>(value, "value");
 
             writer.WriteStartObject();
 
-            this.WriteProperty(writer, serializer, "email_id", request.TemplateId);
+            this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId);
             this.WriteEmailData(writer, serializer, request);
             this.WritePrimaryRecipient(writer, serializer, request);
             this.WriteCcRecipients(writer, serializer, request);
@@ -72,50 +92,43 @@ namespace SendWithUs.Client
             this.WriteTags(writer, serializer, request);
             this.WriteInlineAttachment(writer, serializer, request);
             this.WriteFileAttachments(writer, serializer, request);
-            this.WriteProperty(writer, serializer, "esp_account", request.ProviderId, true);
-            this.WriteProperty(writer, serializer, "version_name", request.TemplateVersionId, true);
+            this.WriteProperty(writer, serializer, PropertyNames.ProviderId, request.ProviderId, true);
+            this.WriteProperty(writer, serializer, PropertyNames.TemplateVersionId, request.TemplateVersionId, true);
 
             writer.WriteEndObject();
         }
 
-        protected void WritePrimaryRecipient(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WritePrimaryRecipient(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
-            writer.WritePropertyName("recipient");
+            writer.WritePropertyName(PropertyNames.Recipient);
             writer.WriteStartObject();
-            this.WriteProperty(writer, serializer, "name", request.RecipientName, true);
-            this.WriteProperty(writer, serializer, "address", request.RecipientAddress);
+            this.WriteProperty(writer, serializer, PropertyNames.Name, request.RecipientName, true);
+            this.WriteProperty(writer, serializer, PropertyNames.Address, request.RecipientAddress);
             writer.WriteEndObject();
         }
 
-        protected void WriteEmailData(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteEmailData(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
-            if (request.Data == null || request.Data.Count == 0)
+            if (request.Data == null)
             {
                 return;
             }
 
-            writer.WritePropertyName("email_data");
-            writer.WriteStartObject();
-
-            foreach (var pair in request.Data)
-            {
-                this.WriteProperty(writer, serializer, pair.Key, pair.Value);
-            }
-
-            writer.WriteEndObject();
+            writer.WritePropertyName(PropertyNames.Data);
+            serializer.Serialize(writer, request.Data);
         }
 
-        protected void WriteCcRecipients(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteCcRecipients(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
-            this.WriteRecipientsList(writer, serializer, "cc", request.CopyTo);
+            this.WriteRecipientsList(writer, serializer, PropertyNames.CopyTo, request.CopyTo);
         }
 
-        protected void WriteBccRecipients(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteBccRecipients(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
-            this.WriteRecipientsList(writer, serializer, "bcc", request.BlindCopyTo);
+            this.WriteRecipientsList(writer, serializer, PropertyNames.BlindCopyTo, request.BlindCopyTo);
         }
 
-        protected void WriteRecipientsList(JsonWriter writer, JsonSerializer serializer, string name, IEnumerable<string> recipients)
+        protected internal virtual void WriteRecipientsList(JsonWriter writer, SerializerProxy serializer, string name, IEnumerable<string> recipients)
         {
             if (recipients == null)
             {
@@ -128,21 +141,21 @@ namespace SendWithUs.Client
             foreach (var address in recipients)
             {
                 writer.WriteStartObject();
-                this.WriteProperty(writer, serializer, "address", address);
+                this.WriteProperty(writer, serializer, PropertyNames.Address, address);
                 writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
         }
 
-        protected void WriteTags(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteTags(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
             if (request.Tags == null)
             {
                 return;
             }
 
-            writer.WritePropertyName("tags");
+            writer.WritePropertyName(PropertyNames.Tags);
             writer.WriteStartArray();
 
             foreach (var tag in request.Tags)
@@ -153,25 +166,25 @@ namespace SendWithUs.Client
             writer.WriteEndArray();
         }
 
-        protected void WriteInlineAttachment(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteInlineAttachment(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
             if (request.InlineAttachment == null)
             {
                 return;
             }
 
-            writer.WritePropertyName("inline");
+            writer.WritePropertyName(PropertyNames.InlineAttachment);
             this.WriteAttachmentObject(writer, serializer, request.InlineAttachment);
         }
 
-        protected void WriteFileAttachments(JsonWriter writer, JsonSerializer serializer, ISendRequest request)
+        protected internal virtual void WriteFileAttachments(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
             if (request.FileAttachments == null)
             {
                 return;
             }
 
-            writer.WritePropertyName("files");
+            writer.WritePropertyName(PropertyNames.FileAttachments);
             writer.WriteStartArray();
 
             foreach (var attachment in request.FileAttachments)
@@ -182,17 +195,17 @@ namespace SendWithUs.Client
             writer.WriteEndArray();
         }
 
-        protected void WriteAttachmentObject(JsonWriter writer, JsonSerializer serializer, IAttachment attachment)
+        protected void WriteAttachmentObject(JsonWriter writer, SerializerProxy serializer, IAttachment attachment)
         {
             writer.WriteStartObject();
-            this.WriteProperty(writer, serializer, "id", attachment.Id);
-            this.WriteProperty(writer, serializer, "data", attachment.Data);
+            this.WriteProperty(writer, serializer, PropertyNames.AttachmentId, attachment.Id);
+            this.WriteProperty(writer, serializer, PropertyNames.AttachmentData, attachment.Data);
             writer.WriteEndObject();
         }
 
-        protected void WriteProperty(JsonWriter writer, JsonSerializer serializer, string name, string value, bool isOptional = false)
+        protected internal virtual void WriteProperty(JsonWriter writer, SerializerProxy serializer, string name, object value, bool isOptional = false)
         {
-            if (isOptional && String.IsNullOrEmpty(value))
+            if (isOptional && (value == null || (string)value == String.Empty))
             {
                 return;
             }

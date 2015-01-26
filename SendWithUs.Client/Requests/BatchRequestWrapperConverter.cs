@@ -21,6 +21,7 @@
 namespace SendWithUs.Client
 {
     using System;
+    using System.Reflection;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -28,6 +29,13 @@ namespace SendWithUs.Client
     /// </summary>
     public class BatchRequestWrapperConverter : JsonConverter
     {
+        public static class PropertyNames
+        {
+            public const string Method = "method";
+            public const string Path = "path";
+            public const string InnerRequest = "body";
+        }
+
         public override bool CanRead
         {
             get { return false; }
@@ -40,7 +48,7 @@ namespace SendWithUs.Client
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(BatchRequestWrapper);
+            return typeof(BatchRequestWrapper).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -50,21 +58,24 @@ namespace SendWithUs.Client
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var wrapper = value as BatchRequestWrapper;
+            // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
+            // code (i.e., the proxy) merely to support unit testing.
+            this.WriteJson(writer, value, new SerializerProxy(serializer));
+        }
 
-            if (wrapper == null)
-            {
-                return;
-            }
+        protected internal virtual void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
+        {
+            EnsureArgument.NotNull(writer, "writer");
+            EnsureArgument.NotNull(serializer, "serializer");
 
-            wrapper.Validate();
+            var wrapper = EnsureArgument.Of<BatchRequestWrapper>(value, "value");
 
             writer.WriteStartObject();
-            writer.WritePropertyName("path");
-            serializer.Serialize(writer, wrapper.Path);
-            writer.WritePropertyName("method");
-            serializer.Serialize(writer, wrapper.Method);
-            writer.WritePropertyName("body");
+            writer.WritePropertyName(PropertyNames.Path);
+            writer.WriteValue(wrapper.Path);
+            writer.WritePropertyName(PropertyNames.Method);
+            writer.WriteValue(wrapper.Method);
+            writer.WritePropertyName(PropertyNames.InnerRequest);
             serializer.Serialize(writer, wrapper.InnerRequest);
             writer.WriteEndObject();
         }

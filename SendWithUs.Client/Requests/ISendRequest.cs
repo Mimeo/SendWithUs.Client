@@ -76,7 +76,7 @@ namespace SendWithUs.Client
         /// Gets the data to use when expanding the message template.
         /// </summary>
         /// <remarks>Corresponds to the "email_data" property in the SendWithUs API.</remarks>
-        IDictionary<string, string> Data { get; }
+        object Data { get; }
 
         /// <summary>
         /// Gets the set of tags to associate with the message.

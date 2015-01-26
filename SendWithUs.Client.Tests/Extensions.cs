@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,33 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SendWithUs.Client
+namespace SendWithUs.Client.Tests
 {
-    using Newtonsoft.Json;
+    using System.Collections.Generic;
 
-    /// <summary>
-    /// Wraps an IRequest object for use in a batch request.
-    /// </summary>
-    /// <remarks>This class MUST NOT implement IRequest.</remarks>
-    [JsonConverter(typeof(BatchRequestWrapperConverter))]
-    public class BatchRequestWrapper
+    public static class Extensions
     {
-        public virtual string Method
+        public static IDictionary<TKey, TValue> Upsert<TKey, TValue>(this IDictionary<TKey, TValue> subject, TKey key, TValue value)
         {
-            get { return this.InnerRequest.GetHttpMethod(); }
-        }
-
-        public virtual string Path
-        {
-            get { return this.InnerRequest.GetUriPath(); }
-        }
-
-        public virtual IRequest InnerRequest { get; protected set; }
-
-        public BatchRequestWrapper(IRequest innerRequest)
-        {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            this.InnerRequest = innerRequest;
+            subject[key] = value;
+            return subject;
         }
     }
 }

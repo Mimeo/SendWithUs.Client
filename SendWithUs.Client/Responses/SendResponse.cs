@@ -24,36 +24,60 @@ namespace SendWithUs.Client
 
     public class SendResponse : BaseResponse<JObject>, ISendResponse
     {
-        public bool Success { get; set; }
+        public static class PropertyNames
+        {
+            public const string Success = "success";
+            public const string Status = "status";
+            public const string ReceiptId = "receipt_id";
+            public const string Details = "email";
+            public const string TemplateName = "name";
+            public const string TemplateVersionId = "version_name";
+        }
 
-        public string Status { get; set; }
+        public virtual bool Success { get; set; }
 
-        public string ReceiptId { get; set; }
+        public virtual string Status { get; set; }
 
-        public string TemplateName { get; set; }
+        public virtual string ReceiptId { get; set; }
 
-        public string TemplateVersionId { get; set; }
+        public virtual string TemplateName { get; set; }
+
+        public virtual string TemplateVersionId { get; set; }
 
         #region Base class overrides 
 
-        protected override void Populate(JObject json)
+        protected internal override void Populate(JObject json)
         {
             if (json == null)
             {
                 return;
             }
 
-            this.Success = json.Value<bool>("success");
-            this.Status = json.Value<string>("status");
-            this.ReceiptId = json.Value<string>("receipt_id");
+            this.Success = json.Value<bool>(PropertyNames.Success);
+            this.Status = json.Value<string>(PropertyNames.Status);
+            this.ReceiptId = json.Value<string>(PropertyNames.ReceiptId);
 
-            var details = json.Property("email");
+            var details = this.GetPropertyValue(json, PropertyNames.Details);
 
-            if (details != null && details.HasValues)
+            if (details != null)
             {
-                this.TemplateName = details.Value.Value<string>("name");
-                this.TemplateVersionId = details.Value.Value<string>("version_name");
+                this.TemplateName = details.Value<string>(PropertyNames.TemplateName);
+                this.TemplateVersionId = details.Value<string>(PropertyNames.TemplateVersionId);
             }
+        }
+
+        /// <summary>
+        /// Gets the value of the named property on the specified object.
+        /// </summary>
+        /// <param name="json">The object from which to get the property value.</param>
+        /// <returns>The property value.</returns>
+        /// <remarks>This method exists to aid unit testing of Populate(), because JObject.GetValue()
+        /// is not virtual and therefore cannot be mocked.</remarks>
+        protected internal virtual JToken GetPropertyValue(JObject json, string propertyName)
+        {
+            //var details = json.Property(propertyName);
+            //return (details != null && details.HasValues) ? details.Value : null;
+            return json.GetValue(propertyName);
         }
 
         #endregion
