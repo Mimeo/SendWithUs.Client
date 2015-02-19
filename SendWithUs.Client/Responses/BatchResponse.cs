@@ -28,16 +28,16 @@ namespace SendWithUs.Client
 
     public class BatchResponse : BaseResponse<JArray>, IBatchResponse
     {
-        public IEnumerable<IResponse> Items { get; set; }
+        public virtual IList<IResponse> Items { get; set; }
 
         protected IResponseFactory ResponseFactory { get; set; }
 
-        protected IEnumerable<Type> ResponseTypes { get; set; }
+        protected IEnumerable<Type> ResponseSequence { get; set; }
 
-        public BatchResponse(ResponseFactory responseFactory, IEnumerable<Type> responseTypes)
+        public BatchResponse(IResponseFactory responseFactory, IEnumerable<Type> responseSequence)
         {
-            this.ResponseFactory =responseFactory;
-            this.ResponseTypes = responseTypes;
+            this.ResponseFactory = responseFactory;
+            this.ResponseSequence = responseSequence;
         }
 
         #region Base class overrides
@@ -49,16 +49,16 @@ namespace SendWithUs.Client
                 return;
             }
 
-            this.Items = json.Zip(this.ResponseTypes, (jt, rt) => this.BuildResponse(jt as JObject, rt));
+            this.Items = json.Zip(this.ResponseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt)).ToList();
         }
 
-        protected IResponse BuildResponse(JObject batched, Type responseType)
+        protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType)
         {
-            EnsureArgument.NotNull(batched, "batched");
+            EnsureArgument.NotNull(wrapper, "wrapper");
             EnsureArgument.NotNull(responseType, "responseType");
 
-            var statusCode = (HttpStatusCode)batched.Value<int>("status_code");
-            var json = batched.GetValue("body") as JObject;
+            var statusCode = (HttpStatusCode)wrapper.Value<int>("status_code");
+            var json = wrapper.GetValue("body") as JObject;
 
             return this.ResponseFactory.Create(responseType, statusCode, json);
         }

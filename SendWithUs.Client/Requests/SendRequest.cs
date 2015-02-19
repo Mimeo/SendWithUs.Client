@@ -74,6 +74,8 @@ namespace SendWithUs.Client
 
         public virtual IEnumerable<string> Tags { get; set; }
 
+        public virtual IDictionary<string, string> Headers { get; set; }
+
         public virtual IAttachment InlineAttachment { get; set; }
 
         public virtual IEnumerable<IAttachment> FileAttachments { get; set; }
@@ -81,6 +83,8 @@ namespace SendWithUs.Client
         public virtual string ProviderId { get; set; }
 
         public virtual string TemplateVersionId { get; set; }
+
+        public virtual string Language { get; set; }
 
         public virtual bool IsValid
         {

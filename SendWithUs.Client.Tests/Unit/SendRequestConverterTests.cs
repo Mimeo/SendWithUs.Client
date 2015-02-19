@@ -194,10 +194,18 @@ namespace SendWithUs.Client.Tests.Unit
             var templateId = TestHelper.GetUniqueId();
             var providerId = TestHelper.GetUniqueId();
             var templateVersionId = TestHelper.GetUniqueId();
+            var language = TestHelper.GetUniqueId();
+            var data = (object)null;
+            var tags = (IEnumerable<string>)null;
+            var headers = (IDictionary<string, string>)null;
 
             request.SetupGet(r => r.TemplateId).Returns(templateId);
             request.SetupGet(r => r.ProviderId).Returns(providerId);
             request.SetupGet(r => r.TemplateVersionId).Returns(templateVersionId);
+            request.SetupGet(r => r.Language).Returns(language);
+            request.SetupGet(r => r.Data).Returns(data);
+            request.SetupGet(r => r.Tags).Returns(tags);
+            request.SetupGet(r => r.Headers).Returns(headers);
             
             // Act
             converter.Object.WriteJson(writer.Object, request.Object, serializer.Object);
@@ -206,11 +214,13 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.TemplateId, templateId, false), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.ProviderId, providerId, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.TemplateVersionId, templateVersionId, true), Times.Once);
-            converter.Verify(c => c.WriteEmailData(writer.Object, serializer.Object, request.Object), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Language, language, true), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Data, data, true), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Tags, tags, true), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Headers, headers, true), Times.Once);
             converter.Verify(c => c.WritePrimaryRecipient(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteCcRecipients(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteBccRecipients(writer.Object, serializer.Object, request.Object), Times.Once);
-            converter.Verify(c => c.WriteTags(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteInlineAttachment(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteFileAttachments(writer.Object, serializer.Object, request.Object), Times.Once);
         }
@@ -253,62 +263,6 @@ namespace SendWithUs.Client.Tests.Unit
             // Assert
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Name, recipientName, true));
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Address, recipientAddress, false));
-        }
-
-        [TestMethod]
-        public void WriteEmailData_NullData_DoesNotWrite()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>();
-            var serializer = new Mock<SerializerProxy>(null);
-            var request = new Mock<ISendRequest>();
-            var converter = new SendRequestConverter();
-
-            request.SetupGet(r => r.Data).Returns(null);
-
-            // Act
-            converter.WriteEmailData(writer.Object, serializer.Object, request.Object);
-
-            // Assert
-            writer.Verify(w => w.WritePropertyName(It.IsAny<string>()), Times.Never);
-        }
-
-        [TestMethod]
-        public void WriteEmailData_Normally_WritesPropertyName()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>();
-            var serializer = new Mock<SerializerProxy>(null);
-            var request = new Mock<ISendRequest>();
-            var converter = new SendRequestConverter();
-            var data = true; //TestHelper.GetRandomData();
-
-            request.SetupGet(r => r.Data).Returns(data);
-
-            // Act
-            converter.WriteEmailData(writer.Object, serializer.Object, request.Object);
-
-            // Assert
-            writer.Verify(w => w.WritePropertyName(Names.Data), Times.Once);
-        }
-
-        [TestMethod]
-        public void WriteEmailData_Normally_SerializesData()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>();
-            var serializer = new Mock<SerializerProxy>(null);
-            var request = new Mock<ISendRequest>();
-            var converter = new SendRequestConverter();
-            var data = true; //TestHelper.GetRandomData();
-
-            request.SetupGet(r => r.Data).Returns(data);
-
-            // Act
-            converter.WriteEmailData(writer.Object, serializer.Object, request.Object);
-
-            // Assert
-            serializer.Verify(s => s.Serialize(writer.Object, data), Times.Once);
         }
 
         [TestMethod]

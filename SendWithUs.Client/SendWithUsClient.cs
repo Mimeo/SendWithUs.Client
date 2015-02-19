@@ -132,7 +132,7 @@ namespace SendWithUs.Client
         /// </summary>
         /// <param name="requests">A set of request objects to be batched.</param>
         /// <returns>A response object.</returns>
-        /// <exception cref="System.ArgumentNullException">The requests argument was null.</exception>
+        /// <exception cref="System.ArgumentException">The requests argument was null, empty, or contained null item(s).</exception>
         public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
             EnsureArgument.NotNullOrEmpty(requests, "requests", false);
@@ -140,8 +140,8 @@ namespace SendWithUs.Client
             var batchRequest = requests.Select(r => new BatchRequestWrapper(r.Validate()));
             var httpResponse = await this.PostJsonAsync("batch", batchRequest).ConfigureAwait(false);
             var json = await this.ReadJsonAsync(httpResponse);
-            var responseTypes = requests.Select(r => r.GetResponseType());
-            return this.ResponseFactory.Create(responseTypes, httpResponse.StatusCode, json);
+            var responseSequence = requests.Select(r => r.GetResponseType());
+            return this.ResponseFactory.Create(responseSequence, httpResponse.StatusCode, json);
         }
 
         #endregion
