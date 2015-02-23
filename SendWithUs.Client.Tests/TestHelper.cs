@@ -88,10 +88,10 @@ namespace SendWithUs.Client.Tests
             return Guid.NewGuid().ToString("N");
         }
 
-        public static IDictionary<string, object> GetRandomData()
+        public static IDictionary<string, string> GetRandomDictionary()
         {
             var itemCount = GetRandomInteger(0, 10);
-            return Generate(itemCount, i => GetUniqueId()).ToDictionary<string ,string, object>(k => k, k => GetUniqueId());
+            return Generate(itemCount, i => GetUniqueId()).ToDictionary(k => k, k => GetUniqueId());
         }
     }
 }

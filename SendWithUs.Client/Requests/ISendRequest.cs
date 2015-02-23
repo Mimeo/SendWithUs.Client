@@ -84,6 +84,11 @@ namespace SendWithUs.Client
         IEnumerable<string> Tags { get; }
 
         /// <summary>
+        /// Gets the SMTP headers to be included with the message.
+        /// </summary>
+        IDictionary<string, string> Headers { get; }
+
+        /// <summary>
         /// Gets an attachment object.
         /// </summary>
         /// <remarks>Corresponds to the "inline." property in the SendWithUs API.</remarks>
@@ -106,6 +111,11 @@ namespace SendWithUs.Client
         /// </summary>
         /// <remarks>Corresponds to the "version_name" property in the SendWithUs API.</remarks>
         string TemplateVersionId { get; }
+
+        /// <summary>
+        /// Gets the language tag for a localized variant of the template identified by TemplateId.
+        /// </summary>
+        string Locale { get; }
 
         /// <summary>
         /// Gets a value indicating whether the request object is valid (well-formed).

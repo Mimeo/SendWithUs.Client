@@ -34,8 +34,10 @@ namespace SendWithUs.Client
             return this.Create(typeof(T), statusCode, json) as T;
         }
 
-        public IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json)
+        public virtual IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json)
         {
+            EnsureArgument.NotNull(responseType, "responseType");
+
             if (!typeof(IResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
             {
                 throw new InvalidOperationException(
@@ -45,9 +47,9 @@ namespace SendWithUs.Client
             return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, json);
         }
 
-        public IBatchResponse Create(IEnumerable<Type> responseTypes, HttpStatusCode statusCode, JToken json)
+        public IBatchResponse Create(IEnumerable<Type> responseSequence, HttpStatusCode statusCode, JToken json)
         {
-            return new BatchResponse(this, responseTypes).Initialize(statusCode, json) as IBatchResponse;
+            return new BatchResponse(this, responseSequence).Initialize(statusCode, json) as IBatchResponse;
         }
     }
 }

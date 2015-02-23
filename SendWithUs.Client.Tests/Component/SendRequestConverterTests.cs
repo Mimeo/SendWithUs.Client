@@ -58,7 +58,7 @@ namespace SendWithUs.Client.Tests.Component
         {
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
-            var data = TestHelper.GetRandomData();
+            var data = TestHelper.GetRandomDictionary();
             var request = new SendRequest(templateId, recipientAddress, data);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
