@@ -35,7 +35,7 @@ namespace SendWithUs.Client
             public const string TemplateId = "email_id";
             public const string ProviderId = "esp_account";
             public const string TemplateVersionId = "version_name";
-            public const string Language = "locale";
+            public const string Locale = "locale";
             public const string Recipient = "recipient";
             public const string Name = "name";
             public const string Address = "address";
@@ -89,7 +89,7 @@ namespace SendWithUs.Client
             this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId, false);
             this.WriteProperty(writer, serializer, PropertyNames.ProviderId, request.ProviderId, true);
             this.WriteProperty(writer, serializer, PropertyNames.TemplateVersionId, request.TemplateVersionId, true);
-            this.WriteProperty(writer, serializer, PropertyNames.Language, request.Language, true);
+            this.WriteProperty(writer, serializer, PropertyNames.Locale, request.Locale, true);
             this.WriteProperty(writer, serializer, PropertyNames.Data, request.Data, true);
             this.WriteProperty(writer, serializer, PropertyNames.Tags, request.Tags, true);
             this.WriteProperty(writer, serializer, PropertyNames.Headers, request.Headers, true);

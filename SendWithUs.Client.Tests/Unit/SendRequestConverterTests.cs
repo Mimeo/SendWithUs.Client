@@ -202,7 +202,7 @@ namespace SendWithUs.Client.Tests.Unit
             request.SetupGet(r => r.TemplateId).Returns(templateId);
             request.SetupGet(r => r.ProviderId).Returns(providerId);
             request.SetupGet(r => r.TemplateVersionId).Returns(templateVersionId);
-            request.SetupGet(r => r.Language).Returns(language);
+            request.SetupGet(r => r.Locale).Returns(language);
             request.SetupGet(r => r.Data).Returns(data);
             request.SetupGet(r => r.Tags).Returns(tags);
             request.SetupGet(r => r.Headers).Returns(headers);
@@ -214,7 +214,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.TemplateId, templateId, false), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.ProviderId, providerId, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.TemplateVersionId, templateVersionId, true), Times.Once);
-            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Language, language, true), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Locale, language, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Data, data, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Tags, tags, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Headers, headers, true), Times.Once);

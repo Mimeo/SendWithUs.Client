@@ -84,7 +84,7 @@ namespace SendWithUs.Client
 
         public virtual string TemplateVersionId { get; set; }
 
-        public virtual string Language { get; set; }
+        public virtual string Locale { get; set; }
 
         public virtual bool IsValid
         {

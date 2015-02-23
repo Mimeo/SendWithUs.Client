@@ -115,8 +115,7 @@ namespace SendWithUs.Client
         /// <summary>
         /// Gets the language tag for a localized variant of the template identified by TemplateId.
         /// </summary>
-        /// <remarks>Corresponds to the "locale" property in the SendWithUs API.</remarks>
-        string Language { get; }
+        string Locale { get; }
 
         /// <summary>
         /// Gets a value indicating whether the request object is valid (well-formed).
