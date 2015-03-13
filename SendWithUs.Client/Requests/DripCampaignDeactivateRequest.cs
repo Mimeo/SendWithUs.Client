@@ -25,27 +25,23 @@ namespace SendWithUs.Client
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// Represents the data necessary to make API requests to activate a drip campaign.
+    /// Represents the data necessary to make API requests to deactivate a drip campaign.
     /// </summary>
-    [JsonConverter(typeof(DripCampaignActivateRequestConverter))]
-    public class DripCampaignActivateRequest : IDripCampaignActivateRequest
+    [JsonConverter(typeof(DripCampaignDeactivateRequestConverter))]
+    public class DripCampaignDeactivateRequest : IDripCampaignDeactivateRequest
     {
         #region Constructors
 
-        public DripCampaignActivateRequest()
+        public DripCampaignDeactivateRequest()
         { }
 
-        public DripCampaignActivateRequest(string campaignId, string recipientAddress) : this(campaignId, recipientAddress, null)
-        { }
-
-        public DripCampaignActivateRequest(string campaignId, string recipientAddress, object data)
+        public DripCampaignDeactivateRequest(string campaignId, string recipientAddress)
         {
             EnsureArgument.NotNullOrEmpty(campaignId, "campaignId");
             EnsureArgument.NotNullOrEmpty(recipientAddress, "recipientAddress");
 
             this.CampaignId = campaignId;
             this.RecipientAddress = recipientAddress;
-            this.Data = data;
         }
 
         #endregion
@@ -54,27 +50,7 @@ namespace SendWithUs.Client
 
         public virtual string CampaignId { get; set; }
 
-        public virtual string SenderAddress { get; set; }
-
-        public virtual string SenderName { get; set; }
-
-        public virtual string SenderReplyTo { get; set; }
-
         public virtual string RecipientAddress { get; set; }
-
-        public virtual string RecipientName { get; set; }
-
-        public virtual IEnumerable<string> CopyTo { get; set; }
-
-        public virtual IEnumerable<string> BlindCopyTo { get; set; }
-
-        public virtual object Data { get; set; }
-
-        public virtual IEnumerable<string> Tags { get; set; }
-
-        public virtual string ProviderId { get; set; }
-
-        public virtual string Locale { get; set; }
 
         public virtual bool IsValid
         {
@@ -87,7 +63,7 @@ namespace SendWithUs.Client
 
         public string GetUriPath()
         {
-            return "/api/v1/" + string.Format("drip_campaigns/{0}/activate", this.CampaignId);
+            return "/api/v1/" + string.Format("drip_campaigns/{0}/deactivate", this.CampaignId);
         }
 
         public string GetHttpMethod()
@@ -97,7 +73,7 @@ namespace SendWithUs.Client
 
         public Type GetResponseType()
         {
-            return typeof(DripCampaignActivateResponse);
+            return typeof(DripCampaignDeactivateResponse);
         }
 
         public IRequest Validate()
@@ -130,45 +106,9 @@ namespace SendWithUs.Client
                 return fail(ValidationFailureMode.MissingRecipientAddress);
             }
 
-            // If sender name or reply-to are specified, then sender address is required.
-            if ((!String.IsNullOrEmpty(this.SenderName) || !String.IsNullOrEmpty(this.SenderReplyTo))
-                && String.IsNullOrEmpty(this.SenderAddress))
-            {
-                return fail(ValidationFailureMode.MissingSenderAddress);
-            }
-
             return true;
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Represents the data necessary to make API requests to activate a drip campaign.
-    /// </summary>
-    /// <typeparam name="TData">The type of the Data property.</typeparam>
-    public class DripCampaignActivateRequest<TData> : DripCampaignActivateRequest
-    {
-        #region Constructors
-
-        public DripCampaignActivateRequest()
-            : base()
-        { }
-
-        public DripCampaignActivateRequest(string campaignId, string recipientAddress)
-            : base(campaignId, recipientAddress)
-        { }
-
-        public DripCampaignActivateRequest(string campaignId, string recipientAddress, TData data)
-            : base(campaignId, recipientAddress, data)
-        { }
-
-        #endregion
-
-        public new TData Data
-        {
-            get { return (TData)base.Data; }
-            set { base.Data = value; }
-        }
     }
 }

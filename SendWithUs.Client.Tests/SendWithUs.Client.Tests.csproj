@@ -78,12 +78,16 @@
     <Compile Include="Component\BatchRequestWrapperConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
     <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
+    <Compile Include="Component\DripCampaignDeactivateConverterTests.cs" />
+    <Compile Include="Component\DripCampaignDeactivateAllConverterTests.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
     <Compile Include="Component\BufferedJsonStringWriter.cs" />
     <Compile Include="Component\SendRequestConverterTests.cs" />
     <Compile Include="EndToEnd\SendAsyncTests.cs" />
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />
     <Compile Include="EndToEnd\DripCampaignActivateAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignDeactivateAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignDeactivateAllAsyncTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Unit\BaseResponseTests.cs" />
@@ -99,6 +103,12 @@
     <Compile Include="Unit\DripCampaignActivateRequestConverterTests.cs" />
     <Compile Include="Unit\DripCampaignActivateRequestTests.cs" />
     <Compile Include="Unit\DripCampaignActivateResponseTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateResponseTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllResponseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -121,6 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="EndToEnd\Data\DripCampaignActivateRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EndToEnd\Data\DripCampaignDeactivateAllRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EndToEnd\Data\DripCampaignDeactivateRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

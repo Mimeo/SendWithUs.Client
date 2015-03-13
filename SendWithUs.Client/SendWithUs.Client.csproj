@@ -48,7 +48,13 @@
     <Compile Include="Requests\BatchRequestWrapperConverter.cs" />
     <Compile Include="Requests\DripCampaignActivateRequest.cs" />
     <Compile Include="Requests\DripCampaignActivateRequestConverter.cs" />
+    <Compile Include="Requests\DripCampaignDeactivateAllRequest.cs" />
+    <Compile Include="Requests\DripCampaignDeactivateAllRequestConverter.cs" />
+    <Compile Include="Requests\DripCampaignDeactivateRequest.cs" />
+    <Compile Include="Requests\DripCampaignDeactivateRequestConverter.cs" />
     <Compile Include="Requests\IDripCampaignActivateRequest.cs" />
+    <Compile Include="Requests\IDripCampaignDeactivateAllRequest.cs" />
+    <Compile Include="Requests\IDripCampaignDeactivateRequest.cs" />
     <Compile Include="Requests\ISendRequest.cs" />
     <Compile Include="Requests\SendRequestConverter.cs" />
     <Compile Include="Responses\BaseResponse.cs" />
@@ -56,8 +62,12 @@
     <Compile Include="Helpers\IAttachment.cs" />
     <Compile Include="Requests\IRequest.cs" />
     <Compile Include="Responses\DripCampaignActivateResponse.cs" />
+    <Compile Include="Responses\DripCampaignDeactivateAllResponse.cs" />
+    <Compile Include="Responses\DripCampaignDeactivateResponse.cs" />
     <Compile Include="Responses\IBatchResponse.cs" />
     <Compile Include="Responses\IDripCampaignActivateResponse.cs" />
+    <Compile Include="Responses\IDripCampaignDeactivateAllResponse.cs" />
+    <Compile Include="Responses\IDripCampaignDeactivateResponse.cs" />
     <Compile Include="Responses\IResponse.cs" />
     <Compile Include="Responses\IResponseFactory.cs" />
     <Compile Include="Responses\ISendResponse.cs" />

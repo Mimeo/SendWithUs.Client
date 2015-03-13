@@ -80,5 +80,53 @@ namespace SendWithUs.Client.Tests.Component
 
             Assert.IsTrue(recipientAddressFound);
         }
+
+        protected void ValidateDripCampaignDeactivateRequest(JObject jsonObject, string expectedRecipientAddress, bool allowOtherProperties)
+        {
+            var recipientAddressFound = false;
+
+            foreach (var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case "recipient_address":
+                        Assert.AreEqual(expectedRecipientAddress, pair.Value);
+                        recipientAddressFound = true;
+                        break;
+                    default:
+                        if (!allowOtherProperties)
+                        {
+                            Assert.Fail("Unexpected object property '{0}'", pair.Key);
+                        }
+                        break;
+                }
+            }
+
+            Assert.IsTrue(recipientAddressFound);
+        }
+
+        protected void ValidateDripCampaignDeactivateAllRequest(JObject jsonObject, string expectedRecipientAddress, bool allowOtherProperties)
+        {
+            var recipientAddressFound = false;
+
+            foreach (var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case "recipient_address":
+                        Assert.AreEqual(expectedRecipientAddress, pair.Value);
+                        recipientAddressFound = true;
+                        break;
+                    default:
+                        if (!allowOtherProperties)
+                        {
+                            Assert.Fail("Unexpected object property '{0}'", pair.Key);
+                        }
+                        break;
+                }
+            }
+
+            Assert.IsTrue(recipientAddressFound);
+        }
     }
 }
