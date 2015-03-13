@@ -44,7 +44,7 @@ namespace SendWithUs.Client
         /// The base URI of the SendWithUs service.
         /// </summary>
         /// <remarks>MUST have a trailing slash.</remarks>
-        protected const string BaseUri = "https://api.sendwithus.com/api/v1/";
+        protected const string BaseUri = "https://api.sendwithus.com";
 
         /// <summary>
         /// Gets or sets the HTTP implementation.
@@ -122,9 +122,18 @@ namespace SendWithUs.Client
         {
             EnsureArgument.NotNull(request, "request");
 
-            var httpResponse = await this.PostJsonAsync("send", request.Validate()).ConfigureAwait(false);
+            var httpResponse = await this.PostJsonAsync(request.GetUriPath(), request.Validate()).ConfigureAwait(false);
             var json = await this.ReadJsonAsync(httpResponse);
             return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
+        }
+
+        public virtual async Task<IDripCampaignActivateResponse> DripCampaignActivateAsync(IDripCampaignActivateRequest request)
+        {
+            EnsureArgument.NotNull(request, "request");
+
+            var httpResponse = await this.PostJsonAsync(request.GetUriPath(), request.Validate()).ConfigureAwait(false);
+            var json = await this.ReadJsonAsync(httpResponse);
+            return this.ResponseFactory.Create<DripCampaignActivateResponse>(httpResponse.StatusCode, json);
         }
 
         /// <summary>
@@ -138,7 +147,7 @@ namespace SendWithUs.Client
             EnsureArgument.NotNullOrEmpty(requests, "requests", false);
 
             var batchRequest = requests.Select(r => new BatchRequestWrapper(r.Validate()));
-            var httpResponse = await this.PostJsonAsync("batch", batchRequest).ConfigureAwait(false);
+            var httpResponse = await this.PostJsonAsync("/api/v1/batch", batchRequest).ConfigureAwait(false);
             var json = await this.ReadJsonAsync(httpResponse);
             var responseSequence = requests.Select(r => r.GetResponseType());
             return this.ResponseFactory.Create(responseSequence, httpResponse.StatusCode, json);

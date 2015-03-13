@@ -36,6 +36,11 @@ namespace SendWithUs.Client.Tests.EndToEnd
             get { return this.GetString("TemplateId"); }
         }
 
+        public string CampaignId
+        {
+            get { return this.GetString("CampaignId"); }
+        }
+
         public string SenderAddress
         {
             get { return this.GetString("SenderAddress"); }

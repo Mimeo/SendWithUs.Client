@@ -45,6 +45,24 @@ namespace SendWithUs.Client.Tests.Unit
 
         #endregion
 
+        #region DripCampaignActivateAsync
+
+        [TestMethod]
+        public void DripCampaignActivateAsync_NullRequest_Throws()
+        {
+            // Arrange
+            var apiKey = TestHelper.GetUniqueId();
+            var client = new SendWithUsClient(apiKey);
+
+            // Act
+            var exception = TestHelper.CaptureException(() => client.DripCampaignActivateAsync(null));
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+        }
+
+        #endregion
+
         #region BatchAsync
 
         [TestMethod]

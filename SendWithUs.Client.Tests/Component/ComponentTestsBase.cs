@@ -56,5 +56,29 @@ namespace SendWithUs.Client.Tests.Component
             Assert.IsTrue(emailIdFound);
             Assert.IsTrue(recipientAddressFound);
         }
+
+        protected void ValidateDripCampaignActivateRequest(JObject jsonObject, string expectedRecipientAddress, bool allowOtherProperties)
+        {
+            var recipientAddressFound = false;
+
+            foreach(var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case "recipient":
+                        Assert.AreEqual(expectedRecipientAddress, pair.Value["address"].Value<string>());
+                        recipientAddressFound = true;
+                        break;
+                    default:
+                        if (!allowOtherProperties)
+                        {
+                            Assert.Fail("Unexpected object property '{0}'", pair.Key);
+                        }
+                        break;
+                }
+            }
+
+            Assert.IsTrue(recipientAddressFound);
+        }
     }
 }

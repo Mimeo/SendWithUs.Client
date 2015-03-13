@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SendRequest>
-    <ApiKey></ApiKey>
-    <TemplateId></TemplateId>
-    <SenderAddress></SenderAddress>
-    <RecipientAddress></RecipientAddress>
+    <ApiKey>test_64afdf86aa571c901db5c70cf7a953727132599e</ApiKey>
+    <TemplateId>tem_PUuDKzcTLQrG7hroMxbwWB</TemplateId>
+    <SenderAddress>kkaplan@hattonpoint.com</SenderAddress>
+    <RecipientAddress>kkaplan@hattonpoint.com</RecipientAddress>
     <AttachmentFileName>EndToEnd/Data/mimeo-logo-black.png</AttachmentFileName>
     <Data>
         <Item name="subject" value="SendAsync Test"/>

@@ -77,11 +77,13 @@
   <ItemGroup>
     <Compile Include="Component\BatchRequestWrapperConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
+    <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
     <Compile Include="Component\BufferedJsonStringWriter.cs" />
     <Compile Include="Component\SendRequestConverterTests.cs" />
     <Compile Include="EndToEnd\SendAsyncTests.cs" />
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignActivateAsyncTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Unit\BaseResponseTests.cs" />
@@ -94,6 +96,9 @@
     <Compile Include="Unit\SendRequestTests.cs" />
     <Compile Include="Unit\SendResponseTests.cs" />
     <Compile Include="Unit\SendWithUsClientTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateResponseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -113,6 +118,11 @@
     <None Include="EndToEnd\Data\SendRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EndToEnd\Data\DripCampaignActivateRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

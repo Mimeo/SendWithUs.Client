@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DripCampaignActivateRequest>
+	<ApiKey>test_64afdf86aa571c901db5c70cf7a953727132599e</ApiKey>
+	<CampaignId>dc_pZ5niXSbnCCv3FbojQ7F4G</CampaignId>
+	<SenderAddress>kkaplan@hattonpoint.com</SenderAddress>
+	<RecipientAddress>kkaplan@hattonpoint.com</RecipientAddress>
+	<Data>
+		<Item name="subject"
+			  value="SendAsync Test"/>
+		<Item name="firstName"
+			  value="Roscoe"/>
+		<Item name="changePasswordUrl"
+			  value="http://example.com"/>
+		<Item name="applicationName"
+			  value="SendWithUs.Client.Tests"/>
+		<Item name="customerServicePhoneNumber"
+			  value="555-1212"/>
+	</Data>
+</DripCampaignActivateRequest>
