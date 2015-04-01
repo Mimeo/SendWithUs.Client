@@ -43,7 +43,7 @@ using SendWithUs.Client;
 
 var sheriff = new Person { ... };
 var wristslap = new Punishment { ... };
-var data = new Dictionary<string, object> { { "who", sheriff }, { "what", wristslap } };
+var data = new DisciplinaryData { Who = sheriff, What = wristslap };
 var request = new SendRequest
 {
     TemplateId = "disciplinary-form",
@@ -74,7 +74,8 @@ The data passed to `RenderRequest` can be any CLR object, as long as it serializ
 ```csharp
 using SendWithUs.Client;
 
-var request = new RenderRequest("template987", new Car { Make = "Dodge", Model = "Charger", Year = "1969" });
+var generalLee = new Car { Make = "Dodge", Model = "Charger", Year = "1969" };
+var request = new RenderRequest("template987", generalLee);
 var client = new SendWithUsClient("my-api-key");
 var response = await client.RenderAsync(request);
 ```
