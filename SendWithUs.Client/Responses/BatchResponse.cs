@@ -30,39 +30,34 @@ namespace SendWithUs.Client
     {
         public virtual IList<IResponse> Items { get; set; }
 
-        protected IResponseFactory ResponseFactory { get; set; }
-
-        protected IEnumerable<Type> ResponseSequence { get; set; }
-
-        public BatchResponse(IResponseFactory responseFactory, IEnumerable<Type> responseSequence)
-        {
-            this.ResponseFactory = responseFactory;
-            this.ResponseSequence = responseSequence;
-        }
+        protected internal virtual JArray RawItems { get; set; }
 
         #region Base class overrides
 
         protected internal override void Populate(JArray json)
         {
-            if (json == null)
-            {
-                return;
-            }
-
-            this.Items = json.Zip(this.ResponseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt)).ToList();
+            this.RawItems = json;
         }
 
-        protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType)
+        #endregion
+
+        public BatchResponse Inflate(IEnumerable<Type> responseSequence, IResponseFactory responseFactory)
+        {
+            this.Items = this.RawItems.Zip(responseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt, responseFactory)).ToList();
+            this.RawItems = null;
+            return this;
+        }
+
+        protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType, IResponseFactory responseFactory)
         {
             EnsureArgument.NotNull(wrapper, "wrapper");
             EnsureArgument.NotNull(responseType, "responseType");
+            EnsureArgument.NotNull(responseFactory, "responseFactory");
 
             var statusCode = (HttpStatusCode)wrapper.Value<int>("status_code");
             var json = wrapper.GetValue("body") as JObject;
 
-            return this.ResponseFactory.Create(responseType, statusCode, json);
+            return responseFactory.Create(responseType, statusCode, json);
         }
-
-        #endregion
     }
 }

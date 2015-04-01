@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,29 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using Newtonsoft.Json.Linq;
-
-    public interface IResponseFactory
+    public interface IRenderRequest : IRequest
     {
-        T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse;
+        /// <summary>
+        /// Gets the unique identifier of an email template.
+        /// </summary>
+        /// <remarks>Corresponds to the "template_id" property in the SendWithUs API.</remarks>
+        string TemplateId { get; }
 
-        IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json);
+        /// <summary>
+        /// Gets the unique identifier for a version of the template identified by TemplateId.
+        /// </summary>
+        /// <remarks>Corresponds to the "version_id" property in the SendWithUs API.</remarks>
+        string TemplateVersionId { get; }
+
+        /// <summary>
+        /// Gets the data to use when expanding the message template.
+        /// </summary>
+        /// <remarks>Corresponds to the "template_data" property in the SendWithUs API.</remarks>
+        object Data { get; }
+
+        /// <summary>
+        /// Gets the language tag for a localized variant of the template identified by TemplateId.
+        /// </summary>
+        string Locale { get; }
     }
 }

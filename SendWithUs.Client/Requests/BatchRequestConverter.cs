@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,15 @@ namespace SendWithUs.Client
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Converts a BatchRequestWrapper object to JSON.
+    /// Converts a BatchRequest object to JSON.
     /// </summary>
-    public class BatchRequestWrapperConverter : JsonConverter
+    public class BatchRequestConverter : BaseConverter
     {
         public static class PropertyNames
         {
             public const string Method = "method";
             public const string Path = "path";
-            public const string InnerRequest = "body";
+            public const string Body = "body";
         }
 
         public override bool CanRead
@@ -48,7 +48,7 @@ namespace SendWithUs.Client
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(BatchRequestWrapper).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+            return typeof(BatchRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -56,27 +56,36 @@ namespace SendWithUs.Client
             throw new NotImplementedException();
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
         {
-            // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
-            // code (i.e., the proxy) merely to support unit testing.
-            this.WriteJson(writer, value, new SerializerProxy(serializer));
+            var batchRequest = EnsureArgument.Of<BatchRequest>(value, "value");
+            var writeComma = false;
+
+            writer.WriteStartArray();
+
+            foreach (var request in batchRequest)
+            {
+                if (writeComma)
+                {
+                    writer.WriteRaw(",");
+                }
+
+                writeComma = true;
+                this.WriteWrapper(writer, serializer, request);
+            }
+
+            writer.WriteEndArray();
         }
 
-        protected internal virtual void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
+        protected internal virtual void WriteWrapper(JsonWriter writer, SerializerProxy serializer, IRequest request)
         {
-            EnsureArgument.NotNull(writer, "writer");
-            EnsureArgument.NotNull(serializer, "serializer");
-
-            var wrapper = EnsureArgument.Of<BatchRequestWrapper>(value, "value");
-
             writer.WriteStartObject();
             writer.WritePropertyName(PropertyNames.Path);
-            writer.WriteValue(wrapper.Path);
+            writer.WriteValue(request.GetUriPath());
             writer.WritePropertyName(PropertyNames.Method);
-            writer.WriteValue(wrapper.Method);
-            writer.WritePropertyName(PropertyNames.InnerRequest);
-            serializer.Serialize(writer, wrapper.InnerRequest);
+            writer.WriteValue(request.GetHttpMethod());
+            writer.WritePropertyName(PropertyNames.Body);
+            serializer.Serialize(writer, request);
             writer.WriteEndObject();
         }
     }

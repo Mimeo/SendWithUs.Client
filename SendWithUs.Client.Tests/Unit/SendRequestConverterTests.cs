@@ -120,37 +120,6 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void WriteJson_NullWriter_Throws()
-        {
-            // Arrange
-            var serializer = new Mock<SerializerProxy>(null).Object;
-            var request = new Mock<ISendRequest>().Object;
-            var converter = new SendRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.WriteJson(null, request, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
-        }
-
-        [TestMethod]
-        public void WriteJson_NullSerializer_Throws()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>().Object;
-            var serializer = null as SerializerProxy;
-            var request = new Mock<ISendRequest>().Object;
-            var converter = new SendRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.WriteJson(writer, request, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
-        }
-
-        [TestMethod]
         public void WriteJson_NonISendRequestValue_Throws()
         {
             // Arrange

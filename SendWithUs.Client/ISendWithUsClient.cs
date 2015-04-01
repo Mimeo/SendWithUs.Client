@@ -36,6 +36,13 @@ namespace SendWithUs.Client
         Task<ISendResponse> SendAsync(ISendRequest request);
 
         /// <summary>
+        /// Renders a template per the given request object.
+        /// </summary>
+        /// <param name="request">A request object describing the template to be rendered.</param>
+        /// <returns>A response object.</returns>
+        Task<IRenderResponse> RenderAsync(IRenderRequest request);
+
+        /// <summary>
         /// Submits a batch request comprising the given set of request objects.
         /// </summary>
         /// <param name="requests">A set of request objects to be batched.</param>

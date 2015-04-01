@@ -32,71 +32,69 @@ namespace SendWithUs.Client.Tests.Unit
     public class BatchResponseTests
     {
         [TestMethod]
-        public void Populate_NullJson_DoesNotSetItems()
+        public void Populate_NullJson_SetsRawItems()
         {
             // Arrange
-            var responseFactory = (IResponseFactory)null;
-            var responseSequence = (IEnumerable<Type>)null;
-            var response = new Mock<BatchResponse>(responseFactory, responseSequence);
+            var response = new Mock<BatchResponse> { CallBase = true };
             var json = (JArray)null;
 
+            response.SetupSet(r => r.RawItems = It.IsAny<JArray>());
+
             // Act
             response.Object.Populate(json);
 
             // Assert
-            response.VerifySet(r => r.Items = It.IsAny<IList<IResponse>>(), Times.Never);
+            response.VerifySet(r => r.RawItems = json, Times.Once);
         }
 
         [TestMethod]
-        public void Populate_Normally_SetsItems()
+        public void Populate_Normally_SetsRawItems()
         {
             // Arrange
-            var responseFactory = (IResponseFactory)null;
-            var responseSequence = Enumerable.Empty<Type>();
-            var response = new Mock<BatchResponse>(responseFactory, responseSequence) { CallBase = true };
+            var response = new Mock<BatchResponse> { CallBase = true };
             var json = new JArray();
 
-            response.SetupSet(r => r.Items = It.IsAny<IList<IResponse>>());
+            response.SetupSet(r => r.RawItems = It.IsAny<JArray>());
 
             // Act
             response.Object.Populate(json);
 
             // Assert
-            response.VerifySet(r => r.Items = It.IsAny<IList<IResponse>>(), Times.Once);
+            response.VerifySet(r => r.RawItems = json, Times.Once);
         }
 
         [TestMethod]
-        public void Populate_Normally_BuildsResponses()
+        public void Inflate_Normally_BuildsResponses()
         {
             // Arrange
             var count = TestHelper.GetRandomInteger(1, 10);
-            var responseFactory = (IResponseFactory)null;
+            var responseFactory = new Mock<IResponseFactory>().Object;
             var responseSequence = TestHelper.Generate(count, i => typeof(IResponse));
-            var response = new Mock<BatchResponse>(responseFactory, responseSequence) { CallBase = true };
+            var response = new Mock<BatchResponse> { CallBase = true };
             var json = new JArray(TestHelper.Generate(count, i => new JObject()).ToArray());
 
-            response.Setup(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>())).Returns(default(IResponse));
+            response.SetupSet(r => r.RawItems = json);
+            response.Setup(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>())).Returns(default(IResponse));
             response.SetupSet(r => r.Items = It.IsAny<IList<IResponse>>());
 
             // Act
-            response.Object.Populate(json);
+            response.Object.Inflate(responseSequence, responseFactory);
 
             // Assert
-            response.Verify(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>()), Times.Exactly(count));
+            response.Verify(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>()), Times.Exactly(count));
         }
 
         [TestMethod]
         public void BuildResponse_NullWrapper_Throws()
         {
             // Arrange
-            var responseFactory = (IResponseFactory)null;
-            var responseSequence = (IEnumerable<Type>)null;
-            var response = new BatchResponse(responseFactory, responseSequence);
+            var response = new BatchResponse();
             var wrapper = (JObject)null;
             var responseType = typeof(IResponse);
+            var responseFactory = new Mock<IResponseFactory>().Object;
 
             // Act
-            var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType));
+            var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
@@ -106,14 +104,29 @@ namespace SendWithUs.Client.Tests.Unit
         public void BuildResponse_NullResponseType_Throws()
         {
             // Arrange
-            var responseFactory = (IResponseFactory)null;
-            var responseSequence = (IEnumerable<Type>)null;
-            var response = new BatchResponse(responseFactory, responseSequence);
+            var response = new BatchResponse();
             var wrapper = new JObject();
             var responseType = (Type)null;
+            var responseFactory = new Mock<IResponseFactory>().Object;
 
             // Act
-            var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType));
+            var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+        }
+
+        [TestMethod]
+        public void BuildResponse_NullResponseFactory_Throws()
+        {
+            // Arrange
+            var response = new BatchResponse();
+            var wrapper = new JObject();
+            var responseType = typeof(IResponse);
+            var responseFactory = (IResponseFactory)null;
+
+            // Act
+            var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
@@ -123,18 +136,17 @@ namespace SendWithUs.Client.Tests.Unit
         public void BuildResponse_Normally_InvokesResponseFactory()
         {
             // Arrange
-            var responseFactory = new Mock<IResponseFactory>();
-            var responseSequence = (IEnumerable<Type>)null;
-            var response = new BatchResponse(responseFactory.Object, responseSequence);
+            var response = new BatchResponse();
             var statusCode = HttpStatusCode.OK;
             var body = new JObject();
             var wrapper = JObject.FromObject(new { status_code = statusCode, body = body });
             var responseType = typeof(IResponse);
+            var responseFactory = new Mock<IResponseFactory>();
 
             responseFactory.Setup(f => f.Create(It.IsAny<Type>(), It.IsAny<HttpStatusCode>(), It.IsAny<JToken>()));
 
             // Act
-            response.BuildResponse(wrapper, responseType);
+            response.BuildResponse(wrapper, responseType, responseFactory.Object);
 
             // Assert
             // Since there are no setups on the wrapper, we are also verifying that the statusCode and body

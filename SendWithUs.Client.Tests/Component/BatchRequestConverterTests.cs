@@ -21,39 +21,45 @@
 namespace SendWithUs.Client.Tests.Component
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     [TestClass]
-    public class BatchRequestWrapperConverterTests : ComponentTestsBase
+    public class BatchRequestConverterTests : ComponentTestsBase
     {
         [TestMethod]
-        public void WriteJson_ValidBatchRequestWrapper_Succeeds()
+        public void WriteJson_ValidBatchRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
-            var wrapper = new BatchRequestWrapper(request);
+            var sendRequest = new SendRequest(templateId, recipientAddress);
+            var batchRequest = new BatchRequest(new List<IRequest> { sendRequest });
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
-            var converter = new BatchRequestWrapperConverter();
+            var converter = new BatchRequestConverter();
 
-            converter.WriteJson(writer, wrapper, serializer);
-            var jsonObject = writer.GetBufferAs<JObject>();
+            converter.WriteJson(writer, batchRequest, serializer);
+            var jsonArray = writer.GetBufferAs<JArray>();
 
-            Assert.IsNotNull(jsonObject);
-            var pathProperty = jsonObject.Property("path");
+            Assert.IsNotNull(jsonArray);
+            Assert.AreEqual(1, jsonArray.Count);
+
+            var batchResponse = jsonArray[0] as JObject;
+            var pathProperty = batchResponse.Property("path");
+            var methodProperty = batchResponse.Property("method");
+            var bodyProperty = batchResponse.Property("body");
+
             Assert.IsNotNull(pathProperty);
             Assert.IsTrue(pathProperty.HasValues);
-            Assert.AreEqual(request.GetUriPath(), (string)pathProperty.Value);
-            var methodProperty = jsonObject.Property("method");
+            Assert.AreEqual(sendRequest.GetUriPath(), (string)pathProperty.Value);
             Assert.IsNotNull(methodProperty);
             Assert.IsTrue(methodProperty.HasValues);
-            Assert.AreEqual(request.GetHttpMethod(), (string)methodProperty.Value);
-            var bodyProperty = jsonObject.Property("body");
+            Assert.AreEqual(sendRequest.GetHttpMethod(), (string)methodProperty.Value);
             Assert.IsNotNull(bodyProperty);
             Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
+
             this.ValidateSendRequest(bodyProperty.Value as JObject, templateId, recipientAddress, false);
         }
     }

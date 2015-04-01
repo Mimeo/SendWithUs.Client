@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,44 @@
 
 namespace SendWithUs.Client
 {
+    using System.Net;
     using Newtonsoft.Json.Linq;
 
-    public class SendResponse : BaseObjectResponse, ISendResponse
+    public class RenderResponse : BaseObjectResponse, IRenderResponse
     {
         public static class PropertyNames
         {
             public const string Success = "success";
             public const string Status = "status";
-            public const string ReceiptId = "receipt_id";
-            public const string Details = "email";
+            public const string Details = "template";
+            public const string TemplateId = "id";
             public const string TemplateName = "name";
             public const string TemplateVersionId = "version_name";
+            public const string Locale = "locale";
+            public const string Subject = "subject";
+            public const string Html = "html";
+            public const string Text = "text";
         }
 
-        #region ISendResponse Members
+        #region IRenderResponse Members
 
-        public virtual bool Success { get; set; }
+        public bool Success { get; set; }
 
-        public virtual string Status { get; set; }
+        public string Status { get; set; }
 
-        public virtual string ReceiptId { get; set; }
+        public string TemplateId { get; set; }
 
-        public virtual string TemplateName { get; set; }
+        public string TemplateName { get; set; }
 
-        public virtual string TemplateVersionId { get; set; }
+        public string TemplateVersionId { get; set; }
+
+        public string Locale { get; set; }
+
+        public string Subject { get; set; }
+
+        public string Html { get; set; }
+
+        public string Text { get; set; }
 
         #endregion
 
@@ -59,15 +72,20 @@ namespace SendWithUs.Client
 
             this.Success = json.Value<bool>(PropertyNames.Success);
             this.Status = json.Value<string>(PropertyNames.Status);
-            this.ReceiptId = json.Value<string>(PropertyNames.ReceiptId);
 
             var details = this.GetPropertyValue(json, PropertyNames.Details);
 
             if (details != null)
             {
+                this.TemplateId = details.Value<string>(PropertyNames.TemplateId);
                 this.TemplateName = details.Value<string>(PropertyNames.TemplateName);
                 this.TemplateVersionId = details.Value<string>(PropertyNames.TemplateVersionId);
+                this.Locale = details.Value<string>(PropertyNames.Locale);
             }
+
+            this.Subject = json.Value<string>(PropertyNames.Subject);
+            this.Html = json.Value<string>(PropertyNames.Html);
+            this.Text = json.Value<string>(PropertyNames.Text);
         }
 
         #endregion

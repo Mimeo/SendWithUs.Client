@@ -116,10 +116,5 @@ namespace SendWithUs.Client
         /// Gets the language tag for a localized variant of the template identified by TemplateId.
         /// </summary>
         string Locale { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the request object is valid (well-formed).
-        /// </summary>
-        bool IsValid { get; }
     }
 }

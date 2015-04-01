@@ -50,5 +50,10 @@ namespace SendWithUs.Client
         /// </summary>
         /// <returns>The current object if valid; throws otherwise.</returns>
         IRequest Validate();
+
+        /// <summary>
+        /// Gets a value indicating whether the request object is valid (well-formed).
+        /// </summary>
+        bool IsValid { get; }
     }
 }
