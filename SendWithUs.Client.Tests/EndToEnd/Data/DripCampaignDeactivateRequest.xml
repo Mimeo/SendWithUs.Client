@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <DripCampaignDeactivateRequest>
-	<ApiKey>test_64afdf86aa571c901db5c70cf7a953727132599e</ApiKey>
-	<CampaignId>dc_pZ5niXSbnCCv3FbojQ7F4G</CampaignId>
-	<RecipientAddress>kkaplan@hattonpoint.com</RecipientAddress>
+	<ApiKey></ApiKey>
+	<CampaignId></CampaignId>
+	<RecipientAddress></RecipientAddress>
 </DripCampaignDeactivateRequest>

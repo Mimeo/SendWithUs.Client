@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <DripCampaignDeactivateAllRequest>
-	<ApiKey>test_64afdf86aa571c901db5c70cf7a953727132599e</ApiKey>
-	<RecipientAddress>kkaplan@hattonpoint.com</RecipientAddress>
+	<ApiKey></ApiKey>
+	<RecipientAddress></RecipientAddress>
 </DripCampaignDeactivateAllRequest>
