@@ -20,7 +20,6 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
@@ -35,7 +34,9 @@ namespace SendWithUs.Client.Tests.Component
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
             var sendRequest = new SendRequest(templateId, recipientAddress);
-            var batchRequest = new BatchRequest(new List<IRequest> { sendRequest });
+            var renderRequest = new RenderRequest(templateId);
+            var requests = new List<IRequest> { sendRequest, renderRequest };
+            var batchRequest = new BatchRequest(requests);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
             var converter = new BatchRequestConverter();
@@ -44,12 +45,12 @@ namespace SendWithUs.Client.Tests.Component
             var jsonArray = writer.GetBufferAs<JArray>();
 
             Assert.IsNotNull(jsonArray);
-            Assert.AreEqual(1, jsonArray.Count);
+            Assert.AreEqual(requests.Count, jsonArray.Count);
 
-            var batchResponse = jsonArray[0] as JObject;
-            var pathProperty = batchResponse.Property("path");
-            var methodProperty = batchResponse.Property("method");
-            var bodyProperty = batchResponse.Property("body");
+            var sendResponse = jsonArray[0] as JObject;
+            var pathProperty = sendResponse.Property("path");
+            var methodProperty = sendResponse.Property("method");
+            var bodyProperty = sendResponse.Property("body");
 
             Assert.IsNotNull(pathProperty);
             Assert.IsTrue(pathProperty.HasValues);
@@ -60,7 +61,23 @@ namespace SendWithUs.Client.Tests.Component
             Assert.IsNotNull(bodyProperty);
             Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
 
-            this.ValidateSendRequest(bodyProperty.Value as JObject, templateId, recipientAddress, false);
+            this.ValidateSendRequest(bodyProperty.Value as JObject, templateId, recipientAddress, null);
+
+            var renderResponse = jsonArray[1] as JObject;
+            pathProperty = renderResponse.Property("path");
+            methodProperty = renderResponse.Property("method");
+            bodyProperty = renderResponse.Property("body");
+
+            Assert.IsNotNull(pathProperty);
+            Assert.IsTrue(pathProperty.HasValues);
+            Assert.AreEqual(renderRequest.GetUriPath(), (string)pathProperty.Value);
+            Assert.IsNotNull(methodProperty);
+            Assert.IsTrue(methodProperty.HasValues);
+            Assert.AreEqual(renderRequest.GetHttpMethod(), (string)methodProperty.Value);
+            Assert.IsNotNull(bodyProperty);
+            Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
+
+            this.ValidateRenderRequest(bodyProperty.Value as JObject, templateId, null);
         }
     }
 }

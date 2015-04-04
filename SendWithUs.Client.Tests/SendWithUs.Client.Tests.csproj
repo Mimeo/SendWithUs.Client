@@ -77,6 +77,8 @@
   <ItemGroup>
     <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
+    <Compile Include="Component\RenderRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
     <Compile Include="Component\BufferedJsonStringWriter.cs" />
     <Compile Include="Component\SendRequestConverterTests.cs" />
@@ -111,6 +113,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EndToEnd\Data\SendRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EndToEnd\Data\RenderRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

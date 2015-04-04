@@ -202,7 +202,7 @@ namespace SendWithUs.Client
             where TResponse : class, IResponse
         { 
             var httpResponse = await this.GetHttpResponseAsync(request);
-            var json = await httpResponse.Content.ReadAsAsync<JToken>();
+            var json = await httpResponse.EnsureSuccessStatusCode().Content.ReadAsAsync<JToken>();
             return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, json);
         }
 

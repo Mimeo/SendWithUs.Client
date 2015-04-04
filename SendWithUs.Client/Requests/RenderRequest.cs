@@ -21,16 +21,26 @@
 namespace SendWithUs.Client
 {
     using System;
+    using Newtonsoft.Json;
 
+    /// <summary>
+    /// Represents the data necessary to make API requests to render templates.
+    /// </summary>
+    [JsonConverter(typeof(RenderRequestConverter))]
     public class RenderRequest : IRenderRequest
     {
         #region Constructors
 
-        public RenderRequest() 
+        public RenderRequest()
+        { }
+
+        public RenderRequest(string templateId) : this(templateId, null)
         { }
 
         public RenderRequest(string templateId, object data)
         {
+            EnsureArgument.NotNullOrEmpty(templateId, "templateId");
+
             this.TemplateId = templateId;
             this.Data = data;
         }

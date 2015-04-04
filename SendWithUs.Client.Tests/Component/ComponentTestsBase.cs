@@ -20,12 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
 
     public abstract class ComponentTestsBase
     {
-        protected void ValidateSendRequest(JObject jsonObject, string expectedEmailId, string expectedRecipientAddress, bool allowOtherProperties)
+        protected void ValidateSendRequest(JObject jsonObject, string expectedEmailId, string expectedRecipientAddress, IDictionary<string,string> expectedData)
         {
             var emailIdFound = false;
             var recipientAddressFound = false;
@@ -35,7 +37,7 @@ namespace SendWithUs.Client.Tests.Component
                 switch (pair.Key)
                 {
                     case "email_id":
-                        Assert.AreEqual(expectedEmailId, pair.Value);
+                        Assert.AreEqual(expectedEmailId, pair.Value.Value<string>());
                         emailIdFound = true;
                         break;
 
@@ -44,17 +46,59 @@ namespace SendWithUs.Client.Tests.Component
                         recipientAddressFound = true;
                         break;
 
-                    default:
-                        if (!allowOtherProperties)
+                    case "email_data":
+                        if (expectedData != null)
                         {
-                            Assert.Fail("Unexpected object property '{0}'", pair.Key);
+                            this.ValidateRequestData(pair.Value as JObject, expectedData);
                         }
+                        break;
+
+                    default:
                         break;
                 }
             }
 
             Assert.IsTrue(emailIdFound);
             Assert.IsTrue(recipientAddressFound);
+        }
+
+        protected void ValidateRenderRequest(JObject jsonObject, string expectedTemplateId, IDictionary<string, string> expectedData)
+        {
+            var templateIdFound = false;
+
+            foreach (var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case "template_id":
+                        Assert.AreEqual(expectedTemplateId, pair.Value.Value<string>());
+                        templateIdFound = true;
+                        break;
+
+                    case "template_data":
+                        if (expectedData != null)
+                        {
+                            this.ValidateRequestData(pair.Value as JObject, expectedData);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            Assert.IsTrue(templateIdFound);
+        }
+
+        protected void ValidateRequestData(JObject actualData, IDictionary<string, string> expectedData)
+        {
+            Assert.AreEqual(expectedData.Count, actualData.Count);
+
+            foreach (var pair in actualData)
+            {
+                Assert.IsTrue(expectedData.ContainsKey(pair.Key));
+                Assert.AreEqual(expectedData[pair.Key], pair.Value.Value<string>());
+            }
         }
     }
 }

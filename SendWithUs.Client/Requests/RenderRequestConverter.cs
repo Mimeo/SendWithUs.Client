@@ -21,7 +21,6 @@
 namespace SendWithUs.Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
     using Newtonsoft.Json;
 
@@ -63,7 +62,7 @@ namespace SendWithUs.Client
 
             this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId, false);
             this.WriteProperty(writer, serializer, PropertyNames.TemplateVersionId, request.TemplateVersionId, true);
-            this.WriteProperty(writer, serializer, PropertyNames.Data, request.Data, false);
+            this.WriteProperty(writer, serializer, PropertyNames.Data, request.Data, true);
             this.WriteProperty(writer, serializer, PropertyNames.Locale, request.Locale, true);
 
             writer.WriteEndObject();

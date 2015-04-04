@@ -26,41 +26,39 @@ namespace SendWithUs.Client.Tests.Component
     using SendWithUs.Client;
 
     [TestClass]
-    public class SendRequestConverterTests : ComponentTestsBase
+    public class RenderRequestConverterTests : ComponentTestsBase
     {
         [TestMethod]
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
+            var request = new RenderRequest(templateId);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
-            var converter = new SendRequestConverter();
+            var converter = new RenderRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, null);
+            this.ValidateRenderRequest(jsonObject, templateId, null);
         }
 
         [TestMethod]
         public void WriteJson_WithData_IncludesAllData()
         {
             var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
             var data = TestHelper.GetRandomDictionary();
-            var request = new SendRequest(templateId, recipientAddress, data);
+            var request = new RenderRequest(templateId, data);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
-            var converter = new SendRequestConverter();
+            var converter = new RenderRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, data);
+            this.ValidateRenderRequest(jsonObject, templateId, data);
         }
     }
 }

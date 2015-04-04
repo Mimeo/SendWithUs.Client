@@ -192,6 +192,27 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndArray(), Times.Once);
         }
 
+
+        [TestMethod]
+        public void WriteJson_Normally_SerializesRequestItems()
+        {
+            // Arrange
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var count = TestHelper.GetRandomInteger(1, 10);
+            var items = TestHelper.Generate(count, i => new Mock<IRequest>().Object);
+            var request = new Mock<BatchRequest>(items);
+            var converter = new Mock<BatchRequestConverter> { CallBase = true };
+
+            request.Setup(r => r.GetEnumerator()).Returns(items.GetEnumerator());
+
+            // Act
+            converter.Object.WriteJson(writer.Object, request.Object, serializer.Object);
+
+            // Assert
+            converter.Verify(c => c.WriteWrapper(writer.Object, serializer.Object, It.IsAny<IRequest>()), Times.Exactly(count));
+        }
+
         [TestMethod]
         public void WriteWrapper_Normally_SerializesUriPath()
         {
@@ -237,25 +258,23 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void WriteJson_Normally_SerializesRequestItems()
+        public void WriteWrapper_Normally_SerializesBody()
         {
             // Arrange
             var writer = new Mock<JsonWriter>();
             var serializer = new Mock<SerializerProxy>(null);
-            var count = TestHelper.GetRandomInteger(1, 10);
-            var items = TestHelper.Generate(count, i => new Mock<IRequest>().Object);
-            var request = new Mock<BatchRequest>(items);
+            var item = new Mock<IRequest>();
+            var request = new Mock<BatchRequest>(new List<IRequest> { item.Object });
             var converter = new BatchRequestConverter();
 
-            request.Setup(r => r.GetEnumerator()).Returns(items.GetEnumerator());
+            item.SetupAllProperties();
 
             // Act
-            converter.WriteJson(writer.Object, request.Object, serializer.Object);
+            converter.WriteWrapper(writer.Object, serializer.Object, request.Object);
 
             // Assert
-            writer.Verify(w => w.WritePropertyName(Names.Body), Times.Exactly(count));
-            serializer.Verify(s => s.Serialize(writer.Object, It.IsAny<IRequest>()), Times.Exactly(count));
-            writer.Verify(w => w.WriteRaw(","), Times.Exactly(count - 1));
+            writer.Verify(w => w.WritePropertyName(Names.Body), Times.Once);
+            serializer.Verify(s => s.Serialize(writer.Object, request.Object), Times.Once);
         }
     }
 }

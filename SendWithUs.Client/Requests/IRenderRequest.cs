@@ -20,6 +20,11 @@
 
 namespace SendWithUs.Client
 {
+    /// <summary>
+    /// Describes the interface of objects used to make API requests to render templates.
+    /// </summary>
+    /// <remarks>This interface roughly corresponds to the JSON object used with the /render route
+    /// in the REST API, with some properties flattened or renamed.</remarks>
     public interface IRenderRequest : IRequest
     {
         /// <summary>

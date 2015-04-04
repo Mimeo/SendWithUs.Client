@@ -22,9 +22,7 @@ namespace SendWithUs.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Represents the data necessary to make API requests to send email messages.

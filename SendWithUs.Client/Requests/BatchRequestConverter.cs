@@ -59,18 +59,11 @@ namespace SendWithUs.Client
         protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
         {
             var batchRequest = EnsureArgument.Of<BatchRequest>(value, "value");
-            var writeComma = false;
 
             writer.WriteStartArray();
 
             foreach (var request in batchRequest)
             {
-                if (writeComma)
-                {
-                    writer.WriteRaw(",");
-                }
-
-                writeComma = true;
                 this.WriteWrapper(writer, serializer, request);
             }
 
@@ -86,6 +79,10 @@ namespace SendWithUs.Client
             writer.WriteValue(request.GetHttpMethod());
             writer.WritePropertyName(PropertyNames.Body);
             serializer.Serialize(writer, request);
+            //FIXME (requires test rewrites)
+            //this.WriteProperty(writer, serializer, PropertyNames.Path, request.GetUriPath(), false);
+            //this.WriteProperty(writer, serializer, PropertyNames.Method, request.GetHttpMethod(), false);
+            //this.WriteProperty(writer, serializer, PropertyNames.Body, request, false);
             writer.WriteEndObject();
         }
     }
