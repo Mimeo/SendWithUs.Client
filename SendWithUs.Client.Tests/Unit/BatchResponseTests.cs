@@ -64,6 +64,25 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
+        public void Inflate_NullRawItems_Throws()
+        {
+            // Arrange
+            var count = TestHelper.GetRandomInteger(1, 10);
+            var responseFactory = new Mock<IResponseFactory>().Object;
+            var responseSequence = TestHelper.Generate(count, i => typeof(IResponse));
+            var response = new Mock<BatchResponse> { CallBase = true };
+            var json = null as JArray;
+
+            response.SetupSet(r => r.RawItems = json);
+
+            // Act
+            var exception = TestHelper.CaptureException(() => response.Object.Inflate(responseSequence, responseFactory));
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(InvalidOperationException));
+        }
+
+        [TestMethod]
         public void Inflate_Normally_BuildsResponses()
         {
             // Arrange

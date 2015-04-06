@@ -49,6 +49,11 @@ namespace SendWithUs.Client
 
         public BatchResponse Inflate(IEnumerable<Type> responseSequence, IResponseFactory responseFactory)
         {
+            if (this.RawItems == null)
+            {
+                throw new InvalidOperationException("Cannot inflate; the value of RawItems is null.");
+            }
+
             // Force enumeration of the Items value so we can discard the RawItems.
             this.Items = this.RawItems.Zip(responseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt, responseFactory)).ToList();
             this.RawItems = null;
