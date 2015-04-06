@@ -28,7 +28,13 @@ namespace SendWithUs.Client
 
     public class BatchResponse : BaseResponse<JArray>, IBatchResponse
     {
-        public virtual IList<IResponse> Items { get; set; }
+        public static class PropertyNames
+        {
+            public const string StatusCode = "status_code";
+            public const string Body = "body";
+        }
+
+        public virtual IEnumerable<IResponse> Items { get; set; }
 
         protected internal virtual JArray RawItems { get; set; }
 
@@ -43,6 +49,7 @@ namespace SendWithUs.Client
 
         public BatchResponse Inflate(IEnumerable<Type> responseSequence, IResponseFactory responseFactory)
         {
+            // Force enumeration of the Items value so we can discard the RawItems.
             this.Items = this.RawItems.Zip(responseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt, responseFactory)).ToList();
             this.RawItems = null;
             return this;
@@ -54,8 +61,8 @@ namespace SendWithUs.Client
             EnsureArgument.NotNull(responseType, "responseType");
             EnsureArgument.NotNull(responseFactory, "responseFactory");
 
-            var statusCode = (HttpStatusCode)wrapper.Value<int>("status_code");
-            var json = wrapper.GetValue("body") as JObject;
+            var statusCode = (HttpStatusCode)wrapper.Value<int>(PropertyNames.StatusCode);
+            var json = wrapper.GetValue(PropertyNames.Body) as JObject;
 
             return responseFactory.Create(responseType, statusCode, json);
         }

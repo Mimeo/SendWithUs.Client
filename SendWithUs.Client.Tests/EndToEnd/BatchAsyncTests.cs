@@ -47,12 +47,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
             Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
             Assert.AreEqual(requests.Count, batchResponse.Items.Count());
 
-            var sendResponse = batchResponse.Items[0] as ISendResponse;
+            var sendResponse = batchResponse.Items.ElementAt(0) as ISendResponse;
             Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
             Assert.AreEqual("OK", sendResponse.Status, true);
             Assert.AreEqual(true, sendResponse.Success);
 
-            var renderResponse = batchResponse.Items[1] as IRenderResponse;
+            var renderResponse = batchResponse.Items.ElementAt(1) as IRenderResponse;
             Assert.AreEqual(HttpStatusCode.OK, renderResponse.StatusCode);
             Assert.AreEqual("OK", renderResponse.Status, true);
             Assert.AreEqual(true, renderResponse.Success);

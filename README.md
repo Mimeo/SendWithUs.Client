@@ -94,4 +94,9 @@ var request1 = new SendRequest("template123", "foo@example.com");
 var request2 = new SendRequest("template567", "bar@example.com");
 var client = new SendWithUsClient("my-api-key");
 var response = await client.BatchAsync(new List<IRequest> { request1, request2 });
+
+foreach (var item in response.Items)
+{
+    ...
+}
 ```
