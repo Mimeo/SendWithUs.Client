@@ -36,7 +36,7 @@ var response = await client.SendAsync(request);
 
 #### A More Realistic Example
 
-The data passed to `SendRequest` can be any CLR object, as long as it serializes as a JSON object.
+The value of `SendRequest.Data` can be any CLR object, as long as it serializes as a JSON object.
 
 ```csharp
 using SendWithUs.Client;
@@ -65,9 +65,10 @@ The type of the `Data` property on `SendRequest` is plain old object. If you wan
 ### Rendering Templates
 
 To render a template, you must instantiate a `RenderRequest` object to pass to `SendWithUsClient.RenderAsync`. A 
-`RenderRequest` must have values for `TemplateId` and `Data`. All other properties are optional.
+`RenderRequest` must have a value for `TemplateId`. All other properties are optional, although it's probably not 
+very useful to omit the `Data` property.
 
-The data passed to `RenderRequest` can be any CLR object, as long as it serializes as a JSON object.
+The value of `RenderRequest.Data` can be any CLR object, as long as it serializes as a JSON object.
 
 #### Example
 
@@ -97,6 +98,11 @@ var response = await client.BatchAsync(new List<IRequest> { request1, request2 }
 
 foreach (var item in response.Items)
 {
+    if (item.StatusCode == HttpStatusCode.OK)
+    {
+        ...
+    }
+
     ...
 }
 ```
