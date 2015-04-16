@@ -41,8 +41,8 @@ The value of `SendRequest.Data` can be any CLR object, as long as it serializes 
 ```csharp
 using SendWithUs.Client;
 
-var sheriff = new Person { ... };
-var wristslap = new Punishment { ... };
+var sheriff = new Person { Name = "Rosco P. Coltrane" };
+var wristslap = new Punishment { Severity = 1 };
 var data = new DisciplinaryData { Who = sheriff, What = wristslap };
 var request = new SendRequest
 {

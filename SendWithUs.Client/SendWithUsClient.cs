@@ -45,7 +45,7 @@ namespace SendWithUs.Client
         /// The base URI of the SendWithUs service.
         /// </summary>
         /// <remarks>MUST NOT have a trailing slash.</remarks>
-        protected const string BaseUri = "https://api.sendwithus.com";
+        private const string BaseUri = "https://api.sendwithus.com";
 
         /// <summary>
         /// Gets or sets the HTTP client.

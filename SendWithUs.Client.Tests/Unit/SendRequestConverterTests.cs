@@ -116,7 +116,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => converter.ReadJson(reader, request.GetType(), request, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotImplementedException));
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
         }
 
         [TestMethod]
