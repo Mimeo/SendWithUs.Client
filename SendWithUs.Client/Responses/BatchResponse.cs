@@ -28,7 +28,7 @@ namespace SendWithUs.Client
 
     public class BatchResponse : BaseResponse<JArray>, IBatchResponse
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string StatusCode = "status_code";
             public const string Body = "body";

@@ -30,7 +30,7 @@ namespace SendWithUs.Client
     /// </summary>
     public class SendRequestConverter : BaseConverter
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string TemplateId = "email_id";
             public const string ProviderId = "esp_account";

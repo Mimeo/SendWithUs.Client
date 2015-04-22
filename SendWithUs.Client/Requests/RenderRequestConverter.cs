@@ -26,7 +26,7 @@ namespace SendWithUs.Client
 
     public class RenderRequestConverter : BaseConverter
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string TemplateId = "template_id";
             public const string TemplateVersionId = "version_id";

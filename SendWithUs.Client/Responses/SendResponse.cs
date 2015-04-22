@@ -24,7 +24,7 @@ namespace SendWithUs.Client
 
     public class SendResponse : BaseObjectResponse, ISendResponse
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string Success = "success";
             public const string Status = "status";

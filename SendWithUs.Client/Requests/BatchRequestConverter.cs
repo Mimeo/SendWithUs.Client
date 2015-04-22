@@ -29,7 +29,7 @@ namespace SendWithUs.Client
     /// </summary>
     public class BatchRequestConverter : BaseConverter
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string Method = "method";
             public const string Path = "path";
