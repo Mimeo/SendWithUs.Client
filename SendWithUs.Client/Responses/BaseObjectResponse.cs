@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,23 @@
 
 namespace SendWithUs.Client
 {
-    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
-    /// <summary>
-    /// Wraps an IRequest object for use in a batch request.
-    /// </summary>
-    /// <remarks>This class MUST NOT implement IRequest.</remarks>
-    [JsonConverter(typeof(BatchRequestWrapperConverter))]
-    public class BatchRequestWrapper
+    public abstract class BaseObjectResponse : BaseResponse<JObject>
     {
-        public virtual string Method
+        /// <summary>
+        /// Gets the value of the named property on the specified object.
+        /// </summary>
+        /// <param name="json">The object from which to get the property value.</param>
+        /// <returns>The property value.</returns>
+        /// <remarks>This method exists to aid unit testing of Populate(), because JObject.GetValue()
+        /// is not virtual and therefore cannot be mocked.</remarks>
+        protected internal virtual JToken GetPropertyValue(JObject json, string propertyName)
         {
-            get { return this.InnerRequest.GetHttpMethod(); }
+            //var details = json.Property(propertyName);
+            //return (details != null && details.HasValues) ? details.Value : null;
+            return json.GetValue(propertyName);
         }
 
-        public virtual string Path
-        {
-            get { return this.InnerRequest.GetUriPath(); }
-        }
-
-        public virtual IRequest InnerRequest { get; protected set; }
-
-        public BatchRequestWrapper(IRequest innerRequest)
-        {
-            EnsureArgument.NotNull(innerRequest, "innerRequest");
-            this.InnerRequest = innerRequest;
-        }
     }
 }

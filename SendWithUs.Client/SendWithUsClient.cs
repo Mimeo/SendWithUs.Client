@@ -24,6 +24,7 @@ namespace SendWithUs.Client
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Net.Http.Formatting;
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
@@ -33,8 +34,8 @@ namespace SendWithUs.Client
     /// Provides access to the SendWithUs REST API.
     /// </summary>
     /// <remarks>
-    /// Currently, the client only covers a small portion of the API surface--namely, sending email and 
-    /// batch operations. 
+    /// Currently, the client only covers a small portion of the API surface--namely, sending email
+    /// rendering templates, and batch operations. 
     /// </remarks>
     public class SendWithUsClient : ISendWithUsClient
     {
@@ -43,13 +44,18 @@ namespace SendWithUs.Client
         /// <summary>
         /// The base URI of the SendWithUs service.
         /// </summary>
-        /// <remarks>MUST have a trailing slash.</remarks>
-        protected const string BaseUri = "https://api.sendwithus.com/api/v1/";
+        /// <remarks>MUST NOT have a trailing slash.</remarks>
+        private const string BaseUri = "https://api.sendwithus.com";
 
         /// <summary>
-        /// Gets or sets the HTTP implementation.
+        /// Gets or sets the HTTP client.
         /// </summary>
-        protected HttpClient Worker { get; set; }
+        protected HttpClient HttpClient { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formatter for JSON payloads.
+        /// </summary>
+        protected MediaTypeFormatter ContentFormatter { get; set; }
 
         /// <summary>
         /// Gets or sets the factory used to construct response objects.
@@ -64,45 +70,41 @@ namespace SendWithUs.Client
         /// Initializes a new instance of the SendWithUsClient class.
         /// </summary>
         /// <param name="apiKey">The API key to use when authenticating with SendWithUs.</param>
-        public SendWithUsClient(string apiKey) : this(apiKey, new HttpClient())
+        public SendWithUsClient(string apiKey) : this(apiKey, new HttpClient(), new JsonMediaTypeFormatter(), new ResponseFactory())
         { }
 
         /// <summary>
         /// Initializes a new instance of the SendWithUsClient class.
         /// </summary>
         /// <param name="apiKey">The API key to use when authenticating with SendWithUs.</param>
-        /// <param name="worker">The HTTP implementation.</param>
-        public SendWithUsClient(string apiKey, HttpClient worker) : this(apiKey, worker, new ResponseFactory())
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of the SendWithUsClient class.
-        /// </summary>
-        /// <param name="apiKey">The API key to use when authenticating with SendWithUs.</param>
-        /// <param name="worker">The HTTP implementation.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="contentFormatter">The formatter for JSON payloads.</param>
         /// <param name="responseFactory">The factory used to construct response objects.</param>
-        public SendWithUsClient(string apiKey, HttpClient worker, IResponseFactory responseFactory)
+        public SendWithUsClient(string apiKey, HttpClient httpClient, MediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
         {
-            this.Initialize(apiKey, worker, responseFactory);
+            this.Initialize(apiKey, httpClient, contentFormatter, responseFactory);
         }
 
         /// <summary>
         /// Prepares the current instance for use.
         /// </summary>
         /// <param name="apiKey">The API key to use when authenticating with SendWithUs.</param>
-        /// <param name="worker">The HTTP implementation.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="contentFormatter">The formatter for JSON payloads.</param>
         /// <param name="responseFactory">The factory used to construct response objects.</param>
         /// <returns>The current instance.</returns>
-        protected virtual SendWithUsClient Initialize(string apiKey, HttpClient worker, IResponseFactory responseFactory)
+        protected virtual SendWithUsClient Initialize(string apiKey, HttpClient httpClient, MediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
         {
             EnsureArgument.NotNullOrEmpty(apiKey, "apiKey");
-            EnsureArgument.NotNull(worker, "worker");
+            EnsureArgument.NotNull(httpClient, "httpClient");
+            EnsureArgument.NotNull(contentFormatter, "contentFormatter");
             EnsureArgument.NotNull(responseFactory, "responseFactory");
 
-            this.Worker = worker;
+            this.HttpClient = httpClient;
+            this.ContentFormatter = contentFormatter;
             this.ResponseFactory = responseFactory;
 
-            this.Worker.DefaultRequestHeaders.Authorization = 
+            this.HttpClient.DefaultRequestHeaders.Authorization = 
                 new AuthenticationHeaderValue("Basic", this.BuildAuthenticationToken(apiKey));
 
             return this;
@@ -121,10 +123,19 @@ namespace SendWithUs.Client
         public virtual async Task<ISendResponse> SendAsync(ISendRequest request)
         {
             EnsureArgument.NotNull(request, "request");
+            return await this.ExecuteAsync<SendResponse>(request.Validate()).ConfigureAwait(false);
+        }
 
-            var httpResponse = await this.PostJsonAsync("send", request.Validate()).ConfigureAwait(false);
-            var json = await this.ReadJsonAsync(httpResponse);
-            return this.ResponseFactory.Create<SendResponse>(httpResponse.StatusCode, json);
+        /// <summary>
+        /// Renders a template per the given request object.
+        /// </summary>
+        /// <param name="request">A request object describing the template to be rendered.</param>
+        /// <returns>A response object.</returns>
+        /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
+        public virtual async Task<IRenderResponse> RenderAsync(IRenderRequest request)
+        {
+            EnsureArgument.NotNull(request, "request");
+            return await this.ExecuteAsync<RenderResponse>(request.Validate()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -136,12 +147,9 @@ namespace SendWithUs.Client
         public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
         {
             EnsureArgument.NotNullOrEmpty(requests, "requests", false);
-
-            var batchRequest = requests.Select(r => new BatchRequestWrapper(r.Validate()));
-            var httpResponse = await this.PostJsonAsync("batch", batchRequest).ConfigureAwait(false);
-            var json = await this.ReadJsonAsync(httpResponse);
-            var responseSequence = requests.Select(r => r.GetResponseType());
-            return this.ResponseFactory.Create(responseSequence, httpResponse.StatusCode, json);
+            var batchRequest = new BatchRequest(requests.Select(r => r.Validate()));
+            var batchResponse = await this.ExecuteAsync<BatchResponse>(batchRequest).ConfigureAwait(false);
+            return batchResponse.Inflate(requests.Select(r => r.GetResponseType()), this.ResponseFactory);
         }
 
         #endregion
@@ -164,32 +172,38 @@ namespace SendWithUs.Client
         /// <param name="template">A URI template with positional parameters.</param>
         /// <param name="args">Arguments for the template.</param>
         /// <returns>The expanded template.</returns>
-        /// <remarks>The template MUST NOT begin with a slash.</remarks>
+        /// <remarks>The template MUST begin with a slash.</remarks>
         protected string BuildRequestUri(string template, params object[] args)
         {
             return SendWithUsClient.BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
         }
 
         /// <summary>
-        /// Posts to the specified URI path with the request serialized as JSON.
+        /// Calls the SendWithUs API using the appropriate HTTP method and URI for the given request.
         /// </summary>
-        /// <typeparam name="TRequest">The  type of the request.</typeparam>
-        /// <param name="path">The path component of the request URI.</param>
-        /// <param name="request">The request object.</param>
-        /// <returns>A response message.</returns>
-        protected Task<HttpResponseMessage> PostJsonAsync<TRequest>(string path, TRequest request)
+        /// <param name="request">A request object.</param>
+        /// <returns>An HTTP response object.</returns>
+        protected Task<HttpResponseMessage> GetHttpResponseAsync(IRequest request)
         {
-            return this.Worker.PostAsJsonAsync(this.BuildRequestUri(path), request);
+            var method = new HttpMethod(request.GetHttpMethod());
+            var uri = this.BuildRequestUri(request.GetUriPath());
+            var content = new ObjectContent(request.GetType(), request, this.ContentFormatter);
+            var httpRequest = new HttpRequestMessage(method, uri) { Content = content };
+            return this.HttpClient.SendAsync(httpRequest);
         }
 
         /// <summary>
-        /// Reads the content of the given response as a <see cref="Newtonsoft.Json.Linq.JToken"/>.
+        /// Executes the given request and creates the appropriate response.
         /// </summary>
-        /// <param name="response">The response object to read.</param>
-        /// <returns>A JSON token.</returns>
-        protected Task<JToken> ReadJsonAsync(HttpResponseMessage response)
-        {
-            return response.Content.ReadAsAsync<JToken>();
+        /// <typeparam name="TResponse">The type of the response to be created.</typeparam>
+        /// <param name="request">A request object.</param>
+        /// <returns>A response object of the specified type.</returns>
+        protected async Task<TResponse> ExecuteAsync<TResponse>(IRequest request)
+            where TResponse : class, IResponse
+        { 
+            var httpResponse = await this.GetHttpResponseAsync(request);
+            var json = await httpResponse.EnsureSuccessStatusCode().Content.ReadAsAsync<JToken>();
+            return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, json);
         }
 
         #endregion

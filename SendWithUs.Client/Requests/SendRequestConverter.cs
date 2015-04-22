@@ -28,9 +28,9 @@ namespace SendWithUs.Client
     /// <summary>
     /// Converts a SendRequest object to JSON.
     /// </summary>
-    public class SendRequestConverter : JsonConverter
+    public class SendRequestConverter : BaseConverter
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
             public const string TemplateId = "email_id";
             public const string ProviderId = "esp_account";
@@ -67,21 +67,11 @@ namespace SendWithUs.Client
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
         {
-            // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
-            // code (i.e., the proxy) merely to support unit testing.
-            this.WriteJson(writer, value, new SerializerProxy(serializer));
-        }
-
-        protected internal virtual void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
-        {
-            EnsureArgument.NotNull(writer, "writer");
-            EnsureArgument.NotNull(serializer, "serializer");
-
             var request = EnsureArgument.Of<ISendRequest>(value, "value");
 
             writer.WriteStartObject();
@@ -176,28 +166,6 @@ namespace SendWithUs.Client
             this.WriteProperty(writer, serializer, PropertyNames.AttachmentId, attachment.Id, false);
             this.WriteProperty(writer, serializer, PropertyNames.AttachmentData, attachment.Data, false);
             writer.WriteEndObject();
-        }
-
-        protected internal virtual void WriteProperty(JsonWriter writer, SerializerProxy serializer, string name, object value, bool isOptional)
-        {
-            if (isOptional && value == null)
-            {
-                return;
-            }
-
-            writer.WritePropertyName(name);
-            serializer.Serialize(writer, value);
-        }
-
-        protected internal virtual void WriteProperty(JsonWriter writer, SerializerProxy serializer, string name, string value, bool isOptional)
-        {
-            if (isOptional && String.IsNullOrEmpty(value))
-            {
-                return;
-            }
-
-            writer.WritePropertyName(name);
-            serializer.Serialize(writer, value);
         }
     }
 }

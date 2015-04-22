@@ -20,41 +20,45 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using SendWithUs.Client;
 
     [TestClass]
-    public class BatchRequestWrapperConverterTests : ComponentTestsBase
+    public class RenderRequestConverterTests : ComponentTestsBase
     {
         [TestMethod]
-        public void WriteJson_ValidBatchRequestWrapper_Succeeds()
+        public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
-            var wrapper = new BatchRequestWrapper(request);
+            var request = new RenderRequest(templateId);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
-            var converter = new BatchRequestWrapperConverter();
+            var converter = new RenderRequestConverter();
 
-            converter.WriteJson(writer, wrapper, serializer);
+            converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            var pathProperty = jsonObject.Property("path");
-            Assert.IsNotNull(pathProperty);
-            Assert.IsTrue(pathProperty.HasValues);
-            Assert.AreEqual(request.GetUriPath(), (string)pathProperty.Value);
-            var methodProperty = jsonObject.Property("method");
-            Assert.IsNotNull(methodProperty);
-            Assert.IsTrue(methodProperty.HasValues);
-            Assert.AreEqual(request.GetHttpMethod(), (string)methodProperty.Value);
-            var bodyProperty = jsonObject.Property("body");
-            Assert.IsNotNull(bodyProperty);
-            Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
-            this.ValidateSendRequest(bodyProperty.Value as JObject, templateId, recipientAddress, false);
+            this.ValidateRenderRequest(jsonObject, templateId, null);
+        }
+
+        [TestMethod]
+        public void WriteJson_WithData_IncludesAllData()
+        {
+            var templateId = TestHelper.GetUniqueId();
+            var data = TestHelper.GetRandomDictionary();
+            var request = new RenderRequest(templateId, data);
+            var writer = BufferedJsonStringWriter.Create();
+            var serializer = new JsonSerializer();
+            var converter = new RenderRequestConverter();
+
+            converter.WriteJson(writer, request, serializer);
+            var jsonObject = writer.GetBufferAs<JObject>();
+
+            Assert.IsNotNull(jsonObject);
+            this.ValidateRenderRequest(jsonObject, templateId, data);
         }
     }
 }

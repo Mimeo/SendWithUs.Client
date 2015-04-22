@@ -22,50 +22,34 @@ namespace SendWithUs.Client.Tests.Unit
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
 
     [TestClass]
-    public class BatchRequestWrapperTests
+    public class BatchRequestTests
     {
         [TestMethod]
-        public void Ctor_NullInnerRequest_Throws()
+        public void GetResponseType_Always_Throws()
         {
             // Arrange
-            var inner = null as IRequest;
+            var request = new BatchRequest(null);
 
             // Act
-            var exception = TestHelper.CaptureException(() => new BatchRequestWrapper(inner));
+            var exception = TestHelper.CaptureException(() => request.GetResponseType());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
         }
 
         [TestMethod]
-        public void Method_Getter_CallsInnerRequestGetHttpMethod()
+        public void Validate_Always_Throws()
         {
             // Arrange
-            var inner = new Mock<IRequest>();
-            var wrapper = new BatchRequestWrapper(inner.Object);
+            var request = new BatchRequest(null);
 
             // Act
-            var method = wrapper.Method;
+            var exception = TestHelper.CaptureException(() => request.Validate());
 
             // Assert
-            inner.Verify(i => i.GetHttpMethod(), Times.Once);
-        }
-
-        [TestMethod]
-        public void Path_Getter_CallsInnerRequestGetUriPath()
-        {
-            // Arrange
-            var inner = new Mock<IRequest>();
-            var wrapper = new BatchRequestWrapper(inner.Object);
-
-            // Act
-            var method = wrapper.Path;
-
-            // Assert
-            inner.Verify(i => i.GetUriPath(), Times.Once);
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
         }
     }
 }

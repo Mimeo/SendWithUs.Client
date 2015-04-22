@@ -20,8 +20,6 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using System.Collections.Generic;
-    using System.IO;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -30,12 +28,6 @@ namespace SendWithUs.Client.Tests.Component
     [TestClass]
     public class SendRequestConverterTests : ComponentTestsBase
     {
-        #region Helpers
-
-        #endregion
-
-        #region Test methods
-
         [TestMethod]
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
@@ -50,7 +42,7 @@ namespace SendWithUs.Client.Tests.Component
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, false);
+            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, null);
         }
 
         [TestMethod]
@@ -68,12 +60,7 @@ namespace SendWithUs.Client.Tests.Component
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, true);
-            var jsonData = jsonObject.GetValue("email_data") as JObject;
-            Assert.IsNotNull(jsonData);
-            Assert.AreEqual(data.Count, jsonData.Count);
+            this.ValidateSendRequest(jsonObject, templateId, recipientAddress, data);
         }
-
-        #endregion
     }
 }

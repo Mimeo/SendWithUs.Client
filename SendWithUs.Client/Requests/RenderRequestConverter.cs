@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,14 @@ namespace SendWithUs.Client
     using System.Reflection;
     using Newtonsoft.Json;
 
-    /// <summary>
-    /// Converts a BatchRequestWrapper object to JSON.
-    /// </summary>
-    public class BatchRequestWrapperConverter : JsonConverter
+    public class RenderRequestConverter : BaseConverter
     {
-        public static class PropertyNames
+        internal static class PropertyNames
         {
-            public const string Method = "method";
-            public const string Path = "path";
-            public const string InnerRequest = "body";
+            public const string TemplateId = "template_id";
+            public const string TemplateVersionId = "version_id";
+            public const string Data = "template_data";
+            public const string Locale = "locale";
         }
 
         public override bool CanRead
@@ -48,35 +46,25 @@ namespace SendWithUs.Client
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(BatchRequestWrapper).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+            return typeof(IRenderRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
         {
-            // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
-            // code (i.e., the proxy) merely to support unit testing.
-            this.WriteJson(writer, value, new SerializerProxy(serializer));
-        }
-
-        protected internal virtual void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
-        {
-            EnsureArgument.NotNull(writer, "writer");
-            EnsureArgument.NotNull(serializer, "serializer");
-
-            var wrapper = EnsureArgument.Of<BatchRequestWrapper>(value, "value");
+            var request = EnsureArgument.Of<IRenderRequest>(value, "value");
 
             writer.WriteStartObject();
-            writer.WritePropertyName(PropertyNames.Path);
-            writer.WriteValue(wrapper.Path);
-            writer.WritePropertyName(PropertyNames.Method);
-            writer.WriteValue(wrapper.Method);
-            writer.WritePropertyName(PropertyNames.InnerRequest);
-            serializer.Serialize(writer, wrapper.InnerRequest);
+
+            this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId, false);
+            this.WriteProperty(writer, serializer, PropertyNames.TemplateVersionId, request.TemplateVersionId, true);
+            this.WriteProperty(writer, serializer, PropertyNames.Data, request.Data, true);
+            this.WriteProperty(writer, serializer, PropertyNames.Locale, request.Locale, true);
+
             writer.WriteEndObject();
         }
     }

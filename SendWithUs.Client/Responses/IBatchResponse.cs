@@ -24,6 +24,6 @@ namespace SendWithUs.Client
 
     public interface IBatchResponse : IResponse
     {
-        IList<IResponse> Items { get; }
+        IEnumerable<IResponse> Items { get; }
     }
 }

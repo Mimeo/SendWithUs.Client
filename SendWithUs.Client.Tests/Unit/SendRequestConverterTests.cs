@@ -116,38 +116,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => converter.ReadJson(reader, request.GetType(), request, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotImplementedException));
-        }
-
-        [TestMethod]
-        public void WriteJson_NullWriter_Throws()
-        {
-            // Arrange
-            var serializer = new Mock<SerializerProxy>(null).Object;
-            var request = new Mock<ISendRequest>().Object;
-            var converter = new SendRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.WriteJson(null, request, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
-        }
-
-        [TestMethod]
-        public void WriteJson_NullSerializer_Throws()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>().Object;
-            var serializer = null as SerializerProxy;
-            var request = new Mock<ISendRequest>().Object;
-            var converter = new SendRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.WriteJson(writer, request, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
         }
 
         [TestMethod]

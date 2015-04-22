@@ -20,33 +20,34 @@
 
 namespace SendWithUs.Client
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     /// <summary>
-    /// Describes the interface of objects used to access to the SendWithUs REST API.
+    /// Describes the interface of objects used to make API requests to render templates.
     /// </summary>
-    public interface ISendWithUsClient
+    /// <remarks>This interface roughly corresponds to the JSON object used with the /render route
+    /// in the REST API, with some properties flattened or renamed.</remarks>
+    public interface IRenderRequest : IRequest
     {
         /// <summary>
-        /// Sends an email message per the given request object.
+        /// Gets the unique identifier of an email template.
         /// </summary>
-        /// <param name="request">A request object describing the email to be sent.</param>
-        /// <returns>A response object.</returns>
-        Task<ISendResponse> SendAsync(ISendRequest request);
+        /// <remarks>Corresponds to the "template_id" property in the SendWithUs API.</remarks>
+        string TemplateId { get; }
 
         /// <summary>
-        /// Renders a template per the given request object.
+        /// Gets the unique identifier for a version of the template identified by TemplateId.
         /// </summary>
-        /// <param name="request">A request object describing the template to be rendered.</param>
-        /// <returns>A response object.</returns>
-        Task<IRenderResponse> RenderAsync(IRenderRequest request);
+        /// <remarks>Corresponds to the "version_id" property in the SendWithUs API.</remarks>
+        string TemplateVersionId { get; }
 
         /// <summary>
-        /// Submits a batch request comprising the given set of request objects.
+        /// Gets the data to use when expanding the message template.
         /// </summary>
-        /// <param name="requests">A set of request objects to be batched.</param>
-        /// <returns>A response object.</returns>
-        Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests);
+        /// <remarks>Corresponds to the "template_data" property in the SendWithUs API.</remarks>
+        object Data { get; }
+
+        /// <summary>
+        /// Gets the language tag for a localized variant of the template identified by TemplateId.
+        /// </summary>
+        string Locale { get; }
     }
 }

@@ -20,42 +20,46 @@
 
 namespace SendWithUs.Client.Tests.EndToEnd
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
 
     [TestClass]
-    public class BatchAsyncTests
+    public class RenderAsyncTests
     {
         [TestMethod]
-        public void BatchAsync_TwoRequests_Succeeds()
+        public void RenderAsync_MinimalRequest_Succeeds()
         {
-            // Arange
-            var subject = "BatchAsync " + TestHelper.GetUniqueId();
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
-            var sendRequest = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
-            var renderRequest = new RenderRequest(testData.TemplateId);
-            var requests = new List<IRequest> { sendRequest, renderRequest };
+            // Arrange
+            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
+            var request = new RenderRequest(testData.TemplateId);
             var client = new SendWithUsClient(testData.ApiKey);
 
             // Act
-            var batchResponse = client.BatchAsync(requests).Result;
+            var response = client.RenderAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
-            Assert.AreEqual(requests.Count, batchResponse.Items.Count());
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("OK", response.Status, true);
+            Assert.AreEqual(true, response.Success);
+        }
 
-            var sendResponse = batchResponse.Items.ElementAt(0) as ISendResponse;
-            Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
-            Assert.AreEqual("OK", sendResponse.Status, true);
-            Assert.AreEqual(true, sendResponse.Success);
+        [TestMethod]
+        public void RenderAsync_WithData_Succeeds()
+        {
+            // Arrange
+            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
+            var subject = "RenderAsync_WithData " + TestHelper.GetUniqueId();
+            var request = new RenderRequest(testData.TemplateId, testData.Data);
+            var client = new SendWithUsClient(testData.ApiKey);
 
-            var renderResponse = batchResponse.Items.ElementAt(1) as IRenderResponse;
-            Assert.AreEqual(HttpStatusCode.OK, renderResponse.StatusCode);
-            Assert.AreEqual("OK", renderResponse.Status, true);
-            Assert.AreEqual(true, renderResponse.Success);
+            // Act 
+            var response = client.RenderAsync(request).Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("OK", response.Status, true);
+            Assert.AreEqual(true, response.Success);
         }
     }
 }

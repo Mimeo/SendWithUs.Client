@@ -22,9 +22,7 @@ namespace SendWithUs.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Represents the data necessary to make API requests to send email messages.
@@ -86,11 +84,6 @@ namespace SendWithUs.Client
 
         public virtual string Locale { get; set; }
 
-        public virtual bool IsValid
-        {
-            get { return this.Validate(false); }
-        }
-
         #endregion
 
         #region IRequest members
@@ -110,44 +103,45 @@ namespace SendWithUs.Client
             return typeof(SendResponse);
         }
 
-        public IRequest Validate()
+        public virtual IRequest Validate()
         {
-            this.Validate(true);
-            return this;
-        }
-
-        protected internal virtual bool Validate(bool throwOnFailure)
-        {
-            Func<ValidationFailureMode, bool> fail = (f) =>
-            {
-                if (throwOnFailure)
-                {
-                    throw new ValidationException(f);
-                }
-
-                return false;
-            };
-
             // Template ID is required.
             if (String.IsNullOrEmpty(this.TemplateId))
             {
-                return fail(ValidationFailureMode.MissingTemplateId);
+                throw new ValidationException(ValidationFailureMode.MissingTemplateId);
             }
 
             // Recipient address is required.
             if (String.IsNullOrEmpty(this.RecipientAddress))
             {
-                return fail(ValidationFailureMode.MissingRecipientAddress);
+                throw new ValidationException(ValidationFailureMode.MissingRecipientAddress);
             }
 
             // If sender name or reply-to are specified, then sender address is required.
             if ((!String.IsNullOrEmpty(this.SenderName) || !String.IsNullOrEmpty(this.SenderReplyTo))
                 && String.IsNullOrEmpty(this.SenderAddress))
             {
-                return fail(ValidationFailureMode.MissingSenderAddress);
+                throw new ValidationException(ValidationFailureMode.MissingSenderAddress);
             }
 
-            return true;
+            return this;
+        }
+
+        public virtual bool IsValid
+        {
+            get
+            {
+                try
+                {
+                    this.Validate();
+                }
+                catch (ValidationException)
+                {
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         #endregion

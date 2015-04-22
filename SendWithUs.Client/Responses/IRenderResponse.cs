@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,24 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
+namespace SendWithUs.Client
+{
+    public interface IRenderResponse : IResponse
+    {
+        bool Success { get; }
 
-[assembly: AssemblyTitle("SendWithUs.Client")]
-[assembly: AssemblyDescription("A .NET client implementation over the SendWithUs REST API.")]
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-[assembly: AssemblyCompany("Mimeo, Inc.")]
-[assembly: AssemblyProduct("SendWithUs.Client")]
-[assembly: AssemblyCopyright("Copyright © 2014 Mimeo, Inc.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("en")]
-[assembly: AssemblyVersion("0.4.0.*")]
-[assembly: AssemblyInformationalVersion("0.4.0")]
-[assembly: InternalsVisibleTo("SendWithUs.Client.Tests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+        string Status { get; }
+
+        string TemplateId { get; }
+
+        string TemplateName { get; }
+
+        string TemplateVersionId { get; }
+
+        string Locale { get; }
+
+        string Subject { get; }
+
+        string Html { get; }
+
+        string Text { get; }
+    }
+}
