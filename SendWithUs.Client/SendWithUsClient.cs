@@ -20,6 +20,8 @@
 
 namespace SendWithUs.Client
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -28,7 +30,6 @@ namespace SendWithUs.Client
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Provides access to the SendWithUs REST API.
@@ -55,7 +56,7 @@ namespace SendWithUs.Client
         /// <summary>
         /// Gets or sets the formatter for JSON payloads.
         /// </summary>
-        protected MediaTypeFormatter ContentFormatter { get; set; }
+        protected JsonMediaTypeFormatter ContentFormatter { get; set; }
 
         /// <summary>
         /// Gets or sets the factory used to construct response objects.
@@ -65,7 +66,7 @@ namespace SendWithUs.Client
         #endregion
 
         #region Constructors
-
+        
         /// <summary>
         /// Initializes a new instance of the SendWithUsClient class.
         /// </summary>
@@ -80,7 +81,7 @@ namespace SendWithUs.Client
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="contentFormatter">The formatter for JSON payloads.</param>
         /// <param name="responseFactory">The factory used to construct response objects.</param>
-        public SendWithUsClient(string apiKey, HttpClient httpClient, MediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
+        public SendWithUsClient(string apiKey, HttpClient httpClient, JsonMediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
         {
             this.Initialize(apiKey, httpClient, contentFormatter, responseFactory);
         }
@@ -93,26 +94,99 @@ namespace SendWithUs.Client
         /// <param name="contentFormatter">The formatter for JSON payloads.</param>
         /// <param name="responseFactory">The factory used to construct response objects.</param>
         /// <returns>The current instance.</returns>
-        protected virtual SendWithUsClient Initialize(string apiKey, HttpClient httpClient, MediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
+        protected virtual SendWithUsClient Initialize(string apiKey, HttpClient httpClient, JsonMediaTypeFormatter contentFormatter, IResponseFactory responseFactory)
         {
-            EnsureArgument.NotNullOrEmpty(apiKey, "apiKey");
-            EnsureArgument.NotNull(httpClient, "httpClient");
-            EnsureArgument.NotNull(contentFormatter, "contentFormatter");
-            EnsureArgument.NotNull(responseFactory, "responseFactory");
+            EnsureArgument.NotNullOrEmpty(apiKey, nameof(apiKey));
+            EnsureArgument.NotNull(httpClient, nameof(httpClient));
+            EnsureArgument.NotNull(contentFormatter, nameof(contentFormatter));
+            EnsureArgument.NotNull(responseFactory, nameof(responseFactory));
 
             this.HttpClient = httpClient;
             this.ContentFormatter = contentFormatter;
             this.ResponseFactory = responseFactory;
-
-            this.HttpClient.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue("Basic", this.BuildAuthenticationToken(apiKey));
+            
+            // FIXME
+            this.ContentFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            this.HttpClient.DefaultRequestHeaders.Authorization = this.BuildAuthenticationHeader(apiKey);
 
             return this;
         }
 
         #endregion
 
-        #region API methods
+        #region ISendWithUsClient implementation
+
+        public async Task<ITemplateResponse> ExecuteAsync(IGetTemplateRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<TemplateResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ITemplateVersionResponse> ExecuteAsync(IGetTemplateVersionRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ICollectionResponse<ITemplateCollectionItem>> ExecuteAsync(IGetTemplateCollectionRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<CollectionResponse<ITemplateCollectionItem>, TemplateInfo>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ICollectionResponse<ITemplateVersionCollectionItem>> ExecuteAsync(IGetTemplateVersionCollectionRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<CollectionResponse<ITemplateVersionCollectionItem>, TemplateVersionInfo>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ITemplateResponse> ExecuteAsync(ICreateTemplateRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<TemplateResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ITemplateVersionResponse> ExecuteAsync(ICreateTemplateVersionRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<ITemplateVersionResponse> ExecuteAsync(IUpdateTemplateVersionRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        public async Task<VoidResponse> ExecuteAsync(IDeleteTemplateRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<VoidResponse>(request.Validate()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Executes a batch request comprising the given set of request objects.
+        /// </summary>
+        /// <param name="requests">A set of request objects to be batched.</param>
+        /// <returns>A batch response object.</returns>
+        public virtual Task<IBatchResponse> ExecuteAsync(params IRequest[] requests) => 
+            this.ExecuteAsync((IEnumerable<IRequest>)requests);
+
+        /// <summary>
+        /// Executes a batch request comprising the given set of request objects.
+        /// </summary>
+        /// <param name="requests">A set of request objects to be batched.</param>
+        /// <returns>A batch response object.</returns>
+        /// <exception cref="System.ArgumentException">The requests argument was null, empty, or contained null item(s).</exception>
+        public virtual async Task<IBatchResponse> ExecuteAsync(IEnumerable<IRequest> requests)
+        {
+            EnsureArgument.NotNullOrEmpty(requests, nameof(requests), false);
+            var batchRequest = new BatchRequest(requests.Select(r => r.Validate()));
+            var batchResponse = await this.ExecuteAsync<BatchResponse>(batchRequest).ConfigureAwait(false);
+            return batchResponse.Inflate(requests.Select(r => r.GetResponseType()), this.ResponseFactory);
+        }
+
+        #region Deprecated API
 
         /// <summary>
         /// Sends an email message per the given request object.
@@ -120,9 +194,10 @@ namespace SendWithUs.Client
         /// <param name="request">A request object describing the email to be sent.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
+        [Obsolete("This method is deprecated and will be removed in the future. Use ExecuteAsync instead.")]
         public virtual async Task<ISendResponse> SendAsync(ISendRequest request)
         {
-            EnsureArgument.NotNull(request, "request");
+            EnsureArgument.NotNull(request, nameof(request));
             return await this.ExecuteAsync<SendResponse>(request.Validate()).ConfigureAwait(false);
         }
 
@@ -132,9 +207,10 @@ namespace SendWithUs.Client
         /// <param name="request">A request object describing the template to be rendered.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
+        [Obsolete("This method is deprecated and will be removed in the future. Use ExecuteAsync instead.")]
         public virtual async Task<IRenderResponse> RenderAsync(IRenderRequest request)
         {
-            EnsureArgument.NotNull(request, "request");
+            EnsureArgument.NotNull(request, nameof(request));
             return await this.ExecuteAsync<RenderResponse>(request.Validate()).ConfigureAwait(false);
         }
 
@@ -144,26 +220,24 @@ namespace SendWithUs.Client
         /// <param name="requests">A set of request objects to be batched.</param>
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentException">The requests argument was null, empty, or contained null item(s).</exception>
-        public virtual async Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests)
-        {
-            EnsureArgument.NotNullOrEmpty(requests, "requests", false);
-            var batchRequest = new BatchRequest(requests.Select(r => r.Validate()));
-            var batchResponse = await this.ExecuteAsync<BatchResponse>(batchRequest).ConfigureAwait(false);
-            return batchResponse.Inflate(requests.Select(r => r.GetResponseType()), this.ResponseFactory);
-        }
+        [Obsolete("This method is deprecated and will be removed in the future. Use ExecuteAsync instead.")]
+        public virtual Task<IBatchResponse> BatchAsync(IEnumerable<IRequest> requests) => this.ExecuteAsync(requests);
+
+        #endregion
 
         #endregion
 
         #region Helpers
 
         /// <summary>
-        /// Builds a token for use in HTTP basic authentication.
+        /// Builds an HTTP header that specifies Basic authentication using the given API key.
         /// </summary>
         /// <param name="apiKey">A valid SendWithUs API key.</param>
-        /// <returns>A token for use in HTTP basic authentication.</returns>
-        protected string BuildAuthenticationToken(string apiKey)
+        /// <returns>An HTTP Basic authentication header.</returns>
+        protected AuthenticationHeaderValue BuildAuthenticationHeader(string apiKey)
         {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(apiKey + ":"));
+            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(apiKey + ":"));
+            return new AuthenticationHeaderValue("Basic", token);
         }
 
         /// <summary>
@@ -174,9 +248,10 @@ namespace SendWithUs.Client
         /// <returns>The expanded template.</returns>
         /// <remarks>The template MUST begin with a slash.</remarks>
         protected string BuildRequestUri(string template, params object[] args)
-        {
-            return SendWithUsClient.BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
-        }
+            => SendWithUsClient.BaseUri + (args.Length > 0 ? String.Format(template, args) : template);
+
+        protected bool NeedRequestContent(HttpMethod method)
+            => (method == HttpMethod.Post || method == HttpMethod.Put);
 
         /// <summary>
         /// Calls the SendWithUs API using the appropriate HTTP method and URI for the given request.
@@ -187,9 +262,31 @@ namespace SendWithUs.Client
         {
             var method = new HttpMethod(request.GetHttpMethod());
             var uri = this.BuildRequestUri(request.GetUriPath());
-            var content = new ObjectContent(request.GetType(), request, this.ContentFormatter);
-            var httpRequest = new HttpRequestMessage(method, uri) { Content = content };
+            var httpRequest = new HttpRequestMessage(method, uri);
+            
+            if (this.NeedRequestContent(method))
+            {
+                httpRequest.Content = new ObjectContent(request.GetType(), request, this.ContentFormatter);
+            }
+
             return this.HttpClient.SendAsync(httpRequest);
+        }
+
+        /// <summary>
+        /// Reads the payload (i.e., message body) of a response from the SendWithUs API.
+        /// </summary>
+        /// <param name="httpResponse">An HTTP response object.</param>
+        /// <returns>The payload represented as a JToken object.</returns>
+        protected async Task<JToken> ReadHttpResponsePayloadAsync(HttpResponseMessage httpResponse)
+        {
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return await httpResponse.Content.ReadAsAsync<JToken>();
+            }
+            else
+            {
+                return new JValue(await httpResponse.Content.ReadAsStringAsync());
+            }
         }
 
         /// <summary>
@@ -202,8 +299,24 @@ namespace SendWithUs.Client
             where TResponse : class, IResponse
         { 
             var httpResponse = await this.GetHttpResponseAsync(request);
-            var json = await httpResponse.EnsureSuccessStatusCode().Content.ReadAsAsync<JToken>();
-            return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, json);
+            var payload = await this.ReadHttpResponsePayloadAsync(httpResponse);
+            return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, payload);
+        }
+
+        /// <summary>
+        /// Executes the given request and creates the appropriate collection response.
+        /// </summary>
+        /// <typeparam name="TCollectionResponse">The type of the collection response to be created.</typeparam>
+        /// <typeparam name="TCollectionItem">The concrete type of items in the collection response.</typeparam>
+        /// <param name="request">A request object.</param>
+        /// <returns>A response object of the specified type.</returns>
+        protected async Task<TCollectionResponse> ExecuteAsync<TCollectionResponse, TCollectionItem>(IRequest request)
+            where TCollectionResponse : class, ICollectionResponse
+            where TCollectionItem : class, ICollectionItem
+        {
+            var httpResponse = await this.GetHttpResponseAsync(request);
+            var payload = await this.ReadHttpResponsePayloadAsync(httpResponse);
+            return this.ResponseFactory.Create<TCollectionResponse, TCollectionItem>(httpResponse.StatusCode, payload);
         }
 
         #endregion

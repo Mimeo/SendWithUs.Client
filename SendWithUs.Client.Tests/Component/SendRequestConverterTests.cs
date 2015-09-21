@@ -33,7 +33,7 @@ namespace SendWithUs.Client.Tests.Component
         {
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
+            var request = new SendRequest { TemplateId = templateId, RecipientAddress = recipientAddress };
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
             var converter = new SendRequestConverter();
@@ -51,7 +51,7 @@ namespace SendWithUs.Client.Tests.Component
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
             var data = TestHelper.GetRandomDictionary();
-            var request = new SendRequest(templateId, recipientAddress, data);
+            var request = new SendRequest { TemplateId = templateId, RecipientAddress = recipientAddress, Data = data };
             var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
             var converter = new SendRequestConverter();

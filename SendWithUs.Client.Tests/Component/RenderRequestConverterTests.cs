@@ -32,7 +32,7 @@ namespace SendWithUs.Client.Tests.Component
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
-            var request = new RenderRequest(templateId);
+            var request = new RenderRequest { TemplateId = templateId };
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
             var converter = new RenderRequestConverter();
@@ -49,7 +49,7 @@ namespace SendWithUs.Client.Tests.Component
         {
             var templateId = TestHelper.GetUniqueId();
             var data = TestHelper.GetRandomDictionary();
-            var request = new RenderRequest(templateId, data);
+            var request = new RenderRequest { TemplateId = templateId, Data = data };
             var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
             var converter = new RenderRequestConverter();

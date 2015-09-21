@@ -33,8 +33,8 @@ namespace SendWithUs.Client.Tests.Component
         {
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
-            var sendRequest = new SendRequest(templateId, recipientAddress);
-            var renderRequest = new RenderRequest(templateId);
+            var sendRequest = new SendRequest { TemplateId = templateId, RecipientAddress = recipientAddress };
+            var renderRequest = new RenderRequest { TemplateId = templateId };
             var requests = new List<IRequest> { sendRequest, renderRequest };
             var batchRequest = new BatchRequest(requests);
             var writer = BufferedJsonStringWriter.Create();

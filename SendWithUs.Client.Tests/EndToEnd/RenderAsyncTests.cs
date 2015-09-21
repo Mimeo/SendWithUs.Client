@@ -28,12 +28,14 @@ namespace SendWithUs.Client.Tests.EndToEnd
     public class RenderAsyncTests
     {
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void RenderAsync_MinimalRequest_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
-            var request = new RenderRequest(testData.TemplateId);
-            var client = new SendWithUsClient(testData.ApiKey);
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(RenderRequest));
+            var request = new RenderRequest { TemplateId = testData.TemplateId };
+            var client = new SendWithUsClient(apiKey);
 
             // Act
             var response = client.RenderAsync(request).Result;
@@ -45,13 +47,15 @@ namespace SendWithUs.Client.Tests.EndToEnd
         }
 
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void RenderAsync_WithData_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(RenderRequest));
             var subject = "RenderAsync_WithData " + TestHelper.GetUniqueId();
-            var request = new RenderRequest(testData.TemplateId, testData.Data);
-            var client = new SendWithUsClient(testData.ApiKey);
+            var request = new RenderRequest { TemplateId = testData.TemplateId, Data = testData.Data };
+            var client = new SendWithUsClient(apiKey);
 
             // Act 
             var response = client.RenderAsync(request).Result;

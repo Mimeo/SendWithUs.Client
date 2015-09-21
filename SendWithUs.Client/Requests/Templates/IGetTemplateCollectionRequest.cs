@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,8 @@
 
 namespace SendWithUs.Client
 {
-    public enum ValidationFailureMode
+    public interface IGetTemplateCollectionRequest : IRequest
     {
-        None,
-        MissingTemplateId,
-        MissingRecipientAddress,
-        MissingSenderAddress,
-        MissingData
+        // Marker interface.
     }
 }

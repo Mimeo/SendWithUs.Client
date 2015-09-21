@@ -20,14 +20,15 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
+    using System.Collections.Generic;
+    using SendPropertyNames = SendWithUs.Client.SendRequestConverter.PropertyNames;
+    using RenderPropertyNames = SendWithUs.Client.RenderRequestConverter.PropertyNames;
 
     public abstract class ComponentTestsBase
     {
-        protected void ValidateSendRequest(JObject jsonObject, string expectedEmailId, string expectedRecipientAddress, IDictionary<string,string> expectedData)
+        protected void ValidateSendRequest(JObject jsonObject, string expectedTemplateId, string expectedRecipientAddress, IDictionary<string,string> expectedData)
         {
             var emailIdFound = false;
             var recipientAddressFound = false;
@@ -36,17 +37,17 @@ namespace SendWithUs.Client.Tests.Component
             {
                 switch (pair.Key)
                 {
-                    case "email_id":
-                        Assert.AreEqual(expectedEmailId, pair.Value.Value<string>());
+                    case SendPropertyNames.TemplateId:
+                        Assert.AreEqual(expectedTemplateId, pair.Value.Value<string>());
                         emailIdFound = true;
                         break;
 
-                    case "recipient":
+                    case SendPropertyNames.Recipient:
                         Assert.AreEqual(expectedRecipientAddress, pair.Value["address"].Value<string>());
                         recipientAddressFound = true;
                         break;
 
-                    case "email_data":
+                    case SendPropertyNames.Data:
                         if (expectedData != null)
                         {
                             this.ValidateRequestData(pair.Value as JObject, expectedData);
@@ -70,12 +71,12 @@ namespace SendWithUs.Client.Tests.Component
             {
                 switch (pair.Key)
                 {
-                    case "template_id":
+                    case RenderPropertyNames.TemplateId:
                         Assert.AreEqual(expectedTemplateId, pair.Value.Value<string>());
                         templateIdFound = true;
                         break;
 
-                    case "template_data":
+                    case RenderPropertyNames.Data:
                         if (expectedData != null)
                         {
                             this.ValidateRequestData(pair.Value as JObject, expectedData);

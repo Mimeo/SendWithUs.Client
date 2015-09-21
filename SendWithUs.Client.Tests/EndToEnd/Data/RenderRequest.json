@@ -1,0 +1,10 @@
+﻿{
+  "templateId": "",
+  "data": {
+    "subject": "RenderAsync Test",
+    "firstName": "Roscoe",
+    "changePasswordUrl": "http://password.example.com",
+    "applicationName": "SendWithUs.Client.Tests",
+    "customerServicePhoneNumber": "800-466-4636"
+  }
+}

@@ -33,11 +33,12 @@ namespace SendWithUs.Client.Tests.Unit
         public void Initialize_Always_SetsStatusCode()
         {
             // Arrange
+            var responseFactory = null as IResponseFactory;
             var statusCode = HttpStatusCode.OK;
             var response = new Mock<BaseResponse<JToken>>() { CallBase = true };
 
             // Act
-            response.Object.Initialize(statusCode, null);
+            response.Object.Initialize(responseFactory, statusCode: statusCode, json: null);
 
             // Assert
             response.VerifySet(r => r.StatusCode = statusCode, Times.Once);
@@ -48,15 +49,16 @@ namespace SendWithUs.Client.Tests.Unit
         public void Initialize_SuccessStatusCode_CallsPopulate()
         {
             // Arrange
+            var responseFactory = null as IResponseFactory;
             var statusCode = HttpStatusCode.OK;
             var jtoken = new JObject();
             var response = new Mock<BaseResponse<JToken>>() { CallBase = true };
 
             // Act
-            response.Object.Initialize(statusCode, jtoken);
+            response.Object.Initialize(responseFactory, statusCode: statusCode, json: jtoken);
 
             // Assert
-            response.Verify(r => r.IsSuccessStatusCode(), Times.Once);
+            response.VerifyGet(r => r.IsSuccessStatusCode, Times.Once);
             response.Verify(r => r.Populate(jtoken), Times.Once);
             response.Verify(r => r.SetErrorMessage(It.IsAny<JValue>()), Times.Never);
         }
@@ -66,15 +68,16 @@ namespace SendWithUs.Client.Tests.Unit
         public void Initialize_NonSuccessStatusCode_CallsSetErrorMessage()
         {
             // Arrange
+            var responseFactory = null as IResponseFactory;
             var statusCode = HttpStatusCode.BadRequest;
             var jtoken = new JObject();
             var response = new Mock<BaseResponse<JToken>>() { CallBase = true };
 
             // Act
-            response.Object.Initialize(statusCode, jtoken);
+            response.Object.Initialize(responseFactory, statusCode: statusCode, json: jtoken);
 
             // Assert
-            response.Verify(r => r.IsSuccessStatusCode(), Times.Once);
+            response.VerifyGet(r => r.IsSuccessStatusCode, Times.Once);
             response.Verify(r => r.Populate(jtoken), Times.Never);
             response.Verify(r => r.SetErrorMessage(It.IsAny<JValue>()), Times.Once);
         }
@@ -90,7 +93,7 @@ namespace SendWithUs.Client.Tests.Unit
             var result = TestHelper.Generate<bool>(200, 299, (i) =>
             {
                 response.Object.StatusCode = (HttpStatusCode)i;
-                return response.Object.IsSuccessStatusCode();
+                return response.Object.IsSuccessStatusCode;
             });
 
             // Assert
@@ -108,7 +111,7 @@ namespace SendWithUs.Client.Tests.Unit
             var result = TestHelper.Generate<bool>(100, 199, (i) =>
             {
                 response.Object.StatusCode = (HttpStatusCode)i;
-                return response.Object.IsSuccessStatusCode();
+                return response.Object.IsSuccessStatusCode;
             }).ToList();
 
             // Assert
@@ -126,7 +129,7 @@ namespace SendWithUs.Client.Tests.Unit
             var result = TestHelper.Generate<bool>(300, 599, (i) =>
             {
                 response.Object.StatusCode = (HttpStatusCode)i;
-                return response.Object.IsSuccessStatusCode();
+                return response.Object.IsSuccessStatusCode;
             });
 
             // Assert

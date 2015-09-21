@@ -40,6 +40,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -78,6 +79,7 @@
     <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
     <Compile Include="Component\RenderRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\TemplateTests.cs" />
     <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
     <Compile Include="Component\BufferedJsonStringWriter.cs" />
@@ -98,7 +100,18 @@
     <Compile Include="Unit\SendWithUsClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="EndToEnd\Data\RenderRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="EndToEnd\Data\SendRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="EndToEnd\Data\Template.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SendWithUs.Client\SendWithUs.Client.csproj">
@@ -112,14 +125,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="EndToEnd\Data\SendRequest.xml">
+    <Content Include="EndToEnd\Data\ApiKey.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="EndToEnd\Data\RenderRequest.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

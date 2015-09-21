@@ -41,12 +41,17 @@ namespace SendWithUs.Client.Tests.Unit
                 get { throw new NotImplementedException(); }
             }
 
+            public bool IsSuccessStatusCode
+            {
+                get { throw new NotImplementedException(); }
+            }
+
             public string ErrorMessage
             {
                 get { throw new NotImplementedException(); }
             }
 
-            public IResponse Initialize(HttpStatusCode statusCode, JToken json)
+            public IResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json)
             {
                 this.Initialized = true;
                 return this;
@@ -67,7 +72,7 @@ namespace SendWithUs.Client.Tests.Unit
             var response = factory.Object.Create<TestResponse>(statusCode, json);
 
             // Assert
-            factory.Verify(f => f.Create(typeof(TestResponse), statusCode, json), Times.Once);
+            factory.Verify(f => f.CreateResponse(typeof(TestResponse), statusCode, json), Times.Once);
         }
 
         [TestMethod]
@@ -80,7 +85,7 @@ namespace SendWithUs.Client.Tests.Unit
             var factory = new ResponseFactory();
 
             // Act
-            var exception = TestHelper.CaptureException(() => factory.Create(responseType, statusCode, json));
+            var exception = TestHelper.CaptureException(() => factory.CreateResponse(responseType, statusCode, json));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
@@ -96,7 +101,7 @@ namespace SendWithUs.Client.Tests.Unit
             var factory = new ResponseFactory();
 
             // Act
-            var exception = TestHelper.CaptureException(() => factory.Create(responseType, statusCode, json));
+            var exception = TestHelper.CaptureException(() => factory.CreateResponse(responseType, statusCode, json));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(InvalidOperationException));
@@ -112,7 +117,7 @@ namespace SendWithUs.Client.Tests.Unit
             var factory = new ResponseFactory();
 
             // Act
-            var response = factory.Create(responseType, statusCode, json);
+            var response = factory.CreateResponse(responseType, statusCode, json);
 
             // Assert 
             Assert.IsInstanceOfType(response, responseType);
@@ -128,7 +133,7 @@ namespace SendWithUs.Client.Tests.Unit
             var factory = new ResponseFactory();
 
             // Act
-            var response = factory.Create(responseType, statusCode, json) as TestResponse;
+            var response = factory.CreateResponse(responseType, statusCode, json) as TestResponse;
 
             // Assert 
             // The Initialized property was set by side-effect.

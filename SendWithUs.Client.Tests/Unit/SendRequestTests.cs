@@ -23,6 +23,7 @@ namespace SendWithUs.Client.Tests.Unit
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+    using System.Linq;
 
     [TestClass]
     public class SendRequestTests
@@ -59,7 +60,7 @@ namespace SendWithUs.Client.Tests.Unit
             // Arrange
             var templateId = TestHelper.GetUniqueId();
             var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
+            var request = new SendRequest { TemplateId = templateId, RecipientAddress = recipientAddress };
 
             // Act
             var self = request.Validate();
@@ -103,7 +104,8 @@ namespace SendWithUs.Client.Tests.Unit
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ValidationException));
             var invalid = exception as ValidationException;
-            Assert.AreEqual(ValidationFailureMode.MissingTemplateId, invalid.FailureMode);
+            Assert.AreEqual(1, invalid.MissingRequiredProperties.Count());
+            Assert.AreEqual("TemplateId", invalid.MissingRequiredProperties.First());
         }
 
         [TestMethod]
@@ -123,29 +125,8 @@ namespace SendWithUs.Client.Tests.Unit
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ValidationException));
             var invalid = exception as ValidationException;
-            Assert.AreEqual(ValidationFailureMode.MissingRecipientAddress, invalid.FailureMode);
-        }
-
-        [TestMethod]
-        public void Validate_InconsistentSenderValues_Throws()
-        {
-            // Arrange
-            var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
-            var senderName = TestHelper.GetUniqueId();
-            var request = new Mock<SendRequest>() { CallBase = true };
-
-            request.SetupGet(r => r.TemplateId).Returns(templateId);
-            request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
-            request.SetupGet(r => r.SenderName).Returns(senderName);
-
-            // Act
-            var exception = TestHelper.CaptureException(() => request.Object.Validate());
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ValidationException));
-            var invalid = exception as ValidationException;
-            Assert.AreEqual(ValidationFailureMode.MissingSenderAddress, invalid.FailureMode);
+            Assert.AreEqual(1, invalid.MissingRequiredProperties.Count());
+            Assert.AreEqual("RecipientAddress", invalid.MissingRequiredProperties.First());
         }
     }
 }

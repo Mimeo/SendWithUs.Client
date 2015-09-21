@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,8 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-    using System.Globalization;
-    using System.Net;
-    using System.Reflection;
-    using Newtonsoft.Json.Linq;
-
-    public class ResponseFactory : IResponseFactory
+    public interface IGetTemplateCollectionRequest : IRequest
     {
-        public T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse
-        {
-            return this.Create(typeof(T), statusCode, json) as T;
-        }
-
-        public virtual IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json)
-        {
-            EnsureArgument.NotNull(responseType, "responseType");
-
-            if (!typeof(IResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement IResponse.", responseType.FullName));
-            }
-
-            return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, json);
-        }
+        // Marker interface.
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>mimeo</owners>
+    <licenseUrl>https://github.com/Mimeo/SendWithUs.Client/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Mimeo/SendWithUs.Client</projectUrl>
+    <iconUrl>https://avatars3.githubusercontent.com/u/166195?v=3&amp;s=32</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>
+0.1.0    Initial release.
+0.2.0    Allow any object as SendRequest.Data. Add tests.
+0.3.0    Add Header and Locale properties to SendRequest. Add more tests.
+0.4.0    Add support for rendering templates.
+    </releaseNotes>
+    <copyright>Copyright © 2014 Mimeo, Inc.</copyright>
+    <tags>SendWithUs rest api client c#</tags>
+    <language>en-US</language>
+  </metadata>
+</package>

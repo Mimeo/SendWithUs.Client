@@ -20,96 +20,56 @@
 
 namespace SendWithUs.Client.Tests.EndToEnd
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+    using System;
     using System.Collections.Generic;
+    using System.Dynamic;
+    using System.IO;
     using System.Linq;
-    using System.Xml.Linq;
 
-    public class TestData
+    public class TestData : DynamicObject
     {
-        public string ApiKey
-        {
-            get { return this.GetString("ApiKey"); }
-        }
+        protected const string DataDirectoryName = "EndToEnd/Data";
 
-        public string TemplateId
-        {
-            get { return this.GetString("TemplateId"); }
-        }
+        protected IDictionary<string, object> DataSource { get; set; }
 
-        public string SenderAddress
+        protected TestData(string pathName)
         {
-            get { return this.GetString("SenderAddress"); }
+            this.DataSource = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(pathName), new DictionaryConverter());
         }
-
-        public string SenderName
+        
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            get { return this.GetString("SenderName"); }
+            return this.DataSource.TryGetValue(binder.Name, out result);
         }
-
-        public string SenderReplyTo
+        
+        protected class DictionaryConverter : CustomCreationConverter<IDictionary<string, Object>>
         {
-            get { return this.GetString("SenderReplyTo"); }
-        }
-
-        public string RecipientAddress
-        {
-            get { return this.GetString("RecipientAddress"); }
-        }
-
-        public string RecipientName
-        {
-            get { return this.GetString("RecipientName"); }
-        }
-
-        public IEnumerable<string> CopyTo
-        {
-            get { return null; }
-        }
-
-        public IEnumerable<string> BlindCopyTo
-        {
-            get { return null; }
-        }
-
-        public IDictionary<string, object> Data
-        {
-            get 
+            public override IDictionary<string, object> Create(Type objectType)
             {
-                var rawData = this.DataSource.Root.Element("Data").Descendants("Item");
-                return rawData.ToDictionary<XElement, string, object>(e => e.Attribute("name").Value, e => e.Attribute("value").Value);
+                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(object) || base.CanConvert(objectType);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                if (reader.TokenType == JsonToken.StartObject || reader.TokenType == JsonToken.Null)
+                {
+                    return base.ReadJson(reader, objectType, existingValue, serializer);
+                }
+
+                // Fall back on standard deserializer.
+                return serializer.Deserialize(reader);
             }
         }
 
-        public IEnumerable<string> Tags
-        {
-            get { return null; }
-        }
+        public static string GetApiKey() => File.ReadAllLines($"{DataDirectoryName}/ApiKey.txt").FirstOrDefault();
 
-        public string AttachmentFileName
-        {
-            get { return this.GetString("AttachmentFileName"); }
-        }
-
-        public string ProviderId
-        {
-            get { return this.GetString("ProviderId"); }
-        }
-
-        public string TemplateVersion
-        {
-            get { return this.GetString("TemplateVersion"); }
-        }
-
-        protected XDocument DataSource { get; set; }
-
-        protected string GetString(string name)
-        {
-            return this.DataSource.Root.Element(name).Value;
-        }
-
-        public TestData(string fileName)
-        {
-            this.DataSource = XDocument.Load(fileName);
-        }
+        public static TestData Load(string fileName) => new TestData($"{DataDirectoryName}/{fileName}.json");
     }
 }

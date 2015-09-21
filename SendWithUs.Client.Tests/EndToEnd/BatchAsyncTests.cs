@@ -30,15 +30,18 @@ namespace SendWithUs.Client.Tests.EndToEnd
     public class BatchAsyncTests
     {
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void BatchAsync_TwoRequests_Succeeds()
         {
             // Arange
+            var apiKey = TestData.GetApiKey();
             var subject = "BatchAsync " + TestHelper.GetUniqueId();
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
-            var sendRequest = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
-            var renderRequest = new RenderRequest(testData.TemplateId);
+            dynamic testData = TestData.Load(nameof(SendRequest));
+            var data = ((IDictionary<string, object>)testData.Data).Upsert("subject", subject);
+            var sendRequest = new SendRequest { TemplateId = testData.TemplateId, RecipientAddress = testData.RecipientAddress, Data = data };
+            var renderRequest = new RenderRequest { TemplateId = testData.TemplateId };
             var requests = new List<IRequest> { sendRequest, renderRequest };
-            var client = new SendWithUsClient(testData.ApiKey);
+            var client = new SendWithUsClient(apiKey);
 
             // Act
             var batchResponse = client.BatchAsync(requests).Result;

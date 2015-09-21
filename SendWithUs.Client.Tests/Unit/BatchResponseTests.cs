@@ -162,7 +162,7 @@ namespace SendWithUs.Client.Tests.Unit
             var responseType = typeof(IResponse);
             var responseFactory = new Mock<IResponseFactory>();
 
-            responseFactory.Setup(f => f.Create(It.IsAny<Type>(), It.IsAny<HttpStatusCode>(), It.IsAny<JToken>()));
+            responseFactory.Setup(f => f.CreateResponse(It.IsAny<Type>(), It.IsAny<HttpStatusCode>(), It.IsAny<JToken>()));
 
             // Act
             response.BuildResponse(wrapper, responseType, responseFactory.Object);
@@ -170,7 +170,7 @@ namespace SendWithUs.Client.Tests.Unit
             // Assert
             // Since there are no setups on the wrapper, we are also verifying that the statusCode and body
             // values were properly extracted from the wrapper.
-            responseFactory.Verify(f => f.Create(responseType, statusCode, body));
+            responseFactory.Verify(f => f.CreateResponse(responseType, statusCode, body));
         }
     }
 }

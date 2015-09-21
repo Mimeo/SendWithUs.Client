@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json;
 
-    public interface IResponseFactory
+    public class Attachment : IAttachment
     {
-        T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse;
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
-        IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json);
+        [JsonProperty("data")]
+        public string Data { get; set; }
     }
 }

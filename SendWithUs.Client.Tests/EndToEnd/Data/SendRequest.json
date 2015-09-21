@@ -1,0 +1,13 @@
+﻿{
+  "templateId": "",
+  "senderAddress": "",
+  "recipientAddress": "",
+  "attachmentFileName": "EndToEnd/Data/mimeo-logo-black.png",
+  "data": {
+    "subject": "SendAsync Test",
+    "firstName": "Roscoe",
+    "changePasswordUrl": "http://password.example.com",
+    "applicationName": "SendWithUs.Client.Tests",
+    "customerServicePhoneNumber": "800-466-4636"
+  }
+}

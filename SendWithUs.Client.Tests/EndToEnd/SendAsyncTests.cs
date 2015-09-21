@@ -31,12 +31,14 @@ namespace SendWithUs.Client.Tests.EndToEnd
     public class SendAsyncTests
     {
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void SendAsync_MinimalRequest_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
-            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress);
-            var client = new SendWithUsClient(testData.ApiKey);
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(SendRequest));
+            var request = new SendRequest { TemplateId = testData.TemplateId, RecipientAddress = testData.RecipientAddress };
+            var client = new SendWithUsClient(apiKey);
 
             // Act
             var response = client.SendAsync(request).Result;
@@ -48,13 +50,16 @@ namespace SendWithUs.Client.Tests.EndToEnd
         }
 
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void SendAsync_WithData_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(SendRequest));
             var subject = "SendAsync_WithData " + TestHelper.GetUniqueId();
-            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
-            var client = new SendWithUsClient(testData.ApiKey);
+            var data = ((IDictionary<string, object>)testData.Data).Upsert("subject", subject);
+            var request = new SendRequest { TemplateId = testData.TemplateId, RecipientAddress = testData.RecipientAddress, Data = data };
+            var client = new SendWithUsClient(apiKey);
 
             // Act 
             var response = client.SendAsync(request).Result;
@@ -66,13 +71,16 @@ namespace SendWithUs.Client.Tests.EndToEnd
         }
 
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void SendAsync_WithInlineAttachment_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(SendRequest));
             var subject = "SendAsync_WithInlineAttachment " + TestHelper.GetUniqueId();
-            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
-            var client = new SendWithUsClient(testData.ApiKey);
+            var data = ((IDictionary<string, object>)testData.Data).Upsert("subject", subject);
+            var request = new SendRequest { TemplateId = testData.TemplateId, RecipientAddress = testData.RecipientAddress, Data = data };
+            var client = new SendWithUsClient(apiKey);
 
             request.InlineAttachment = new Attachment
             {
@@ -91,13 +99,16 @@ namespace SendWithUs.Client.Tests.EndToEnd
 
 
         [TestMethod]
+        [TestCategory("EndToEnd")]
         public void SendAsync_WithFileAttachment_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/SendRequest.xml");
+            var apiKey = TestData.GetApiKey();
+            dynamic testData = TestData.Load(nameof(SendRequest));
             var subject = "SendAsync_WithFileAttachment " + TestHelper.GetUniqueId();
-            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
-            var client = new SendWithUsClient(testData.ApiKey);
+            var data = ((IDictionary<string, object>)testData.Data).Upsert("subject", subject);
+            var request = new SendRequest { TemplateId = testData.TemplateId, RecipientAddress = testData.RecipientAddress, Data = data };
+            var client = new SendWithUsClient(apiKey);
 
             request.SenderAddress = testData.SenderAddress;
             request.FileAttachments = new List<IAttachment>
