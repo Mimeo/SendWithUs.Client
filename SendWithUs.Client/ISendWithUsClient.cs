@@ -88,6 +88,24 @@ namespace SendWithUs.Client
 
         #endregion
 
+        #region Send & Render
+
+        /// <summary>
+        /// Executes a request to send an email message.
+        /// </summary>
+        /// <param name="request">The request to send an email message.</param>
+        /// <returns>A response object.</returns>
+        Task<ISendResponse> ExecuteAsync(ISendRequest request);
+
+        /// <summary>
+        /// Executes a request to render a template.
+        /// </summary>
+        /// <param name="request">The request to render a template.</param>
+        /// <returns>A response object.</returns>
+        Task<IRenderResponse> ExecuteAsync(IRenderRequest request);
+
+        #endregion
+
         #region Batching
 
         /// <summary>

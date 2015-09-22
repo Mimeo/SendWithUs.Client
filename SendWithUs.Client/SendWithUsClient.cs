@@ -163,7 +163,29 @@ namespace SendWithUs.Client
             EnsureArgument.NotNull(request, nameof(request));
             return await this.ExecuteAsync<VoidResponse>(request.Validate()).ConfigureAwait(false);
         }
+        
+        /// <summary>
+        /// Executes a request to send an email message.
+        /// </summary>
+        /// <param name="request">The request to send an email message.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ISendResponse> ExecuteAsync(ISendRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<SendResponse>(request.Validate()).ConfigureAwait(false);
+        }
 
+        /// <summary>
+        /// Executes a request to render a template.
+        /// </summary>
+        /// <param name="request">The request to render a template.</param>
+        /// <returns>A response object.</returns>
+        public async Task<IRenderResponse> ExecuteAsync(IRenderRequest request)
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            return await this.ExecuteAsync<RenderResponse>(request.Validate()).ConfigureAwait(false);
+        }
+        
         /// <summary>
         /// Executes a batch request comprising the given set of request objects.
         /// </summary>
