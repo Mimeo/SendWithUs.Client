@@ -22,6 +22,8 @@ namespace SendWithUs.Client.Tests.Unit
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Linq;
+    using Moq;
 
     [TestClass]
     public class BatchRequestTests
@@ -40,16 +42,44 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void Validate_Always_Throws()
+        public void Validate_AllItemsValid_ReturnsSelf()
         {
             // Arrange
-            var request = new BatchRequest(null);
+            var items = Enumerable.Repeat(1, 10).Select(x => new Mock<IRequest>()).ToList();
+            var request = new BatchRequest(items.Select(m => m.Object));
+
+            items.Select(m => m.Setup(r => r.Validate()).Returns(m.Object));
+
+            // Act
+            var result = request.Validate();
+
+            // Assert
+            Assert.AreSame(request, result);
+        }
+
+        [TestMethod]
+        public void Validate_SomeItemsInvalid_Throws()
+        {
+            // Arrange
+            var invalidCount = 0;
+            var items = Enumerable.Repeat(1, 10).Select(x => new Mock<IRequest>()).ToList();
+            var request = new BatchRequest(items.Select(m => m.Object));
+            
+            for (var index = 0; index < items.Count; index += 1)
+            {
+                if (index % 2 == 0)
+                {
+                    items[index].Setup(r => r.Validate()).Throws(new ValidationException(null));
+                    invalidCount += 1;
+                }
+            }
 
             // Act
             var exception = TestHelper.CaptureException(() => request.Validate());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+            Assert.IsInstanceOfType(exception, typeof(AggregateException));
+            Assert.AreEqual(invalidCount, ((AggregateException)exception).InnerExceptions.Count);
         }
     }
 }

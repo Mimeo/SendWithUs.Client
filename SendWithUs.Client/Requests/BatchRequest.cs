@@ -26,12 +26,16 @@ namespace SendWithUs.Client
     using System.Linq;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Represents a batch request.
+    /// </summary>
+    /// <remarks>Internal to prevent external code from instantiating this class.</remarks>
     [JsonConverter(typeof(BatchRequestConverter))]
     internal class BatchRequest : IEnumerable<IRequest>, IRequest
     {
         protected IEnumerable<IRequest> Items { get; set; }
 
-        public BatchRequest(IEnumerable<IRequest> items)
+        internal BatchRequest(IEnumerable<IRequest> items)
         {
             this.Items = items ?? Enumerable.Empty<IRequest>();
         }
@@ -62,8 +66,29 @@ namespace SendWithUs.Client
 
         public IRequest Validate()
         {
-            // Throw to ensure that a batch request is never nested inside a batch request.
-            throw new NotSupportedException();
+            // Would be cool if we could write:
+            // this.Items.Capture<ValidationException>(r => r.Validate())
+
+            var exceptions = new List<ValidationException>();
+
+            foreach (var request in this.Items)
+            {
+                try
+                {
+                    request.Validate();
+                }
+                catch (ValidationException ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
+
+            return this;
         }
 
         public bool IsValid

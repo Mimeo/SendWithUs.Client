@@ -26,7 +26,7 @@ namespace SendWithUs.Client
 
     public abstract class BaseResponse<T> : IResponse where T : JToken
     {
-        protected IResponseFactory ResponseFactory { get; set; }
+        //protected IResponseFactory ResponseFactory { get; set; }
 
         protected internal abstract void Populate(T json);
 
@@ -47,7 +47,7 @@ namespace SendWithUs.Client
 
         public virtual IResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json)
         {
-            this.ResponseFactory = responseFactory;
+            //this.ResponseFactory = responseFactory;
             this.StatusCode = statusCode;
 
             if (this.IsSuccessStatusCode)

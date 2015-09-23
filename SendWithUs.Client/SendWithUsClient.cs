@@ -34,10 +34,6 @@ namespace SendWithUs.Client
     /// <summary>
     /// Provides access to the SendWithUs REST API.
     /// </summary>
-    /// <remarks>
-    /// Currently, the client only covers a small portion of the API surface--namely, sending email
-    /// rendering templates, and batch operations. 
-    /// </remarks>
     public class SendWithUsClient : ISendWithUsClient
     {
         #region State
@@ -116,64 +112,77 @@ namespace SendWithUs.Client
 
         #region ISendWithUsClient implementation
 
-        public async Task<ITemplateResponse> ExecuteAsync(IGetTemplateRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<TemplateResponse>(request.Validate()).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Executes a request to retrieve a template.
+        /// </summary>
+        /// <param name="request">The request to retrieve a template.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ITemplateResponse> ExecuteAsync(IGetTemplateRequest request) 
+            => await this.ExecuteAsync<TemplateResponse>(request).ConfigureAwait(false);
 
-        public async Task<ITemplateVersionResponse> ExecuteAsync(IGetTemplateVersionRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Executes a request to retrieve a template version.
+        /// </summary>
+        /// <param name="request">The request to retrieve a template version.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ITemplateVersionResponse> ExecuteAsync(IGetTemplateVersionRequest request) 
+            => await this.ExecuteAsync<TemplateVersionResponse>(request).ConfigureAwait(false);
 
-        public async Task<ICollectionResponse<ITemplateCollectionItem>> ExecuteAsync(IGetTemplateCollectionRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<CollectionResponse<ITemplateCollectionItem>, TemplateInfo>(request.Validate()).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Executes a request to retrieve a collection of templates.
+        /// </summary>
+        /// <param name="request">The request to retrieve a collection of templates.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ICollectionResponse<ITemplateCollectionItem>> ExecuteAsync(IGetTemplateCollectionRequest request) 
+            => await this.ExecuteAsync<CollectionResponse<ITemplateCollectionItem>, TemplateInfo>(request).ConfigureAwait(false);
 
-        public async Task<ICollectionResponse<ITemplateVersionCollectionItem>> ExecuteAsync(IGetTemplateVersionCollectionRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<CollectionResponse<ITemplateVersionCollectionItem>, TemplateVersionInfo>(request.Validate()).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Executes a request to retrieve a collection of template versions.
+        /// </summary>
+        /// <param name="request">The request to retrieve a collection of template versions.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ICollectionResponse<ITemplateVersionCollectionItem>> ExecuteAsync(IGetTemplateVersionCollectionRequest request) 
+            => await this.ExecuteAsync<CollectionResponse<ITemplateVersionCollectionItem>, TemplateVersionInfo>(request).ConfigureAwait(false);
 
+        /// <summary>
+        /// Executes a request to create a template.
+        /// </summary>
+        /// <param name="request">The request to create a template.</param>
+        /// <returns>A response object.</returns>
         public async Task<ITemplateResponse> ExecuteAsync(ICreateTemplateRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<TemplateResponse>(request.Validate()).ConfigureAwait(false);
-        }
+            => await this.ExecuteAsync<TemplateResponse>(request).ConfigureAwait(false);
 
-        public async Task<ITemplateVersionResponse> ExecuteAsync(ICreateTemplateVersionRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Executes a request to create a version of an existing template.
+        /// </summary>
+        /// <param name="request">The request to create a template version.</param>
+        /// <returns>A response object.</returns>
+        public async Task<ITemplateVersionResponse> ExecuteAsync(ICreateTemplateVersionRequest request) 
+            => await this.ExecuteAsync<TemplateVersionResponse>(request).ConfigureAwait(false);
 
+        /// <summary>
+        /// Executes a request to update a version of an existing template.
+        /// </summary>
+        /// <param name="request">The request to update a template version.</param>
+        /// <returns>A response object.</returns>
         public async Task<ITemplateVersionResponse> ExecuteAsync(IUpdateTemplateVersionRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<TemplateVersionResponse>(request.Validate()).ConfigureAwait(false);
-        }
+            => await this.ExecuteAsync<TemplateVersionResponse>(request).ConfigureAwait(false);
 
+        /// <summary>
+        /// Executes a request to delete a template.
+        /// </summary>
+        /// <param name="request">The request to delete a template.</param>
+        /// <returns>A response object.</returns>
         public async Task<VoidResponse> ExecuteAsync(IDeleteTemplateRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<VoidResponse>(request.Validate()).ConfigureAwait(false);
-        }
-        
+            => await this.ExecuteAsync<VoidResponse>(request).ConfigureAwait(false);
+
         /// <summary>
         /// Executes a request to send an email message.
         /// </summary>
         /// <param name="request">The request to send an email message.</param>
         /// <returns>A response object.</returns>
         public async Task<ISendResponse> ExecuteAsync(ISendRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<SendResponse>(request.Validate()).ConfigureAwait(false);
-        }
+            => await this.ExecuteAsync<SendResponse>(request).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a request to render a template.
@@ -181,18 +190,15 @@ namespace SendWithUs.Client
         /// <param name="request">The request to render a template.</param>
         /// <returns>A response object.</returns>
         public async Task<IRenderResponse> ExecuteAsync(IRenderRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<RenderResponse>(request.Validate()).ConfigureAwait(false);
-        }
-        
+            => await this.ExecuteAsync<RenderResponse>(request).ConfigureAwait(false);
+
         /// <summary>
         /// Executes a batch request comprising the given set of request objects.
         /// </summary>
         /// <param name="requests">A set of request objects to be batched.</param>
         /// <returns>A batch response object.</returns>
-        public virtual Task<IBatchResponse> ExecuteAsync(params IRequest[] requests) => 
-            this.ExecuteAsync((IEnumerable<IRequest>)requests);
+        public virtual Task<IBatchResponse> ExecuteAsync(params IRequest[] requests) 
+            => this.ExecuteAsync((IEnumerable<IRequest>)requests);
 
         /// <summary>
         /// Executes a batch request comprising the given set of request objects.
@@ -203,7 +209,7 @@ namespace SendWithUs.Client
         public virtual async Task<IBatchResponse> ExecuteAsync(IEnumerable<IRequest> requests)
         {
             EnsureArgument.NotNullOrEmpty(requests, nameof(requests), false);
-            var batchRequest = new BatchRequest(requests.Select(r => r.Validate()));
+            var batchRequest = new BatchRequest(requests);
             var batchResponse = await this.ExecuteAsync<BatchResponse>(batchRequest).ConfigureAwait(false);
             return batchResponse.Inflate(requests.Select(r => r.GetResponseType()), this.ResponseFactory);
         }
@@ -217,11 +223,7 @@ namespace SendWithUs.Client
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
         [Obsolete("This method is deprecated and will be removed in the future. Use ExecuteAsync instead.")]
-        public virtual async Task<ISendResponse> SendAsync(ISendRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<SendResponse>(request.Validate()).ConfigureAwait(false);
-        }
+        public virtual Task<ISendResponse> SendAsync(ISendRequest request) => this.ExecuteAsync(request);
 
         /// <summary>
         /// Renders a template per the given request object.
@@ -230,11 +232,7 @@ namespace SendWithUs.Client
         /// <returns>A response object.</returns>
         /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
         [Obsolete("This method is deprecated and will be removed in the future. Use ExecuteAsync instead.")]
-        public virtual async Task<IRenderResponse> RenderAsync(IRenderRequest request)
-        {
-            EnsureArgument.NotNull(request, nameof(request));
-            return await this.ExecuteAsync<RenderResponse>(request.Validate()).ConfigureAwait(false);
-        }
+        public virtual Task<IRenderResponse> RenderAsync(IRenderRequest request) => this.ExecuteAsync(request);
 
         /// <summary>
         /// Submits a batch request comprising the given set of request objects.
@@ -319,8 +317,9 @@ namespace SendWithUs.Client
         /// <returns>A response object of the specified type.</returns>
         protected async Task<TResponse> ExecuteAsync<TResponse>(IRequest request)
             where TResponse : class, IResponse
-        { 
-            var httpResponse = await this.GetHttpResponseAsync(request);
+        {
+            EnsureArgument.NotNull(request, nameof(request));
+            var httpResponse = await this.GetHttpResponseAsync(request.Validate());
             var payload = await this.ReadHttpResponsePayloadAsync(httpResponse);
             return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, payload);
         }
@@ -336,7 +335,8 @@ namespace SendWithUs.Client
             where TCollectionResponse : class, ICollectionResponse
             where TCollectionItem : class, ICollectionItem
         {
-            var httpResponse = await this.GetHttpResponseAsync(request);
+            EnsureArgument.NotNull(request, nameof(request));
+            var httpResponse = await this.GetHttpResponseAsync(request.Validate());
             var payload = await this.ReadHttpResponsePayloadAsync(httpResponse);
             return this.ResponseFactory.Create<TCollectionResponse, TCollectionItem>(httpResponse.StatusCode, payload);
         }

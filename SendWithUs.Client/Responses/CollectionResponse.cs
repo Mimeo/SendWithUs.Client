@@ -31,8 +31,8 @@ namespace SendWithUs.Client
     public class CollectionResponse<TItem> : BaseResponse<JArray>, ICollectionResponse<TItem>
         where TItem : class, ICollectionItem
     {
-        protected Type ItemType { get; set; }
-
+        protected Func<JToken, TItem> ItemFactory { get; set; }
+        
         #region ICollectionResponse<TItem> Members
 
         public IEnumerable<TItem> Items { get; set; }
@@ -50,7 +50,7 @@ namespace SendWithUs.Client
                     String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement {1}.", itemType.FullName, typeof(TItem).FullName));
             }
 
-            this.ItemType = itemType;
+            this.ItemFactory = jt => (TItem)responseFactory.CreateItem(itemType, jt);
             base.Initialize(responseFactory, statusCode, json);
             return this;
         }
@@ -63,12 +63,14 @@ namespace SendWithUs.Client
         {
             if (json != null)
             {
-                this.Items = json.Select(jt => this.ResponseFactory.CreateItem(this.ItemType, jt) as TItem).ToList();
+                this.Items = json.Select(jt => this.ItemFactory.Invoke(jt)).ToList();
             }
             else
             {
                 this.Items = Enumerable.Empty<TItem>();
             }
+
+            this.ItemFactory = null;
         }
 
         #endregion

@@ -20,11 +20,11 @@
 
 namespace SendWithUs.Client
 {
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Globalization;
     using System.Net;
     using System.Reflection;
-    using Newtonsoft.Json.Linq;
 
     public class ResponseFactory : IResponseFactory
     {
