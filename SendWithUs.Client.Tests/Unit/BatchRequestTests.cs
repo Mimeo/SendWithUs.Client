@@ -54,6 +54,7 @@ namespace SendWithUs.Client.Tests.Unit
             var result = request.Validate();
 
             // Assert
+            items.ForEach(m => m.Verify(r => r.Validate(), Times.Once));
             Assert.AreSame(request, result);
         }
 
@@ -78,6 +79,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => request.Validate());
 
             // Assert
+            items.ForEach(m => m.Verify(r => r.Validate(), Times.Once));
             Assert.IsInstanceOfType(exception, typeof(AggregateException));
             Assert.AreEqual(invalidCount, ((AggregateException)exception).InnerExceptions.Count);
         }

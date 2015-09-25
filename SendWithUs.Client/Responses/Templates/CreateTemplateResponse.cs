@@ -44,7 +44,7 @@ namespace SendWithUs.Client
 
         #region Base Class Overrides
 
-        protected internal override void Populate(JObject json)
+        protected internal override void Populate(IResponseFactory responseFactory, JObject json)
         {
             if (json == null)
             {

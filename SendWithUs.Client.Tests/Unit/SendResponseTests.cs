@@ -37,11 +37,12 @@ namespace SendWithUs.Client.Tests.Unit
         public void Populate_NullJson_DoesNotSetProperties()
         {
             // Arrange
+            var responseFactory = null as IResponseFactory;
             var response = new Mock<SendResponse>() { CallBase = true };
             var json = null as JObject;
 
             // Act
-            response.Object.Populate(json);
+            response.Object.Populate(responseFactory, json);
 
             // Assert
             response.VerifySet(r => r.Success = It.IsAny<bool>(), Times.Never);
@@ -55,6 +56,7 @@ namespace SendWithUs.Client.Tests.Unit
         public void Populate_ValidJson_SetsProperties()
         {
             // Arrange
+            var responseFactory = null as IResponseFactory;
             var response = new Mock<SendResponse>() { CallBase = true };
             var success = true;
             var status = TestHelper.GetUniqueId();
@@ -72,7 +74,7 @@ namespace SendWithUs.Client.Tests.Unit
             details.Setup(d => d.Value<string>(Names.TemplateVersionId)).Returns(templateVersionId);
 
             // Act
-            response.Object.Populate(json.Object);
+            response.Object.Populate(responseFactory, json.Object);
 
             // Assert
             response.VerifySet(r => r.Success = success, Times.Once);

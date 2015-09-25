@@ -20,10 +20,15 @@
 
 namespace SendWithUs.Client
 {
+    using Newtonsoft.Json.Linq;
+    using System;
     using System.Collections.Generic;
+    using System.Net;
 
     public interface IBatchResponse : IResponse
     {
         IEnumerable<IResponse> Items { get; }
+
+        IBatchResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json, IEnumerable<Type> itemTypes);
     }
 }

@@ -39,5 +39,7 @@ namespace SendWithUs.Client
         ICollectionResponse CreateResponse(Type responseType, Type collectionItemType, HttpStatusCode statusCode, JToken json);
 
         ICollectionItem CreateItem(Type itemType, JToken json);
+
+        IBatchResponse CreateBatchResponse(HttpStatusCode statusCode, JToken json, IEnumerable<Type> itemTypes);
     }
 }

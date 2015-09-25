@@ -31,7 +31,7 @@ namespace SendWithUs.Client
     public class CollectionResponse<TItem> : BaseResponse<JArray>, ICollectionResponse<TItem>
         where TItem : class, ICollectionItem
     {
-        protected Func<JToken, TItem> ItemFactory { get; set; }
+        protected Type ItemType { get; set; }
         
         #region ICollectionResponse<TItem> Members
 
@@ -49,28 +49,26 @@ namespace SendWithUs.Client
                 throw new InvalidOperationException(
                     String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement {1}.", itemType.FullName, typeof(TItem).FullName));
             }
-
-            this.ItemFactory = jt => (TItem)responseFactory.CreateItem(itemType, jt);
+            
+            this.ItemType = itemType;
             base.Initialize(responseFactory, statusCode, json);
             return this;
         }
 
         #endregion
 
-        #region Base class overrides
+        #region Base Class Overrides
 
-        protected internal override void Populate(JArray json)
+        protected internal override void Populate(IResponseFactory responseFactory, JArray json)
         {
             if (json != null)
             {
-                this.Items = json.Select(jt => this.ItemFactory.Invoke(jt)).ToList();
+                this.Items = json.Select(jt => (TItem)responseFactory.CreateItem(this.ItemType, jt)).ToList();
             }
             else
             {
                 this.Items = Enumerable.Empty<TItem>();
             }
-
-            this.ItemFactory = null;
         }
 
         #endregion

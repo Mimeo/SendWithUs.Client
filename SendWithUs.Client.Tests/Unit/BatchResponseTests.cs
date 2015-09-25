@@ -32,77 +32,55 @@ namespace SendWithUs.Client.Tests.Unit
     public class BatchResponseTests
     {
         [TestMethod]
-        public void Populate_NullJson_SetsRawItems()
+        public void Populate_NullJson_SetsItemsToEmpty()
         {
             // Arrange
-            var response = new Mock<BatchResponse> { CallBase = true };
-            var json = (JArray)null;
-
-            response.SetupSet(r => r.RawItems = It.IsAny<JArray>());
-
-            // Act
-            response.Object.Populate(json);
-
-            // Assert
-            response.VerifySet(r => r.RawItems = json, Times.Once);
-        }
-
-        [TestMethod]
-        public void Populate_Normally_SetsRawItems()
-        {
-            // Arrange
-            var response = new Mock<BatchResponse> { CallBase = true };
-            var json = new JArray();
-
-            response.SetupSet(r => r.RawItems = It.IsAny<JArray>());
-
-            // Act
-            response.Object.Populate(json);
-
-            // Assert
-            response.VerifySet(r => r.RawItems = json, Times.Once);
-        }
-
-        [TestMethod]
-        public void Inflate_NullRawItems_Throws()
-        {
-            // Arrange
-            var count = TestHelper.GetRandomInteger(1, 10);
-            var responseFactory = new Mock<IResponseFactory>().Object;
-            var responseSequence = TestHelper.Generate(count, i => typeof(IResponse));
+            var responseFactory = new Mock<IResponseFactory>();
             var response = new Mock<BatchResponse> { CallBase = true };
             var json = null as JArray;
+            var empty = Enumerable.Empty<IResponse>();
 
-            response.SetupSet(r => r.RawItems = json);
+            response.SetupSet(r => r.Items = It.IsAny<IEnumerable<IResponse>>());
 
             // Act
-            var exception = TestHelper.CaptureException(() => response.Object.Inflate(responseSequence, responseFactory));
+            response.Object.Populate(responseFactory.Object, json);
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(InvalidOperationException));
+            response.VerifySet(r => r.Items = empty, Times.Once);
         }
 
         [TestMethod]
-        public void Inflate_Normally_BuildsResponses()
+        public void Populate_Normally_SetsItemsToList()
         {
             // Arrange
-            var count = TestHelper.GetRandomInteger(1, 10);
-            var responseFactory = new Mock<IResponseFactory>().Object;
-            var responseSequence = TestHelper.Generate(count, i => typeof(IResponse));
+            var responseFactory = new Mock<IResponseFactory>();
             var response = new Mock<BatchResponse> { CallBase = true };
-            var json = new JArray(TestHelper.Generate(count, i => new JObject()).ToArray());
-
-            response.SetupSet(r => r.RawItems = json);
-            response.Setup(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>())).Returns(default(IResponse));
-            response.SetupSet(r => r.Items = It.IsAny<IList<IResponse>>());
+            var itemCount = TestHelper.GetRandomInteger(1, 10);
+            var json = new JArray(Enumerable.Repeat(new JObject(), itemCount).ToArray());
+            var itemTypes = Enumerable.Repeat(typeof(IResponse), itemCount).ToList<Type>();
+            var mockItems = itemTypes.Select(t => new Mock<IResponse>()).ToList();
+            var call = 0;
+            var actualItems = default(IEnumerable<IResponse>);
+            
+            response.SetupGet(r => r.ItemTypes).Returns(itemTypes);
+            response.Setup(r => r.BuildResponse(It.IsAny<JObject>(), typeof(IResponse), responseFactory.Object))
+                .Returns(() => mockItems[call++].Object);
+            response.SetupSet(r => r.Items = It.IsAny<IEnumerable<IResponse>>())
+                .Callback<IEnumerable<IResponse>>(v => actualItems = v);
 
             // Act
-            response.Object.Inflate(responseSequence, responseFactory);
+            response.Object.Populate(responseFactory.Object, json);
 
             // Assert
-            response.Verify(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>()), Times.Exactly(count));
+            //response.VerifySet(r => r.Items = It.IsAny<List<IResponse>>(), Times.Once);
+            response.Verify(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>()), Times.Exactly(itemCount));
+            Assert.AreEqual(itemCount, actualItems.Count());
+            for (var index = 0; index < itemCount; index += 1)
+            {
+                Assert.AreSame(mockItems[index].Object, actualItems.ElementAt(index));
+            }
         }
-
+        
         [TestMethod]
         public void BuildResponse_NullWrapper_Throws()
         {

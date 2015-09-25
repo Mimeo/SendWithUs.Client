@@ -210,8 +210,9 @@ namespace SendWithUs.Client
         {
             EnsureArgument.NotNullOrEmpty(requests, nameof(requests), false);
             var batchRequest = new BatchRequest(requests);
-            var batchResponse = await this.ExecuteAsync<BatchResponse>(batchRequest).ConfigureAwait(false);
-            return batchResponse.Inflate(requests.Select(r => r.GetResponseType()), this.ResponseFactory);
+            var httpResponse = await this.GetHttpResponseAsync(batchRequest.Validate());
+            var payload = await this.ReadHttpResponsePayloadAsync(httpResponse);
+            return this.ResponseFactory.CreateBatchResponse(httpResponse.StatusCode, payload, requests.Select(r => r.GetResponseType()));
         }
 
         #region Deprecated API

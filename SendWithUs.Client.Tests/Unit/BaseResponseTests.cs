@@ -49,17 +49,17 @@ namespace SendWithUs.Client.Tests.Unit
         public void Initialize_SuccessStatusCode_CallsPopulate()
         {
             // Arrange
-            var responseFactory = null as IResponseFactory;
+            var responseFactory = new Mock<IResponseFactory>();
             var statusCode = HttpStatusCode.OK;
             var jtoken = new JObject();
             var response = new Mock<BaseResponse<JToken>>() { CallBase = true };
 
             // Act
-            response.Object.Initialize(responseFactory, statusCode: statusCode, json: jtoken);
+            response.Object.Initialize(responseFactory.Object, statusCode: statusCode, json: jtoken);
 
             // Assert
             response.VerifyGet(r => r.IsSuccessStatusCode, Times.Once);
-            response.Verify(r => r.Populate(jtoken), Times.Once);
+            response.Verify(r => r.Populate(responseFactory.Object, jtoken), Times.Once);
             response.Verify(r => r.SetErrorMessage(It.IsAny<JValue>()), Times.Never);
         }
 
@@ -68,17 +68,17 @@ namespace SendWithUs.Client.Tests.Unit
         public void Initialize_NonSuccessStatusCode_CallsSetErrorMessage()
         {
             // Arrange
-            var responseFactory = null as IResponseFactory;
+            var responseFactory = new Mock<IResponseFactory>();
             var statusCode = HttpStatusCode.BadRequest;
             var jtoken = new JObject();
             var response = new Mock<BaseResponse<JToken>>() { CallBase = true };
 
             // Act
-            response.Object.Initialize(responseFactory, statusCode: statusCode, json: jtoken);
+            response.Object.Initialize(responseFactory.Object, statusCode: statusCode, json: jtoken);
 
             // Assert
             response.VerifyGet(r => r.IsSuccessStatusCode, Times.Once);
-            response.Verify(r => r.Populate(jtoken), Times.Never);
+            response.Verify(r => r.Populate(responseFactory.Object, jtoken), Times.Never);
             response.Verify(r => r.SetErrorMessage(It.IsAny<JValue>()), Times.Once);
         }
 

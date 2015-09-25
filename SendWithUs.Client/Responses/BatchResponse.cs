@@ -33,33 +33,38 @@ namespace SendWithUs.Client
             public const string StatusCode = "status_code";
             public const string Body = "body";
         }
+        
+        protected internal virtual IEnumerable<Type> ItemTypes { get; set; }
+
+        #region IBatchResponse Members
 
         public virtual IEnumerable<IResponse> Items { get; set; }
 
-        protected internal virtual JArray RawItems { get; set; }
-
-        #region Base class overrides
-
-        protected internal override void Populate(JArray json)
+        public IBatchResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json, IEnumerable<Type> itemTypes)
         {
-            this.RawItems = json;
-        }
-
-        #endregion
-
-        public BatchResponse Inflate(IEnumerable<Type> responseSequence, IResponseFactory responseFactory)
-        {
-            if (this.RawItems == null)
-            {
-                throw new InvalidOperationException("Cannot inflate; the value of RawItems is null.");
-            }
-
-            // Force enumeration of the Items value so we can discard the RawItems.
-            this.Items = this.RawItems.Zip(responseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt, responseFactory)).ToList();
-            this.RawItems = null;
+            this.ItemTypes = itemTypes;
+            this.Initialize(responseFactory, statusCode, json);
             return this;
         }
 
+        #endregion
+        
+        #region Base Class Overrides
+
+        protected internal override void Populate(IResponseFactory responseFactory, JArray json)
+        {
+            if (json != null)
+            {
+                this.Items = json.Zip(this.ItemTypes, (jt, it) => this.BuildResponse(jt as JObject, it, responseFactory)).ToList();
+            }
+            else
+            {
+                this.Items = Enumerable.Empty<IResponse>();
+            }
+        }
+
+        #endregion
+        
         protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType, IResponseFactory responseFactory)
         {
             EnsureArgument.NotNull(wrapper, nameof(wrapper));

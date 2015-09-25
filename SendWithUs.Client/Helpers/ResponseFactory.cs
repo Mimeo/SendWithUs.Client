@@ -22,6 +22,7 @@ namespace SendWithUs.Client
 {
     using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Reflection;
@@ -70,7 +71,13 @@ namespace SendWithUs.Client
             return ((ICollectionResponse)Activator.CreateInstance(responseType)).Initialize(this, statusCode, json, collectionItemType);
         }
 
-        public ICollectionItem CreateItem(Type itemType, JToken json) =>
-            ((ICollectionItem)Activator.CreateInstance(itemType)).Initialize(this, json);
+        public ICollectionItem CreateItem(Type itemType, JToken json) 
+            => ((ICollectionItem)Activator.CreateInstance(itemType)).Initialize(this, json);
+
+        public IBatchResponse CreateBatchResponse(HttpStatusCode statusCode, JToken json, IEnumerable<Type> itemTypes)
+        {
+            EnsureArgument.NotNullOrEmpty<Type>(itemTypes, nameof(itemTypes), false);
+            return ((IBatchResponse)Activator.CreateInstance(typeof(BatchResponse))).Initialize(this, statusCode, json, itemTypes);
+        }
     }
 }

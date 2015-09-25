@@ -24,7 +24,7 @@ namespace SendWithUs.Client
 
     public class VoidResponse : BaseResponse<JToken>
     {
-        protected internal override void Populate(JToken json)
+        protected internal override void Populate(IResponseFactory responseFactory, JToken json)
         {
             // No-op.
         }
