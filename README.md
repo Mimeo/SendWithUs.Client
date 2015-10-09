@@ -25,6 +25,8 @@ The goal of this library is to provide a thin, strongly-typed abstraction over t
 Central to this approach is the `SendWithUsClient` object, which exposes a set of methods that uniformly take a request
 object and return a response object.
 
+A malformed request will result in a `ValidationException` being thrown.
+
 Errors from the REST API are not turned in to exceptions by the library. Rather, each response object has several properties
 whose values indicate the outcome of the request: `StatusCode`, `IsSuccessStatusCode`, `ErrorMessage`.
 
