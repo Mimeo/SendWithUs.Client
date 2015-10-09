@@ -44,6 +44,8 @@ namespace SendWithUs.Client
 
         #region Base Class Overrides
 
+        public override Type InterfaceType => typeof(ICreateTemplateResponse);
+
         protected internal override void Populate(IResponseFactory responseFactory, JObject json)
         {
             if (json == null)

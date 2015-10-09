@@ -20,17 +20,39 @@
 
 namespace SendWithUs.Client
 {
-    using System.Net;
     using Newtonsoft.Json.Linq;
+    using System;
+    using System.Net;
 
     public interface IResponse
     {
+        /// <summary>
+        /// Gets the HTTP status code.
+        /// </summary>
         HttpStatusCode StatusCode { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether the status code represents success.
+        /// </summary>
         bool IsSuccessStatusCode { get; }
 
+        /// <summary>
+        /// Gets the error message when the status code represents failure; null otherwise.
+        /// </summary>
         string ErrorMessage { get; }
 
+        /// <summary>
+        /// Gets the primary interface implemented by the response.
+        /// </summary>
+        Type InterfaceType { get; }
+
+        /// <summary>
+        /// Initializes a freshly created response.
+        /// </summary>
+        /// <param name="responseFactory">A response factory that may be used to create contained objects.</param>
+        /// <param name="statusCode">An HTTP status code returned by the REST API.</param>
+        /// <param name="json">A JSON payload returned by the REST API.</param>
+        /// <returns></returns>
         IResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json);
     }
 }

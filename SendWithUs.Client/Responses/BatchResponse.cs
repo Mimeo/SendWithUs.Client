@@ -48,8 +48,10 @@ namespace SendWithUs.Client
         }
 
         #endregion
-        
+
         #region Base Class Overrides
+
+        public override Type InterfaceType => typeof(IBatchResponse);
 
         protected internal override void Populate(IResponseFactory responseFactory, JArray json)
         {

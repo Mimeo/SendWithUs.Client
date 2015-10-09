@@ -21,12 +21,19 @@
 namespace SendWithUs.Client
 {
     using Newtonsoft.Json.Linq;
+    using System;
 
     public class VoidResponse : BaseResponse<JToken>
     {
+        #region Base Class Overrides
+
+        public override Type InterfaceType => typeof(IResponse);
+
         protected internal override void Populate(IResponseFactory responseFactory, JToken json)
         {
             // No-op.
         }
+
+        #endregion
     }
 }

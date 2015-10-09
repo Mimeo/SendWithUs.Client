@@ -59,6 +59,8 @@ namespace SendWithUs.Client
 
         #region Base Class Overrides
 
+        public override Type InterfaceType => typeof(ICollectionResponse<TItem>);
+
         protected internal override void Populate(IResponseFactory responseFactory, JArray json)
         {
             if (json != null)

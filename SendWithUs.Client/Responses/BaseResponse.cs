@@ -43,6 +43,8 @@ namespace SendWithUs.Client
 
         public virtual string ErrorMessage { get; set; }
 
+        public abstract Type InterfaceType { get; }
+
         public virtual IResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json)
         {
             this.StatusCode = statusCode;

@@ -20,6 +20,7 @@
 
 namespace SendWithUs.Client
 {
+    using System;
     using Newtonsoft.Json.Linq;
 
     public class RenderResponse : BaseObjectResponse, IRenderResponse
@@ -61,6 +62,8 @@ namespace SendWithUs.Client
         #endregion
 
         #region Base class overrides
+
+        public override Type InterfaceType => typeof(IRenderResponse);
 
         protected internal override void Populate(IResponseFactory responseFactory, JObject json)
         {

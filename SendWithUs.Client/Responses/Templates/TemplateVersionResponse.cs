@@ -45,7 +45,9 @@ namespace SendWithUs.Client
 
         #endregion
 
-        #region Base class overrides
+        #region Base Class Overrides
+
+        public override Type InterfaceType => typeof(ITemplateVersionResponse);
 
         protected internal override void Populate(IResponseFactory responseFactory, JObject json)
         {
