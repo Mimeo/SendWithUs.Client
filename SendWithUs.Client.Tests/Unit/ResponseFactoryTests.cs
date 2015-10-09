@@ -51,6 +51,8 @@ namespace SendWithUs.Client.Tests.Unit
                 get { throw new NotImplementedException(); }
             }
 
+            public Type InterfaceType => typeof(IResponse);
+
             public IResponse Initialize(IResponseFactory responseFactory, HttpStatusCode statusCode, JToken json)
             {
                 this.Initialized = true;
