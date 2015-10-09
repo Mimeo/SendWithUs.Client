@@ -36,7 +36,7 @@ namespace SendWithUs.Client
 
         IResponse CreateResponse(Type responseType, HttpStatusCode statusCode, JToken json);
 
-        ICollectionResponse CreateResponse(Type responseType, Type collectionItemType, HttpStatusCode statusCode, JToken json);
+        ICollectionResponse CreateResponse(Type collectionType, Type collectionItemType, HttpStatusCode statusCode, JToken json);
 
         ICollectionItem CreateItem(Type itemType, JToken json);
 

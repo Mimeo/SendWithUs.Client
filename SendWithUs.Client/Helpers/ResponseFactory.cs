@@ -23,12 +23,17 @@ namespace SendWithUs.Client
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Net;
     using System.Reflection;
 
     public class ResponseFactory : IResponseFactory
     {
+        private static readonly TypeInfo IResponseTypeInfo = typeof(IResponse).GetTypeInfo();
+        private static readonly TypeInfo ICollectionResponseTypeInfo = typeof(ICollectionResponse).GetTypeInfo();
+        private static readonly TypeInfo ICollectionItemTypeInfo = typeof(ICollectionItem).GetTypeInfo();
+        
+        #region IResponseFactory Methods
+
         public TResponse Create<TResponse>(HttpStatusCode statusCode, JToken json)
             where TResponse : class, IResponse
             => this.CreateResponse(typeof(TResponse), statusCode, json) as TResponse;
@@ -41,43 +46,47 @@ namespace SendWithUs.Client
         public virtual IResponse CreateResponse(Type responseType, HttpStatusCode statusCode, JToken json)
         {
             EnsureArgument.NotNull(responseType, nameof(responseType));
-
-            if (!typeof(IResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement IResponse.", responseType.FullName));
-            }
-
-            return ((IResponse)Activator.CreateInstance(responseType)).Initialize(this, statusCode, json);
+            this.ValidateInterfaceImplementation(responseType, IResponseTypeInfo);
+            return this.BuildInstance<IResponse>(responseType).Initialize(this, statusCode, json);
         }
 
-        public virtual ICollectionResponse CreateResponse(Type responseType, Type collectionItemType, HttpStatusCode statusCode, JToken json)
+        public virtual ICollectionResponse CreateResponse(Type collectionType, Type collectionItemType, HttpStatusCode statusCode, JToken json)
         {
-            EnsureArgument.NotNull(responseType, nameof(responseType));
+            EnsureArgument.NotNull(collectionType, nameof(collectionType));
             EnsureArgument.NotNull(collectionItemType, nameof(collectionItemType));
-
-            if (!typeof(ICollectionResponse).GetTypeInfo().IsAssignableFrom(responseType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement ICollectionResponse.", responseType.FullName));
-            }
-
-            if (!typeof(ICollectionItem).GetTypeInfo().IsAssignableFrom(collectionItemType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "Type '{0}' does not implement ICollectionItem.", collectionItemType.FullName));
-            }
-
-            return ((ICollectionResponse)Activator.CreateInstance(responseType)).Initialize(this, statusCode, json, collectionItemType);
+            this.ValidateInterfaceImplementation(collectionType, ICollectionResponseTypeInfo);
+            this.ValidateInterfaceImplementation(collectionItemType, ICollectionItemTypeInfo);
+            return this.BuildInstance<ICollectionResponse>(collectionType).Initialize(this, statusCode, json, collectionItemType);
         }
 
-        public ICollectionItem CreateItem(Type itemType, JToken json) 
-            => ((ICollectionItem)Activator.CreateInstance(itemType)).Initialize(this, json);
+        public ICollectionItem CreateItem(Type itemType, JToken json)
+        {
+            return this.BuildInstance<ICollectionItem>(itemType).Initialize(this, json);
+        }
 
         public IBatchResponse CreateBatchResponse(HttpStatusCode statusCode, JToken json, IEnumerable<Type> itemTypes)
         {
             EnsureArgument.NotNullOrEmpty<Type>(itemTypes, nameof(itemTypes), false);
-            return ((IBatchResponse)Activator.CreateInstance(typeof(BatchResponse))).Initialize(this, statusCode, json, itemTypes);
+            return this.BuildInstance<IBatchResponse>(typeof(BatchResponse)).Initialize(this, statusCode, json, itemTypes);
         }
+
+        #endregion
+
+        #region Helpers
+
+        protected void ValidateInterfaceImplementation(Type responseType, TypeInfo requiredInterface)
+        {
+            if (!requiredInterface.IsAssignableFrom(responseType.GetTypeInfo()))
+            {
+                throw new InvalidOperationException($"Type '{responseType.FullName}' does not implement '{requiredInterface.FullName}'.");
+            }
+        }
+        
+        protected TReturn BuildInstance<TReturn>(Type type) where TReturn : class
+        {
+            return Activator.CreateInstance(type) as TReturn;
+        }
+
+        #endregion
     }
 }
