@@ -33,7 +33,7 @@ namespace SendWithUs.Client
             public const string StatusCode = "status_code";
             public const string Body = "body";
         }
-        
+
         protected internal virtual IEnumerable<Type> ItemTypes { get; set; }
 
         #region IBatchResponse Members
@@ -63,10 +63,10 @@ namespace SendWithUs.Client
             {
                 this.Items = Enumerable.Empty<IResponse>();
             }
-        }
+            }
 
         #endregion
-        
+
         protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType, IResponseFactory responseFactory)
         {
             EnsureArgument.NotNull(wrapper, nameof(wrapper));

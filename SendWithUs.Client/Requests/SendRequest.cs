@@ -80,17 +80,17 @@ namespace SendWithUs.Client
             {
                 yield return nameof(this.TemplateId);
             }
-            
+
             if (String.IsNullOrEmpty(this.RecipientAddress))
             {
                 yield return nameof(this.RecipientAddress);
             }
 
             foreach (var property in base.GetMissingRequiredProperties())
-            {
+                {
                 yield return property;
-            }
         }
+    }
 
         #endregion
     }

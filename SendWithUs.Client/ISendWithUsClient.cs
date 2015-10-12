@@ -139,7 +139,7 @@ namespace SendWithUs.Client
         /// <param name="request">A request object describing the template to be rendered.</param>
         /// <returns>A response object.</returns>
         Task<IRenderResponse> RenderAsync(IRenderRequest request);
-        
+
         /// <summary>
         /// Submits a batch request comprising the given collection of request objects.
         /// </summary>

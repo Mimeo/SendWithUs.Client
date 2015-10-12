@@ -62,10 +62,10 @@ namespace SendWithUs.Client
             if (String.IsNullOrEmpty(this.TemplateId))
             {
                 yield return nameof(this.TemplateId);
-            }
+        }
 
             foreach (var property in base.GetMissingRequiredProperties())
-            {
+                {
                 yield return property;
             }
         }
