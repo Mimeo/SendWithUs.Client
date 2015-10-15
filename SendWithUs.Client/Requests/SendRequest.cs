@@ -74,7 +74,7 @@ namespace SendWithUs.Client
 
         public override Type GetResponseType() => typeof(SendResponse);
 
-        protected override IEnumerable<string> GetMissingRequiredProperties()
+        protected internal override IEnumerable<string> GetMissingRequiredProperties()
         {
             if (String.IsNullOrEmpty(this.TemplateId))
             {

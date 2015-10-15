@@ -31,147 +31,6 @@ namespace SendWithUs.Client.Tests.Unit
     [TestClass]
     public class BatchRequestConverterTests
     {
-        internal class BatchRequestSubtype : BatchRequest
-        {
-            internal BatchRequestSubtype() : base(null)
-            { }
-        }
-
-        public class NonBatchRequest
-        { }
-
-        [TestMethod]
-        public void CanRead_Getter_ReturnsFalse()
-        {
-            // Arrange
-            var converter = new BatchRequestConverter();
-
-            // Act 
-            var canRead = converter.CanRead;
-
-            // Assert
-            Assert.IsFalse(canRead);
-        }
-
-        [TestMethod]
-        public void CanWrite_Getter_ReturnsTrue()
-        {
-            // Arrange
-            var converter = new BatchRequestConverter();
-
-            // Act 
-            var canRead = converter.CanWrite;
-
-            // Assert
-            Assert.IsTrue(canRead);
-        }
-
-        [TestMethod]
-        public void CanConvert_BatchRequestType_ReturnsTrue()
-        {
-            // Arrange
-            var type = typeof(BatchRequest);
-            var converter = new BatchRequestConverter();
-
-            // Act
-            var canConvert = converter.CanConvert(type);
-
-            // Assert
-            Assert.IsTrue(canConvert);
-        }
-
-        [TestMethod]
-        public void CanConvert_BatchRequestWrapperSubtype_ReturnsTrue()
-        {
-            // Arrange
-            var type = typeof(BatchRequestSubtype);
-            var converter = new BatchRequestConverter();
-
-            // Act
-            var canConvert = converter.CanConvert(type);
-
-            // Assert
-            Assert.IsTrue(canConvert);
-        }
-
-        [TestMethod]
-        public void CanConvert_NonBatchRequestType_ReturnsFalse()
-        {
-            // Arrange
-            var type = typeof(NonBatchRequest);
-            var converter = new BatchRequestConverter();
-
-            // Act
-            var canConvert = converter.CanConvert(type);
-
-            // Assert
-            Assert.IsFalse(canConvert);
-        }
-
-        [TestMethod]
-        public void ReadJson_Always_Throws()
-        {
-            // Arrange
-            var reader = new Mock<JsonReader>().Object;
-            var serializer = new Mock<JsonSerializer>().Object;
-            var request = new BatchRequest(null);
-            var converter = new BatchRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.ReadJson(reader, request.GetType(), request, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
-        }
-
-        //[TestMethod]
-        //public void WriteJson_NullWriter_Throws()
-        //{
-        //    // Arrange
-        //    var serializer = new Mock<JsonSerializer>().Object;
-        //    var inner = new Mock<IRequest>();
-        //    var wrapper = new BatchRequestWrapper(inner.Object);
-        //    var converter = new BatchRequestWrapperConverter();
-
-        //    // Act
-        //    var exception = TestHelper.CaptureException(() => converter.WriteJson(null, wrapper, serializer));
-
-        //    // Assert
-        //    Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
-        //}
-
-        //[TestMethod]
-        //public void WriteJson_NullSerializer_Throws()
-        //{
-        //    // Arrange
-        //    var writer = new Mock<JsonWriter>().Object;
-        //    var inner = new Mock<IRequest>();
-        //    var wrapper = new BatchRequestWrapper(inner.Object);
-        //    var converter = new BatchRequestWrapperConverter();
-
-        //    // Act
-        //    var exception = TestHelper.CaptureException(() => converter.WriteJson(writer, wrapper, null));
-
-        //    // Assert
-        //    Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
-        //}
-
-        [TestMethod]
-        public void WriteJson_NonBatchRequestValue_Throws()
-        {
-            // Arrange
-            var writer = new Mock<JsonWriter>().Object;
-            var serializer = new Mock<SerializerProxy>(null).Object;
-            var value = new NonBatchRequest();
-            var converter = new BatchRequestConverter();
-
-            // Act
-            var exception = TestHelper.CaptureException(() => converter.WriteJson(writer, value, serializer));
-
-            // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
-        }
-
         [TestMethod]
         public void WriteJson_Normally_WritesJsonArray()
         {
@@ -191,15 +50,14 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteStartArray(), Times.Once);
             writer.Verify(w => w.WriteEndArray(), Times.Once);
         }
-
-
+        
         [TestMethod]
         public void WriteJson_Normally_SerializesRequestItems()
         {
             // Arrange
             var writer = new Mock<JsonWriter>();
             var serializer = new Mock<SerializerProxy>(null);
-            var count = TestHelper.GetRandomInteger(1, 10);
+            var count = 7;
             var items = TestHelper.Generate(count, i => new Mock<IRequest>().Object);
             var request = new Mock<BatchRequest>(items);
             var converter = new Mock<BatchRequestConverter> { CallBase = true };
@@ -214,6 +72,24 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
+        public void WriteWrapper_Normally_WritesJsonObject()
+        {
+            // Arrange
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var item = new Mock<IRequest>();
+            var request = new Mock<BatchRequest>(new List<IRequest> { item.Object });
+            var converter = new BatchRequestConverter();
+
+            // Act
+            converter.WriteWrapper(writer.Object, serializer.Object, request.Object);
+
+            // Assert
+            writer.Verify(w => w.WriteStartObject(), Times.Once);
+            writer.Verify(w => w.WriteEndObject(), Times.Once);
+        }
+
+        [TestMethod]
         public void WriteWrapper_Normally_SerializesUriPath()
         {
             // Arrange
@@ -221,18 +97,17 @@ namespace SendWithUs.Client.Tests.Unit
             var serializer = new Mock<SerializerProxy>(null);
             var item = new Mock<IRequest>();
             var request = new Mock<BatchRequest>(new List<IRequest> { item.Object });
-            var path = TestHelper.GetUniqueId();
-            var converter = new BatchRequestConverter();
-
-            item.SetupAllProperties();
+            var path = "/werewolf/mummy/frankenstein";
+            var converter = new Mock<BatchRequestConverter>() { CallBase = true };
+            
             request.Setup(r => r.GetUriPath()).Returns(path);
+            converter.Setup(c => c.WriteProperty(writer.Object, serializer.Object, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()));
 
             // Act
-            converter.WriteWrapper(writer.Object, serializer.Object, request.Object);
+            converter.Object.WriteWrapper(writer.Object, serializer.Object, request.Object);
 
             // Assert
-            writer.Verify(w => w.WritePropertyName(Names.Path), Times.Once);
-            writer.Verify(s => s.WriteValue(path), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Path, path, false), Times.Once);
         }
 
         [TestMethod]
@@ -243,18 +118,17 @@ namespace SendWithUs.Client.Tests.Unit
             var serializer = new Mock<SerializerProxy>(null);
             var item = new Mock<IRequest>();
             var request = new Mock<BatchRequest>(new List<IRequest> { item.Object });
-            var method = TestHelper.GetUniqueId();
-            var converter = new BatchRequestConverter();
-
-            item.SetupAllProperties();
+            var method = "haltandcatchfire";
+            var converter = new Mock<BatchRequestConverter>() { CallBase = true };
+            
             request.Setup(r => r.GetHttpMethod()).Returns(method);
+            converter.Setup(c => c.WriteProperty(writer.Object, serializer.Object, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()));
 
             // Act
-            converter.WriteWrapper(writer.Object, serializer.Object, request.Object);
+            converter.Object.WriteWrapper(writer.Object, serializer.Object, request.Object);
 
             // Assert
-            writer.Verify(w => w.WritePropertyName(Names.Method), Times.Once);
-            writer.Verify(w => w.WriteValue(method), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Method, method, false), Times.Once);
         }
 
         [TestMethod]
@@ -265,16 +139,15 @@ namespace SendWithUs.Client.Tests.Unit
             var serializer = new Mock<SerializerProxy>(null);
             var item = new Mock<IRequest>();
             var request = new Mock<BatchRequest>(new List<IRequest> { item.Object });
-            var converter = new BatchRequestConverter();
-
-            item.SetupAllProperties();
+            var converter = new Mock<BatchRequestConverter>() { CallBase = true };
+            
+            converter.Setup(c => c.WriteProperty(writer.Object, serializer.Object, It.IsAny<string>(), It.IsAny<object>(), It.IsAny<bool>()));
 
             // Act
-            converter.WriteWrapper(writer.Object, serializer.Object, request.Object);
+            converter.Object.WriteWrapper(writer.Object, serializer.Object, request.Object);
 
             // Assert
-            writer.Verify(w => w.WritePropertyName(Names.Body), Times.Once);
-            serializer.Verify(s => s.Serialize(writer.Object, request.Object), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Body, request.Object, false), Times.Once);
         }
     }
 }

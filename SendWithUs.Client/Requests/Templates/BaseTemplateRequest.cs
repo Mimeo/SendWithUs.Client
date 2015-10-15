@@ -56,7 +56,7 @@ namespace SendWithUs.Client
             return $"{BaseUriPath}/{this.TemplateId}/locales/{this.Locale}";
         }
 
-        protected override IEnumerable<string> GetMissingRequiredProperties()
+        protected internal override IEnumerable<string> GetMissingRequiredProperties()
         {
             if (this.IsTemplateIdRequired() && String.IsNullOrEmpty(this.TemplateId))
             {

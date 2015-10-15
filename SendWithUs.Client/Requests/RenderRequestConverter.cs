@@ -20,11 +20,10 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-    using System.Reflection;
     using Newtonsoft.Json;
+    using System;
 
-    public class RenderRequestConverter : BaseConverter
+    public class RenderRequestConverter : BaseConverter<IRenderRequest>
     {
         internal static class PropertyNames
         {
@@ -33,22 +32,9 @@ namespace SendWithUs.Client
             public const string Data = "template_data";
             public const string Locale = "locale";
         }
-
-        public override bool CanRead => false;
-
-        public override bool CanWrite => true;
-
-        public override bool CanConvert(Type objectType) => typeof(IRenderRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        
+        protected internal override void WriteJson(JsonWriter writer, IRenderRequest request, SerializerProxy serializer)
         {
-            throw new NotSupportedException();
-        }
-
-        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
-        {
-            var request = EnsureArgument.Of<IRenderRequest>(value, nameof(value));
-
             writer.WriteStartObject();
 
             this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId, false);

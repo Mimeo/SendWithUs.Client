@@ -32,7 +32,7 @@ namespace SendWithUs.Client
 
         public override Type GetResponseType() => typeof(CreateTemplateResponse);
 
-        protected override IEnumerable<string> GetMissingRequiredProperties()
+        protected internal override IEnumerable<string> GetMissingRequiredProperties()
         {
             if (!String.IsNullOrEmpty(this.TemplateId) && String.IsNullOrEmpty(this.Locale))
             {

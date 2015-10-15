@@ -20,21 +20,40 @@
 
 namespace SendWithUs.Client
 {
-    using System;
     using Newtonsoft.Json;
+    using System;
+    using System.Reflection;
 
-    public abstract class BaseConverter : JsonConverter
+    public abstract class BaseConverter<TSubject> : JsonConverter 
+        where TSubject : class
     {
-        protected internal abstract void WriteJson(JsonWriter writer, object value, SerializerProxy serializer);
+        #region Base Class Overrrides
+
+        public override bool CanRead => false;
+
+        public override bool CanWrite => true;
+
+        public override bool CanConvert(Type objectType) => typeof(TSubject).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+
+        protected internal abstract void WriteJson(JsonWriter writer, TSubject subject, SerializerProxy serializer);
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             EnsureArgument.NotNull(writer, nameof(writer));
             EnsureArgument.NotNull(serializer, nameof(serializer));
 
+            TSubject subject = EnsureArgument.Of<TSubject>(value, nameof(value));
+
             // KLUGE: JsonSerializer is not mockable, so we resort to the bad practice of inserting
             // code (i.e., the proxy) merely to support unit testing.
-            this.WriteJson(writer, value, new SerializerProxy(serializer));
+            this.WriteJson(writer, subject, new SerializerProxy(serializer));
         }
 
         protected internal virtual void WriteProperty(JsonWriter writer, SerializerProxy serializer, string name, object value, bool isOptional)

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,42 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SendWithUs.Client
+namespace SendWithUs.Client.Tests.Unit
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
 
-    public class GetTemplateVersionRequest : BaseTemplateRequest, IGetTemplateVersionRequest
+    [TestClass]
+    public class RenderRequestTests
     {
-        #region IGetTemplateVersionRequest Members
-
-        public string TemplateVersionId { get; set; }
-
-        #endregion
-
-        #region Base Class Overrides
-
-        public override string GetHttpMethod() => "GET";
-
-        public override string GetUriPath() => base.GetUriPath() + "/versions/" + this.TemplateVersionId;
-
-        public override Type GetResponseType() => typeof(TemplateVersionResponse);
-
-        protected internal override IEnumerable<string> GetMissingRequiredProperties()
+        [TestMethod]
+        public void GetMissingRequiredProperties_NullTemplateId_YieldsTemplateId()
         {
-            if (String.IsNullOrEmpty(this.TemplateVersionId))
-            {
-                yield return nameof(this.TemplateVersionId);
-            }
+            // Arrange
+            var templateId = null as string;
+            var request = new RenderRequest { TemplateId = templateId };
 
-            foreach (var property in base.GetMissingRequiredProperties())
-            {
-                yield return property;
-            }
+            // Act
+            var result = request.GetMissingRequiredProperties().ToList();
+
+            // Assert
+            Assert.IsTrue(result.Contains(nameof(request.TemplateId)));
         }
 
-        protected override bool IsTemplateIdRequired() => true;
+        [TestMethod]
+        public void GetMissingRequiredProperties_EmptyTemplateId_YieldsTemplateId()
+        {
+            // Arrange
+            var templateId = String.Empty;
+            var request = new RenderRequest { TemplateId = templateId };
 
-        #endregion
+            // Act
+            var result = request.GetMissingRequiredProperties().ToList();
+
+            // Assert
+            Assert.IsTrue(result.Contains(nameof(request.TemplateId)));
+        }
     }
 }

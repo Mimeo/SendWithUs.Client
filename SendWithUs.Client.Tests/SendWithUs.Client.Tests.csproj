@@ -88,10 +88,14 @@
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
+    <Compile Include="Unit\BaseConverterTests.cs" />
+    <Compile Include="Unit\BaseRequestTests.cs" />
     <Compile Include="Unit\BaseResponseTests.cs" />
     <Compile Include="Unit\BatchRequestConverterTests.cs" />
     <Compile Include="Unit\BatchRequestTests.cs" />
     <Compile Include="Unit\BatchResponseTests.cs" />
+    <Compile Include="Unit\RenderRequestConverterTests.cs" />
+    <Compile Include="Unit\RenderRequestTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
     <Compile Include="Unit\SendRequestConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

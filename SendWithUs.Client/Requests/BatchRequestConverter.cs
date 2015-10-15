@@ -20,14 +20,13 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-    using System.Reflection;
     using Newtonsoft.Json;
+    using System;
 
     /// <summary>
     /// Converts a BatchRequest object to JSON.
     /// </summary>
-    public class BatchRequestConverter : BaseConverter
+    public class BatchRequestConverter : BaseConverter<IBatchRequest>
     {
         internal static class PropertyNames
         {
@@ -35,22 +34,9 @@ namespace SendWithUs.Client
             public const string Path = "path";
             public const string Body = "body";
         }
-
-        public override bool CanRead => false;
-
-        public override bool CanWrite => true;
-
-        public override bool CanConvert(Type objectType) => typeof(BatchRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        
+        protected internal override void WriteJson(JsonWriter writer, IBatchRequest batchRequest, SerializerProxy serializer)
         {
-            throw new NotSupportedException();
-        }
-
-        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
-        {
-            var batchRequest = EnsureArgument.Of<BatchRequest>(value, nameof(value));
-
             writer.WriteStartArray();
 
             foreach (var request in batchRequest)
@@ -64,16 +50,9 @@ namespace SendWithUs.Client
         protected internal virtual void WriteWrapper(JsonWriter writer, SerializerProxy serializer, IRequest request)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName(PropertyNames.Path);
-            writer.WriteValue(request.GetUriPath());
-            writer.WritePropertyName(PropertyNames.Method);
-            writer.WriteValue(request.GetHttpMethod());
-            writer.WritePropertyName(PropertyNames.Body);
-            serializer.Serialize(writer, request);
-            //FIXME (requires test rewrites)
-            //this.WriteProperty(writer, serializer, PropertyNames.Path, request.GetUriPath(), false);
-            //this.WriteProperty(writer, serializer, PropertyNames.Method, request.GetHttpMethod(), false);
-            //this.WriteProperty(writer, serializer, PropertyNames.Body, request, false);
+            this.WriteProperty(writer, serializer, PropertyNames.Path, request.GetUriPath(), false);
+            this.WriteProperty(writer, serializer, PropertyNames.Method, request.GetHttpMethod(), false);
+            this.WriteProperty(writer, serializer, PropertyNames.Body, request, false);
             writer.WriteEndObject();
         }
     }

@@ -20,40 +20,10 @@
 
 namespace SendWithUs.Client
 {
-    using System;
     using System.Collections.Generic;
 
-    public class GetTemplateVersionRequest : BaseTemplateRequest, IGetTemplateVersionRequest
+    public interface IBatchRequest : IEnumerable<IRequest>, IRequest
     {
-        #region IGetTemplateVersionRequest Members
-
-        public string TemplateVersionId { get; set; }
-
-        #endregion
-
-        #region Base Class Overrides
-
-        public override string GetHttpMethod() => "GET";
-
-        public override string GetUriPath() => base.GetUriPath() + "/versions/" + this.TemplateVersionId;
-
-        public override Type GetResponseType() => typeof(TemplateVersionResponse);
-
-        protected internal override IEnumerable<string> GetMissingRequiredProperties()
-        {
-            if (String.IsNullOrEmpty(this.TemplateVersionId))
-            {
-                yield return nameof(this.TemplateVersionId);
-            }
-
-            foreach (var property in base.GetMissingRequiredProperties())
-            {
-                yield return property;
-            }
-        }
-
-        protected override bool IsTemplateIdRequired() => true;
-
-        #endregion
+        // Marker interface.
     }
 }

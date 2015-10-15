@@ -49,6 +49,7 @@
     <Compile Include="Requests\BaseRequest.cs" />
     <Compile Include="Requests\BatchRequest.cs" />
     <Compile Include="Requests\BatchRequestConverter.cs" />
+    <Compile Include="Requests\IBatchRequest.cs" />
     <Compile Include="Requests\IRenderRequest.cs" />
     <Compile Include="Requests\ISendRequest.cs" />
     <Compile Include="Requests\Templates\BaseTemplateRequestWithPayload.cs" />

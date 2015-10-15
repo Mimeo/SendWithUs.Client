@@ -20,18 +20,18 @@
 
 namespace SendWithUs.Client
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents a batch request.
     /// </summary>
     /// <remarks>Internal to prevent external code from instantiating this class.</remarks>
     [JsonConverter(typeof(BatchRequestConverter))]
-    internal class BatchRequest : IEnumerable<IRequest>, IRequest
+    internal class BatchRequest : IBatchRequest
     {
         protected IEnumerable<IRequest> Items { get; set; }
 

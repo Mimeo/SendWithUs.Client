@@ -53,7 +53,7 @@ namespace SendWithUs.Client
         
         public override string GetUriPath() => String.IsNullOrEmpty(this.TemplateId) ? BaseUriPath : $"{BaseUriPath}/{this.TemplateId}/locales";
 
-        protected override IEnumerable<string> GetMissingRequiredProperties()
+        protected internal override IEnumerable<string> GetMissingRequiredProperties()
         {
             if (String.IsNullOrEmpty(this.Name))
             {

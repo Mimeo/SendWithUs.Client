@@ -67,7 +67,7 @@ namespace SendWithUs.Client
 
         #region Helpers
 
-        protected virtual IEnumerable<string> GetMissingRequiredProperties()
+        protected internal virtual IEnumerable<string> GetMissingRequiredProperties()
         {
             yield break;
         }

@@ -73,6 +73,10 @@ namespace SendWithUs.Client.Tests.Unit
                     items[index].Setup(r => r.Validate()).Throws(new ValidationException(null));
                     invalidCount += 1;
                 }
+                else
+                {
+                    items[index].Setup(r => r.Validate()).Returns(items[index].Object);
+                }
             }
 
             // Act
@@ -83,5 +87,19 @@ namespace SendWithUs.Client.Tests.Unit
             Assert.IsInstanceOfType(exception, typeof(AggregateException));
             Assert.AreEqual(invalidCount, ((AggregateException)exception).InnerExceptions.Count);
         }
+
+        [TestMethod]
+        public void IsValid_Always_Throws()
+        {
+            // Arrange
+            var request = new BatchRequest(null);
+
+            // Act
+            var exception = TestHelper.CaptureException(() => {  var x = request.IsValid; });
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+        }
+
     }
 }

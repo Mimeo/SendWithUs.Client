@@ -57,15 +57,15 @@ namespace SendWithUs.Client
 
         public override Type GetResponseType() => typeof(RenderResponse);
 
-        protected override IEnumerable<string> GetMissingRequiredProperties()
+        protected internal override IEnumerable<string> GetMissingRequiredProperties()
         {
             if (String.IsNullOrEmpty(this.TemplateId))
             {
                 yield return nameof(this.TemplateId);
-        }
+            }
 
             foreach (var property in base.GetMissingRequiredProperties())
-                {
+            {
                 yield return property;
             }
         }

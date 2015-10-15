@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Converts a SendRequest object to JSON.
     /// </summary>
-    public class SendRequestConverter : BaseConverter
+    public class SendRequestConverter : BaseConverter<ISendRequest>
     {
         internal static class PropertyNames
         {
@@ -51,22 +50,9 @@ namespace SendWithUs.Client
             public const string AttachmentId = "id";
             public const string AttachmentData = "data";
         }
-
-        public override bool CanRead => false;
-
-        public override bool CanWrite => true;
-
-        public override bool CanConvert(Type objectType) => typeof(ISendRequest).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        
+        protected internal override void WriteJson(JsonWriter writer, ISendRequest request, SerializerProxy serializer)
         {
-            throw new NotSupportedException();
-        }
-
-        protected internal override void WriteJson(JsonWriter writer, object value, SerializerProxy serializer)
-        {
-            var request = EnsureArgument.Of<ISendRequest>(value, nameof(value));
-
             writer.WriteStartObject();
 
             this.WriteProperty(writer, serializer, PropertyNames.TemplateId, request.TemplateId, false);
