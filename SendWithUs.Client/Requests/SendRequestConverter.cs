@@ -36,10 +36,12 @@ namespace SendWithUs.Client
             public const string ProviderId = "esp_account";
             public const string TemplateVersionId = "version_name";
             public const string Locale = "locale";
+            public const string Sender = "sender";
             public const string Recipient = "recipient";
             public const string Name = "name";
             public const string Address = "address";
             public const string Data = "email_data";
+            public const string ReplyTo = "reply_to";
             public const string CopyTo = "cc";
             public const string BlindCopyTo = "bcc";
             public const string Tags = "tags";
@@ -83,11 +85,44 @@ namespace SendWithUs.Client
             this.WriteProperty(writer, serializer, PropertyNames.Data, request.Data, true);
             this.WriteProperty(writer, serializer, PropertyNames.Tags, request.Tags, true);
             this.WriteProperty(writer, serializer, PropertyNames.Headers, request.Headers, true);
+            this.WriteSender(writer, serializer, request);
             this.WritePrimaryRecipient(writer, serializer, request);
             this.WriteCcRecipients(writer, serializer, request);
             this.WriteBccRecipients(writer, serializer, request);
             this.WriteInlineAttachment(writer, serializer, request);
             this.WriteFileAttachments(writer, serializer, request);
+
+            writer.WriteEndObject();
+        }
+
+        protected internal virtual void WriteSender(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
+        {
+            var haveName = !String.IsNullOrEmpty(request.SenderName);
+            var haveAddress = !String.IsNullOrEmpty(request.SenderAddress);
+            var haveReplyTo = !String.IsNullOrEmpty(request.SenderReplyTo);
+
+            if (!haveAddress && !haveName && !haveReplyTo)
+            {
+                return;
+            }
+
+            writer.WritePropertyName(PropertyNames.Sender);
+            writer.WriteStartObject();
+
+            if (haveName)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.Name, request.SenderName, true);
+            }
+
+            if (haveAddress)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.Address, request.SenderAddress, false);
+            }
+
+            if (haveReplyTo)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.ReplyTo, request.SenderReplyTo, false);
+            }
 
             writer.WriteEndObject();
         }
