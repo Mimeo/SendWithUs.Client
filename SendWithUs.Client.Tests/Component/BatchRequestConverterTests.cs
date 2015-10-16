@@ -61,7 +61,7 @@ namespace SendWithUs.Client.Tests.Component
             Assert.IsNotNull(bodyProperty);
             Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
 
-            this.ValidateSendRequest(bodyProperty.Value as JObject, templateId, recipientAddress, null);
+            this.ValidateSendRequest(sendRequest, bodyProperty.Value as JObject);
 
             var renderResponse = jsonArray[1] as JObject;
             pathProperty = renderResponse.Property("path");

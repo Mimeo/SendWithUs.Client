@@ -20,36 +20,42 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using RenderNames = SendWithUs.Client.RenderRequestConverter.PropertyNames;
+    using SendNames = SendWithUs.Client.SendRequestConverter.PropertyNames;
 
     public abstract class ComponentTestsBase
     {
-        protected void ValidateSendRequest(JObject jsonObject, string expectedEmailId, string expectedRecipientAddress, IDictionary<string,string> expectedData)
+        protected void ValidateSendRequest(SendRequest request, JObject jsonObject)
         {
-            var emailIdFound = false;
+            var templateIdFound = false;
             var recipientAddressFound = false;
 
             foreach (var pair in jsonObject)
             {
                 switch (pair.Key)
                 {
-                    case "email_id":
-                        Assert.AreEqual(expectedEmailId, pair.Value.Value<string>());
-                        emailIdFound = true;
+                    case SendNames.TemplateId:
+                        Assert.AreEqual(request.TemplateId, pair.Value.Value<string>());
+                        templateIdFound = true;
                         break;
 
-                    case "recipient":
-                        Assert.AreEqual(expectedRecipientAddress, pair.Value["address"].Value<string>());
+                    case SendNames.Sender:
+                        this.ValidateSenderObject(request, pair.Value);
+                        break;
+
+                    case SendNames.Recipient:
+                        Assert.AreEqual(request.RecipientAddress, pair.Value[SendNames.Address].Value<string>());
                         recipientAddressFound = true;
                         break;
 
-                    case "email_data":
-                        if (expectedData != null)
+                    case SendNames.Data:
+                        if (request.Data != null)
                         {
-                            this.ValidateRequestData(pair.Value as JObject, expectedData);
+                            this.ValidateRequestData(pair.Value as JObject, request.Data as IDictionary<string, string>);
                         }
                         break;
 
@@ -58,8 +64,29 @@ namespace SendWithUs.Client.Tests.Component
                 }
             }
 
-            Assert.IsTrue(emailIdFound);
+            Assert.IsTrue(templateIdFound);
             Assert.IsTrue(recipientAddressFound);
+        }
+
+        protected void ValidateSenderObject(SendRequest request, JToken json)
+        {
+            var senderObject = json as JObject;
+            Assert.IsNotNull(senderObject);
+
+            if (!String.IsNullOrEmpty(request.SenderName))
+            {
+                Assert.AreEqual(request.SenderName, senderObject[SendNames.Name].Value<string>());
+            }
+
+            if (!String.IsNullOrEmpty(request.SenderAddress))
+            {
+                Assert.AreEqual(request.SenderAddress, senderObject[SendNames.Address].Value<string>());
+            }
+
+            if (!String.IsNullOrEmpty(request.SenderReplyTo))
+            {
+                Assert.AreEqual(request.SenderReplyTo, senderObject[SendNames.ReplyTo].Value<string>());
+            }
         }
 
         protected void ValidateRenderRequest(JObject jsonObject, string expectedTemplateId, IDictionary<string, string> expectedData)
@@ -70,12 +97,12 @@ namespace SendWithUs.Client.Tests.Component
             {
                 switch (pair.Key)
                 {
-                    case "template_id":
+                    case RenderNames.TemplateId:
                         Assert.AreEqual(expectedTemplateId, pair.Value.Value<string>());
                         templateIdFound = true;
                         break;
 
-                    case "template_data":
+                    case RenderNames.Data:
                         if (expectedData != null)
                         {
                             this.ValidateRequestData(pair.Value as JObject, expectedData);
