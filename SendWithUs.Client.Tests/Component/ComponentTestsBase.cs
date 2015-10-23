@@ -20,10 +20,10 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
+    using Xunit;
     using RenderPropertyNames = SendWithUs.Client.RenderRequestConverter.PropertyNames;
     using SendPropertyNames = SendWithUs.Client.SendRequestConverter.PropertyNames;
 
@@ -39,7 +39,7 @@ namespace SendWithUs.Client.Tests.Component
                 switch (pair.Key)
                 {
                     case SendPropertyNames.TemplateId:
-                        Assert.AreEqual(request.TemplateId, pair.Value.Value<string>());
+                        Assert.Equal(request.TemplateId, pair.Value.Value<string>());
                         templateIdFound = true;
                         break;
 
@@ -48,7 +48,7 @@ namespace SendWithUs.Client.Tests.Component
                         break;
 
                     case SendPropertyNames.Recipient:
-                        Assert.AreEqual(request.RecipientAddress, pair.Value[SendPropertyNames.Address].Value<string>());
+                        Assert.Equal(request.RecipientAddress, pair.Value[SendPropertyNames.Address].Value<string>());
                         recipientAddressFound = true;
                         break;
 
@@ -64,28 +64,28 @@ namespace SendWithUs.Client.Tests.Component
                 }
             }
 
-            Assert.IsTrue(templateIdFound);
-            Assert.IsTrue(recipientAddressFound);
+            Assert.True(templateIdFound);
+            Assert.True(recipientAddressFound);
         }
 
         protected void ValidateSenderObject(SendRequest request, JToken json)
         {
             var senderObject = json as JObject;
-            Assert.IsNotNull(senderObject);
+            Assert.NotNull(senderObject);
 
             if (!String.IsNullOrEmpty(request.SenderName))
             {
-                Assert.AreEqual(request.SenderName, senderObject[SendPropertyNames.Name].Value<string>());
+                Assert.Equal(request.SenderName, senderObject[SendPropertyNames.Name].Value<string>());
             }
 
             if (!String.IsNullOrEmpty(request.SenderAddress))
             {
-                Assert.AreEqual(request.SenderAddress, senderObject[SendPropertyNames.Address].Value<string>());
+                Assert.Equal(request.SenderAddress, senderObject[SendPropertyNames.Address].Value<string>());
             }
 
             if (!String.IsNullOrEmpty(request.SenderReplyTo))
             {
-                Assert.AreEqual(request.SenderReplyTo, senderObject[SendPropertyNames.ReplyTo].Value<string>());
+                Assert.Equal(request.SenderReplyTo, senderObject[SendPropertyNames.ReplyTo].Value<string>());
             }
         }
 
@@ -98,7 +98,7 @@ namespace SendWithUs.Client.Tests.Component
                 switch (pair.Key)
                 {
                     case RenderPropertyNames.TemplateId:
-                        Assert.AreEqual(expectedTemplateId, pair.Value.Value<string>());
+                        Assert.Equal(expectedTemplateId, pair.Value.Value<string>());
                         templateIdFound = true;
                         break;
 
@@ -114,17 +114,17 @@ namespace SendWithUs.Client.Tests.Component
                 }
             }
 
-            Assert.IsTrue(templateIdFound);
+            Assert.True(templateIdFound);
         }
 
         protected void ValidateRequestData(JObject actualData, IDictionary<string, string> expectedData)
         {
-            Assert.AreEqual(expectedData.Count, actualData.Count);
+            Assert.Equal(expectedData.Count, actualData.Count);
 
             foreach (var pair in actualData)
             {
-                Assert.IsTrue(expectedData.ContainsKey(pair.Key));
-                Assert.AreEqual(expectedData[pair.Key], pair.Value.Value<string>());
+                Assert.True(expectedData.ContainsKey(pair.Key));
+                Assert.Equal(expectedData[pair.Key], pair.Value.Value<string>());
             }
         }
     }

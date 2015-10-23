@@ -20,18 +20,17 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json;
     using SendWithUs.Client;
+    using System;
+    using System.Collections.Generic;
+    using Xunit;
     using Names = SendRequestConverter.PropertyNames;
 
-    [TestClass]
     public class SendRequestConverterTests
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesObject()
         {
             // Arrange
@@ -48,7 +47,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndObject(), Times.AtLeastOnce);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_CallsHelpers()
         {
             // Arrange
@@ -91,7 +90,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteFileAttachments(writer.Object, serializer.Object, request.Object), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteSender_EmptySenderInfo_DoesNotWrite()
         {
             // Arrange
@@ -113,7 +112,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(jw => jw.WritePropertyName(It.IsAny<string>()), Times.Never);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteSender_WithSenderAddress_WritesSenderObjectWithAddress()
         {
             // Arrange
@@ -141,7 +140,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(jw => jw.WriteEndObject(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteSender_WithSenderName_WritesSenderObjectWithName()
         {
             // Arrange
@@ -169,7 +168,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(jw => jw.WriteEndObject(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteSender_WithSenderReplyTo_WritesSenderObjectWithReplyTo()
         {
             // Arrange
@@ -197,7 +196,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(jw => jw.WriteEndObject(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WritePrimaryRecipient_Normally_WritesObjectValuedProperty()
         {
             // Arrange
@@ -215,7 +214,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndObject());
         }
 
-        [TestMethod]
+        [Fact]
         public void WritePrimaryRecipient_Normally_CallsHelpers()
         {
             // Arrange
@@ -237,7 +236,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Address, recipientAddress, false));
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteCcRecipients_Always_CallsWriteRecipientsList()
         {
             // Arrange
@@ -256,7 +255,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteRecipientsList(writer.Object, serializer.Object, Names.CopyTo, recipients));
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteBccRecipients_Always_CallsWriteRecipientsList()
         {
             // Arrange
@@ -275,7 +274,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteRecipientsList(writer.Object, serializer.Object, Names.BlindCopyTo, recipients));
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteRecipientsList_NullRecipients_DoesNotWrite()
         {
             // Arrange

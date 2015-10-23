@@ -20,12 +20,11 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json;
     using System;
+    using Xunit;
 
-    [TestClass]
     public class BaseConverterTests
     {
         public class ExampleSubject { }
@@ -34,7 +33,7 @@ namespace SendWithUs.Client.Tests.Unit
 
         public class SomeOtherType { }
 
-        [TestMethod]
+        [Fact]
         public void CanRead_Getter_ReturnsFalse()
         {
             // Arrange
@@ -44,10 +43,10 @@ namespace SendWithUs.Client.Tests.Unit
             var canRead = converter.Object.CanRead;
 
             // Assert
-            Assert.IsFalse(canRead);
+            Assert.False(canRead);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanWrite_Getter_ReturnsTrue()
         {
             // Arrange
@@ -57,10 +56,10 @@ namespace SendWithUs.Client.Tests.Unit
             var canRead = converter.Object.CanWrite;
 
             // Assert
-            Assert.IsTrue(canRead);
+            Assert.True(canRead);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanConvert_MatchingSubjectType_ReturnsTrue()
         {
             // Arrange
@@ -71,10 +70,10 @@ namespace SendWithUs.Client.Tests.Unit
             var canConvert = converter.Object.CanConvert(type);
 
             // Assert
-            Assert.IsTrue(canConvert);
+            Assert.True(canConvert);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanConvert_SubjectSubtype_ReturnsTrue()
         {
             // Arrange
@@ -85,10 +84,10 @@ namespace SendWithUs.Client.Tests.Unit
             var canConvert = converter.Object.CanConvert(type);
 
             // Assert
-            Assert.IsTrue(canConvert);
+            Assert.True(canConvert);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanConvert_NonSubjectType_ReturnsFalse()
         {
             // Arrange
@@ -99,10 +98,10 @@ namespace SendWithUs.Client.Tests.Unit
             var canConvert = converter.Object.CanConvert(type);
 
             // Assert
-            Assert.IsFalse(canConvert);
+            Assert.False(canConvert);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadJson_Always_Throws()
         {
             // Arrange
@@ -115,10 +114,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => converter.Object.ReadJson(reader, request.GetType(), request, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+            Assert.IsType(typeof(NotSupportedException), exception);
         }
         
-        [TestMethod]
+        [Fact]
         public void WriteJson_NullWriter_Throws()
         {
             // Arrange
@@ -129,16 +128,16 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Should not reach this call to our WriteJson overload.
             mockConverter.Setup(c => c.WriteJson(It.IsAny<JsonWriter>(), It.IsAny<ExampleSubject>(), It.IsAny<SerializerProxy>()))
-                .Throws<AssertFailedException>();
+                .Throws<InvalidOperationException>();
 
             // Act
             var exception = TestHelper.CaptureException(() => mockConverter.Object.WriteJson(writer, value, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_NullSerializer_Throws()
         {
             // Arrange
@@ -149,16 +148,16 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Should not reach this call to our WriteJson overload.
             mockConverter.Setup(c => c.WriteJson(It.IsAny<JsonWriter>(), It.IsAny<ExampleSubject>(), It.IsAny<SerializerProxy>()))
-                .Throws<AssertFailedException>();
+                .Throws<InvalidOperationException>();
 
             // Act
             var exception = TestHelper.CaptureException(() => mockConverter.Object.WriteJson(writer, value, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_NonSubjectType_Throws()
         {
             // Arrange
@@ -169,17 +168,17 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Should not reach this call to our WriteJson overload.
             mockConverter.Setup(c => c.WriteJson(It.IsAny<JsonWriter>(), It.IsAny<ExampleSubject>(), It.IsAny<SerializerProxy>()))
-                .Throws<AssertFailedException>();
+                .Throws<InvalidOperationException>();
 
             // Act
             var exception = TestHelper.CaptureException(() => mockConverter.Object.WriteJson(writer, value, serializer));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
-            Assert.AreEqual(nameof(value), ((ArgumentException)exception).ParamName);
+            Assert.IsType(typeof(ArgumentException), exception);
+            Assert.Equal(nameof(value), ((ArgumentException)exception).ParamName);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_CallsWriteJsonOverload()
         {
             // Arrange
@@ -197,7 +196,7 @@ namespace SendWithUs.Client.Tests.Unit
             mockConverter.Verify(c => c.WriteJson(writer, subject, It.IsAny<SerializerProxy>()), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteProperty_NullValueAndIsOptional_DoesNothing()
         {
             // Arrange
@@ -219,7 +218,7 @@ namespace SendWithUs.Client.Tests.Unit
             mockSerializer.Verify(s => s.Serialize(It.IsAny<JsonWriter>(), It.IsAny<string>()), Times.Never);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteProperty_NonNullValue_SerializesNameAndValue()
         {
             // Arrange
@@ -241,7 +240,7 @@ namespace SendWithUs.Client.Tests.Unit
             mockSerializer.Verify(s => s.Serialize(It.IsAny<JsonWriter>(), propValue), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteProperty_EmptyStringValueAndIsOptional_DoesNothing()
         {
             // Arrange
@@ -263,7 +262,7 @@ namespace SendWithUs.Client.Tests.Unit
             mockSerializer.Verify(s => s.Serialize(It.IsAny<JsonWriter>(), It.IsAny<string>()), Times.Never);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteProperty_NonEmptyStringValue_SerializesNameAndValue()
         {
             // Arrange

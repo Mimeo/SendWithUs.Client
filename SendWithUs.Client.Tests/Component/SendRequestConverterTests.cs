@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class SendRequestConverterTests : ComponentTestsBase
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
@@ -41,11 +40,11 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
-            Assert.IsNotNull(jsonObject);
+            Assert.NotNull(jsonObject);
             this.ValidateSendRequest(request, jsonObject);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_WithData_IncludesAllData()
         {
             var templateId = TestHelper.GetUniqueId();
@@ -59,11 +58,11 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
-            Assert.IsNotNull(jsonObject);
+            Assert.NotNull(jsonObject);
             this.ValidateSendRequest(request, jsonObject);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_FullSenderInfo_WritesSenderJsonObject()
         {
             var templateId = "template_1234";
@@ -86,7 +85,7 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
-            Assert.IsNotNull(jsonObject);
+            Assert.NotNull(jsonObject);
             this.ValidateSendRequest(request, jsonObject);
         }
     }

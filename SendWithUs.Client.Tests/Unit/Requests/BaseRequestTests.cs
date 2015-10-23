@@ -20,14 +20,13 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using System.Collections.Generic;
+    using Xunit;
 
-    [TestClass]
     public class BaseRequestTests
     {
-        [TestMethod]
+        [Fact]
         public void Validate_HasMissingRequiredProperties_Throws()
         {
             // Arrange
@@ -41,10 +40,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => mockRequest.Object.Validate());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ValidationException));
+            Assert.IsType(typeof(ValidationException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_NoMissingRequiredProperties_ReturnsSelf()
         {
             // Arrange
@@ -58,10 +57,10 @@ namespace SendWithUs.Client.Tests.Unit
             var result = mockRequest.Object.Validate();
 
             // Assert
-            Assert.AreSame(mockRequest.Object, result);
+            Assert.Same(mockRequest.Object, result);
         }
 
-        [TestMethod]
+        [Fact]
         public void IsValid_ValidateThrows_ReturnsFalse()
         {
             // Arrange
@@ -76,11 +75,11 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             mockRequest.Verify(r => r.Validate(), Times.Once);
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void IsValid_ValidateDoesNotThrow_ReturnsTrue()
         {
             // Arrange
@@ -94,7 +93,7 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             mockRequest.Verify(r => r.Validate(), Times.Once);
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
     }
 }

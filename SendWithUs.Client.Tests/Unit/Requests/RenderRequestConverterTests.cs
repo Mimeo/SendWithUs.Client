@@ -20,17 +20,16 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json;
     using System;
     using System.Linq.Expressions;
+    using Xunit;
     using Names = RenderRequestConverter.PropertyNames;
 
-    [TestClass]
     public class RenderRequestConverterTests
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesJsonObject()
         {
             // Arrange
@@ -50,7 +49,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndObject(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesTemplateId()
         {
             var propName = Names.TemplateId;
@@ -59,7 +58,7 @@ namespace SendWithUs.Client.Tests.Unit
             this.RunTest_WriteJsonCallsWriteProperty(r => r.TemplateId, propName, propValue, false);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesTemplateVersionId()
         {
             var propName = Names.TemplateVersionId;
@@ -68,7 +67,7 @@ namespace SendWithUs.Client.Tests.Unit
             this.RunTest_WriteJsonCallsWriteProperty(r => r.TemplateVersionId, propName, propValue, true);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesLocale()
         {
             var propName = Names.Locale;
@@ -77,7 +76,7 @@ namespace SendWithUs.Client.Tests.Unit
             this.RunTest_WriteJsonCallsWriteProperty(r => r.Locale, propName, propValue, true);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesData()
         {
             var propName = Names.Data;

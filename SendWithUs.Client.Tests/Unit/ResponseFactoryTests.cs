@@ -20,13 +20,12 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json.Linq;
+    using System;
+    using System.Net;
+    using Xunit;
 
-    [TestClass]
     public class ResponseFactoryTests
     {
         public class TestResponse : IResponse
@@ -61,7 +60,7 @@ namespace SendWithUs.Client.Tests.Unit
             #endregion
         }
 
-        [TestMethod]
+        [Fact]
         public void GenericCreate_Always_CallsCreate()
         {
             // Arrange
@@ -76,7 +75,7 @@ namespace SendWithUs.Client.Tests.Unit
             factory.Verify(f => f.CreateResponse(typeof(TestResponse), statusCode, json), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void Create_NullResponseType_Throws()
         {
             // Arrange
@@ -89,10 +88,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => factory.CreateResponse(responseType, statusCode, json));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void Create_NonIResponseType_Throws()
         {
             // Arrange
@@ -105,10 +104,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => factory.CreateResponse(responseType, statusCode, json));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(InvalidOperationException));
+            Assert.IsType(typeof(InvalidOperationException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void Create_IResponseSubtype_ReturnsInstanceOfSubtype()
         {
             // Arrange
@@ -121,10 +120,10 @@ namespace SendWithUs.Client.Tests.Unit
             var response = factory.CreateResponse(responseType, statusCode, json);
 
             // Assert 
-            Assert.IsInstanceOfType(response, responseType);
+            Assert.IsType(responseType, response);
         }
 
-        [TestMethod]
+        [Fact]
         public void Create_Normally_InitializesInstance()
         {
             // Arrange
@@ -138,7 +137,7 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert 
             // The Initialized property was set by side-effect.
-            Assert.IsTrue(response.Initialized);
+            Assert.True(response.Initialized);
         }
     }
 }

@@ -21,14 +21,12 @@
 namespace SendWithUs.Client.Tests.EndToEnd
 {
     using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class RenderAsyncTests
     {
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void RenderAsync_MinimalRequest_Succeeds()
         {
             // Arrange
@@ -41,13 +39,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.RenderAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void RenderAsync_WithData_Succeeds()
         {
             // Arrange
@@ -61,9 +58,9 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.RenderAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
     }
 }

@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+    using System;
     using System.Linq;
+    using Xunit;
 
-    [TestClass]
     public class SendRequestTests
     {
-        [TestMethod]
+        [Fact]
         public void IsValid_Getter_CallsValidate()
         {
             // Arrange
@@ -41,7 +40,7 @@ namespace SendWithUs.Client.Tests.Unit
             request.Verify(r => r.Validate(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetResponseType_Always_ReturnsSendResponseType()
         {
             // Arrange
@@ -51,10 +50,10 @@ namespace SendWithUs.Client.Tests.Unit
             var responseType = request.GetResponseType();
 
             // Assert
-            Assert.AreEqual(typeof(SendResponse), responseType);
+            Assert.Equal(typeof(SendResponse), responseType);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_Always_ReturnsSelf()
         {
             // Arrange
@@ -66,10 +65,10 @@ namespace SendWithUs.Client.Tests.Unit
             var self = request.Validate();
 
             // Assert
-            Assert.AreSame(request, self);
+            Assert.Same(request, self);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_Normally_ReturnsThis()
         {
             // Arrange
@@ -84,10 +83,10 @@ namespace SendWithUs.Client.Tests.Unit
             var self = request.Object.Validate();
 
             // Assert
-            Assert.AreSame(request.Object, self);
+            Assert.Same(request.Object, self);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_EmptyTemplateId_Throws()
         {
             // Arrange
@@ -102,13 +101,13 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => request.Object.Validate());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ValidationException));
+            Assert.IsType(typeof(ValidationException), exception);
             var invalid = exception as ValidationException;
-            Assert.AreEqual(1, invalid.MissingRequiredProperties.Count());
-            Assert.AreEqual("TemplateId", invalid.MissingRequiredProperties.First());
+            Assert.Equal(1, invalid.MissingRequiredProperties.Count());
+            Assert.Equal("TemplateId", invalid.MissingRequiredProperties.First());
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_EmptyRecipientAddress_Throws()
         {
             // Arrange
@@ -123,10 +122,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => request.Object.Validate());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ValidationException));
+            Assert.IsType(typeof(ValidationException), exception);
             var invalid = exception as ValidationException;
-            Assert.AreEqual(1, invalid.MissingRequiredProperties.Count());
-            Assert.AreEqual("RecipientAddress", invalid.MissingRequiredProperties.First());
+            Assert.Equal(1, invalid.MissingRequiredProperties.Count());
+            Assert.Equal("RecipientAddress", invalid.MissingRequiredProperties.First());
         }
     }
 }

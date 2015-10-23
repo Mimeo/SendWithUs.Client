@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System.Linq;
     using Moq;
+    using System;
+    using System.Linq;
+    using Xunit;
 
-    [TestClass]
     public class BatchRequestTests
     {
-        [TestMethod]
+        [Fact]
         public void GetResponseType_Always_Throws()
         {
             // Arrange
@@ -38,10 +37,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => request.GetResponseType());
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+            Assert.IsType(typeof(NotSupportedException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_AllItemsValid_ReturnsSelf()
         {
             // Arrange
@@ -55,10 +54,10 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             items.ForEach(m => m.Verify(r => r.Validate(), Times.Once));
-            Assert.AreSame(request, result);
+            Assert.Same(request, result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Validate_SomeItemsInvalid_Throws()
         {
             // Arrange
@@ -84,11 +83,11 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             items.ForEach(m => m.Verify(r => r.Validate(), Times.Once));
-            Assert.IsInstanceOfType(exception, typeof(AggregateException));
-            Assert.AreEqual(invalidCount, ((AggregateException)exception).InnerExceptions.Count);
+            Assert.IsType(typeof(AggregateException), exception);
+            Assert.Equal(invalidCount, ((AggregateException)exception).InnerExceptions.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void IsValid_Always_Throws()
         {
             // Arrange
@@ -98,8 +97,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => {  var x = request.IsValid; });
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+            Assert.IsType(typeof(NotSupportedException), exception);
         }
-
     }
 }

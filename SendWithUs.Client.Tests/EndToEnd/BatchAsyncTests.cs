@@ -23,14 +23,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class BatchAsyncTests
     {
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void BatchAsync_TwoRequests_Succeeds()
         {
             // Arange
@@ -47,18 +45,18 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var batchResponse = client.BatchAsync(requests).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
-            Assert.AreEqual(requests.Count, batchResponse.Items.Count());
+            Assert.Equal(HttpStatusCode.OK, batchResponse.StatusCode);
+            Assert.Equal(requests.Count, batchResponse.Items.Count());
 
             var sendResponse = batchResponse.Items.ElementAt(0) as ISendResponse;
-            Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
-            Assert.AreEqual("OK", sendResponse.Status, true);
-            Assert.AreEqual(true, sendResponse.Success);
+            Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+            Assert.Equal("OK", sendResponse.Status, true);
+            Assert.Equal(true, sendResponse.Success);
 
             var renderResponse = batchResponse.Items.ElementAt(1) as IRenderResponse;
-            Assert.AreEqual(HttpStatusCode.OK, renderResponse.StatusCode);
-            Assert.AreEqual("OK", renderResponse.Status, true);
-            Assert.AreEqual(true, renderResponse.Success);
+            Assert.Equal(HttpStatusCode.OK, renderResponse.StatusCode);
+            Assert.Equal("OK", renderResponse.Status, true);
+            Assert.Equal(true, renderResponse.Success);
         }
     }
 }

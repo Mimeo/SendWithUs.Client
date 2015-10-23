@@ -20,15 +20,13 @@
 
 namespace SendWithUs.Client.Tests.EndToEnd
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
     using System.Net;
+    using Xunit;
 
-    [TestClass]
     public class TemplateTests
     {
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void GetTemplateCollectionRequest_AllTemplates_Succeeds()
         {
             // Arrange
@@ -40,11 +38,10 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.ExecuteAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void GetTemplateRequest_TemplateById_Succeeds()
         {
             // Arrange
@@ -57,11 +54,10 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.ExecuteAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void CreateTemplateRequest_NewTemplate_Succeeds()
         {
             // Arrange
@@ -75,11 +71,10 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.ExecuteAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void CreateTemplateRequest_AddLocale_Succeeds()
         {
             // Arrange
@@ -101,7 +96,7 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.ExecuteAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }

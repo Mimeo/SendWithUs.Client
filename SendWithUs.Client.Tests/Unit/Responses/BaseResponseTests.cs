@@ -20,16 +20,15 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System.Linq;
-    using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json.Linq;
+    using System.Linq;
+    using System.Net;
+    using Xunit;
 
-    [TestClass]
     public class BaseResponseTests
     {
-        [TestMethod]
+        [Fact]
         public void Initialize_Always_SetsStatusCode()
         {
             // Arrange
@@ -42,10 +41,10 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             response.VerifySet(r => r.StatusCode = statusCode, Times.Once);
-            Assert.AreEqual(response.Object.StatusCode, statusCode);
+            Assert.Equal(response.Object.StatusCode, statusCode);
         }
 
-        [TestMethod]
+        [Fact]
         public void Initialize_SuccessStatusCode_CallsPopulate()
         {
             // Arrange
@@ -64,7 +63,7 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Initialize_NonSuccessStatusCode_CallsSetErrorMessage()
         {
             // Arrange
@@ -82,7 +81,7 @@ namespace SendWithUs.Client.Tests.Unit
             response.Verify(r => r.SetErrorMessage(It.IsAny<JValue>()), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void IsSuccessStatusCode_StatusCodeInRange200To299_ReturnsTrue()
         {
             // Arrange
@@ -97,10 +96,10 @@ namespace SendWithUs.Client.Tests.Unit
             });
 
             // Assert
-            Assert.IsTrue(result.All(v => v == true));
+            Assert.True(result.All(v => v == true));
         }
 
-        [TestMethod]
+        [Fact]
         public void IsSuccessStatusCode_StatusCodeLessThan200_ReturnsFalse()
         {
             // Arrange
@@ -115,10 +114,10 @@ namespace SendWithUs.Client.Tests.Unit
             }).ToList();
 
             // Assert
-            Assert.IsTrue(result.All(v => v == false));
+            Assert.True(result.All(v => v == false));
         }
 
-        [TestMethod]
+        [Fact]
         public void IsSuccessStatusCode_StatusCodeGreaterThan299_ReturnsFalse()
         {
             // Arrange
@@ -133,10 +132,10 @@ namespace SendWithUs.Client.Tests.Unit
             });
 
             // Assert
-            Assert.IsTrue(result.All(v => v == false));
+            Assert.True(result.All(v => v == false));
         }
 
-        [TestMethod]
+        [Fact]
         public void SetErrorMessage_NullValue_UsesStatusCode()
         {
             // Arrange
@@ -156,7 +155,7 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
 
-        [TestMethod]
+        [Fact]
         public void SetErrorMessage_NonNullValue_UsesValue()
         {
             // Arrange

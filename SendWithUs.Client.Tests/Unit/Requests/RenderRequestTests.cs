@@ -20,14 +20,13 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Linq;
+    using Xunit;
 
-    [TestClass]
     public class RenderRequestTests
     {
-        [TestMethod]
+        [Fact]
         public void GetMissingRequiredProperties_NullTemplateId_YieldsTemplateId()
         {
             // Arrange
@@ -38,10 +37,10 @@ namespace SendWithUs.Client.Tests.Unit
             var result = request.GetMissingRequiredProperties().ToList();
 
             // Assert
-            Assert.IsTrue(result.Contains(nameof(request.TemplateId)));
+            Assert.True(result.Contains(nameof(request.TemplateId)));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetMissingRequiredProperties_EmptyTemplateId_YieldsTemplateId()
         {
             // Arrange
@@ -52,7 +51,7 @@ namespace SendWithUs.Client.Tests.Unit
             var result = request.GetMissingRequiredProperties().ToList();
 
             // Assert
-            Assert.IsTrue(result.Contains(nameof(request.TemplateId)));
+            Assert.True(result.Contains(nameof(request.TemplateId)));
         }
     }
 }

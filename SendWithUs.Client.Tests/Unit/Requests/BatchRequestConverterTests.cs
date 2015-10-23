@@ -20,18 +20,16 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Xunit;
     using Names = BatchRequestConverter.PropertyNames;
 
-    [TestClass]
     public class BatchRequestConverterTests
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_WritesJsonArray()
         {
             // Arrange
@@ -51,7 +49,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndArray(), Times.Once);
         }
         
-        [TestMethod]
+        [Fact]
         public void WriteJson_Normally_SerializesRequestItems()
         {
             // Arrange
@@ -71,7 +69,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteWrapper(writer.Object, serializer.Object, It.IsAny<IRequest>()), Times.Exactly(count));
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteWrapper_Normally_WritesJsonObject()
         {
             // Arrange
@@ -89,7 +87,7 @@ namespace SendWithUs.Client.Tests.Unit
             writer.Verify(w => w.WriteEndObject(), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteWrapper_Normally_SerializesUriPath()
         {
             // Arrange
@@ -110,7 +108,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Path, path, false), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteWrapper_Normally_SerializesHttpMethod()
         {
             // Arrange
@@ -131,7 +129,7 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Method, method, false), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteWrapper_Normally_SerializesBody()
         {
             // Arrange

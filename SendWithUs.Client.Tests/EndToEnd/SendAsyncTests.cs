@@ -24,14 +24,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
     using System.Collections.Generic;
     using System.IO;
     using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class SendAsyncTests
     {
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void SendAsync_MinimalRequest_Succeeds()
         {
             // Arrange
@@ -44,13 +42,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.SendAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void SendAsync_WithData_Succeeds()
         {
             // Arrange
@@ -65,13 +62,12 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.SendAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void SendAsync_WithInlineAttachment_Succeeds()
         {
             // Arrange
@@ -92,14 +88,13 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.SendAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
 
 
-        [TestMethod]
-        [TestCategory("EndToEnd")]
+        [Fact]
         public void SendAsync_WithFileAttachment_Succeeds()
         {
             // Arrange
@@ -124,9 +119,9 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var response = client.SendAsync(request).Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("OK", response.Status, true);
-            Assert.AreEqual(true, response.Success);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.Status, true);
+            Assert.Equal(true, response.Success);
         }
     }
 }

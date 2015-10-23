@@ -20,15 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Component
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class RenderRequestConverterTests : ComponentTestsBase
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
@@ -40,11 +39,11 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
-            Assert.IsNotNull(jsonObject);
+            Assert.NotNull(jsonObject);
             this.ValidateRenderRequest(jsonObject, templateId, null);
         }
 
-        [TestMethod]
+        [Fact]
         public void WriteJson_WithData_IncludesAllData()
         {
             var templateId = TestHelper.GetUniqueId();
@@ -57,7 +56,7 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
-            Assert.IsNotNull(jsonObject);
+            Assert.NotNull(jsonObject);
             this.ValidateRenderRequest(jsonObject, templateId, data);
         }
     }

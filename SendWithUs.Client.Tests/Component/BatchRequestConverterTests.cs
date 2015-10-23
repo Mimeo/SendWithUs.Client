@@ -21,14 +21,13 @@
 namespace SendWithUs.Client.Tests.Component
 {
     using System.Collections.Generic;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-
-    [TestClass]
+    using Xunit;
+    
     public class BatchRequestConverterTests : ComponentTestsBase
     {
-        [TestMethod]
+        [Fact]
         public void WriteJson_ValidBatchRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
@@ -44,22 +43,22 @@ namespace SendWithUs.Client.Tests.Component
             converter.WriteJson(writer, batchRequest, serializer);
             var jsonArray = writer.GetBufferAs<JArray>();
 
-            Assert.IsNotNull(jsonArray);
-            Assert.AreEqual(requests.Count, jsonArray.Count);
+            Assert.NotNull(jsonArray);
+            Assert.Equal(requests.Count, jsonArray.Count);
 
             var sendResponse = jsonArray[0] as JObject;
             var pathProperty = sendResponse.Property("path");
             var methodProperty = sendResponse.Property("method");
             var bodyProperty = sendResponse.Property("body");
 
-            Assert.IsNotNull(pathProperty);
-            Assert.IsTrue(pathProperty.HasValues);
-            Assert.AreEqual(sendRequest.GetUriPath(), (string)pathProperty.Value);
-            Assert.IsNotNull(methodProperty);
-            Assert.IsTrue(methodProperty.HasValues);
-            Assert.AreEqual(sendRequest.GetHttpMethod(), (string)methodProperty.Value);
-            Assert.IsNotNull(bodyProperty);
-            Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
+            Assert.NotNull(pathProperty);
+            Assert.True(pathProperty.HasValues);
+            Assert.Equal(sendRequest.GetUriPath(), (string)pathProperty.Value);
+            Assert.NotNull(methodProperty);
+            Assert.True(methodProperty.HasValues);
+            Assert.Equal(sendRequest.GetHttpMethod(), (string)methodProperty.Value);
+            Assert.NotNull(bodyProperty);
+            Assert.IsType(typeof(JObject), bodyProperty.Value);
 
             this.ValidateSendRequest(sendRequest, bodyProperty.Value as JObject);
 
@@ -68,14 +67,14 @@ namespace SendWithUs.Client.Tests.Component
             methodProperty = renderResponse.Property("method");
             bodyProperty = renderResponse.Property("body");
 
-            Assert.IsNotNull(pathProperty);
-            Assert.IsTrue(pathProperty.HasValues);
-            Assert.AreEqual(renderRequest.GetUriPath(), (string)pathProperty.Value);
-            Assert.IsNotNull(methodProperty);
-            Assert.IsTrue(methodProperty.HasValues);
-            Assert.AreEqual(renderRequest.GetHttpMethod(), (string)methodProperty.Value);
-            Assert.IsNotNull(bodyProperty);
-            Assert.IsInstanceOfType(bodyProperty.Value, typeof(JObject));
+            Assert.NotNull(pathProperty);
+            Assert.True(pathProperty.HasValues);
+            Assert.Equal(renderRequest.GetUriPath(), (string)pathProperty.Value);
+            Assert.NotNull(methodProperty);
+            Assert.True(methodProperty.HasValues);
+            Assert.Equal(renderRequest.GetHttpMethod(), (string)methodProperty.Value);
+            Assert.NotNull(bodyProperty);
+            Assert.IsType(typeof(JObject), bodyProperty.Value);
 
             this.ValidateRenderRequest(bodyProperty.Value as JObject, templateId, null);
         }

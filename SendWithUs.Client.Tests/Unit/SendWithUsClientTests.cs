@@ -20,18 +20,17 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
+    using SendWithUs.Client;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using SendWithUs.Client;
+    using Xunit;
 
-    [TestClass]
     public class SendWithUsClientTests
     {
         #region RenderAsync
 
-        [TestMethod]
+        [Fact]
         public void RenderAsync_NullRequest_Throws()
         {
             // Arrange
@@ -43,14 +42,14 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => client.RenderAsync(request));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
         #endregion
 
         #region SendAsync
 
-        [TestMethod]
+        [Fact]
         public void SendAsync_NullRequest_Throws()
         {
             // Arrange
@@ -62,14 +61,14 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => client.SendAsync(request));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
         #endregion
 
         #region BatchAsync
 
-        [TestMethod]
+        [Fact]
         public void BatchAsync_NullRequests_Throws()
         {
             // Arrange
@@ -81,10 +80,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => client.BatchAsync(requests));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
+            Assert.IsType(typeof(ArgumentException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void BatchAsync_EmptyRequests_Throws()
         {
             // Arrange
@@ -96,7 +95,7 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => client.BatchAsync(requests));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
+            Assert.IsType(typeof(ArgumentException), exception);
         }
 
         #endregion

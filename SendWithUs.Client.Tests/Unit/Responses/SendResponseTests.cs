@@ -20,20 +20,14 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Text;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Newtonsoft.Json.Linq;
+    using Xunit;
     using Names = SendWithUs.Client.SendResponse.PropertyNames;
 
-    [TestClass]
     public class SendResponseTests
     {
-        [TestMethod]
+        [Fact]
         public void Populate_NullJson_DoesNotSetProperties()
         {
             // Arrange
@@ -52,7 +46,7 @@ namespace SendWithUs.Client.Tests.Unit
             response.VerifySet(r => r.TemplateVersionId = It.IsAny<string>(), Times.Never);
         }
 
-        [TestMethod]
+        [Fact]
         public void Populate_ValidJson_SetsProperties()
         {
             // Arrange

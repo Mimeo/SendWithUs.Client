@@ -20,18 +20,17 @@
 
 namespace SendWithUs.Client.Tests.Unit
 {
+    using Moq;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
-    using Newtonsoft.Json.Linq;
+    using Xunit;
 
-    [TestClass]
     public class BatchResponseTests
     {
-        [TestMethod]
+        [Fact]
         public void Populate_NullJson_SetsItemsToEmpty()
         {
             // Arrange
@@ -49,7 +48,7 @@ namespace SendWithUs.Client.Tests.Unit
             response.VerifySet(r => r.Items = empty, Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void Populate_Normally_SetsItemsToList()
         {
             // Arrange
@@ -74,14 +73,14 @@ namespace SendWithUs.Client.Tests.Unit
             // Assert
             //response.VerifySet(r => r.Items = It.IsAny<List<IResponse>>(), Times.Once);
             response.Verify(r => r.BuildResponse(It.IsAny<JObject>(), It.IsAny<Type>(), It.IsAny<IResponseFactory>()), Times.Exactly(itemCount));
-            Assert.AreEqual(itemCount, actualItems.Count());
+            Assert.Equal(itemCount, actualItems.Count());
             for (var index = 0; index < itemCount; index += 1)
             {
-                Assert.AreSame(mockItems[index].Object, actualItems.ElementAt(index));
+                Assert.Same(mockItems[index].Object, actualItems.ElementAt(index));
             }
         }
         
-        [TestMethod]
+        [Fact]
         public void BuildResponse_NullWrapper_Throws()
         {
             // Arrange
@@ -94,10 +93,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuildResponse_NullResponseType_Throws()
         {
             // Arrange
@@ -110,10 +109,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuildResponse_NullResponseFactory_Throws()
         {
             // Arrange
@@ -126,10 +125,10 @@ namespace SendWithUs.Client.Tests.Unit
             var exception = TestHelper.CaptureException(() => response.BuildResponse(wrapper, responseType, responseFactory));
 
             // Assert
-            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+            Assert.IsType(typeof(ArgumentNullException), exception);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuildResponse_Normally_InvokesResponseFactory()
         {
             // Arrange
