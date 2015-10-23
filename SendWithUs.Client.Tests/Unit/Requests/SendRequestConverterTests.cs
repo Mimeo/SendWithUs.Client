@@ -83,11 +83,118 @@ namespace SendWithUs.Client.Tests.Unit
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Data, data, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Tags, tags, true), Times.Once);
             converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Headers, headers, true), Times.Once);
+            converter.Verify(c => c.WriteSender(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WritePrimaryRecipient(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteCcRecipients(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteBccRecipients(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteInlineAttachment(writer.Object, serializer.Object, request.Object), Times.Once);
             converter.Verify(c => c.WriteFileAttachments(writer.Object, serializer.Object, request.Object), Times.Once);
+        }
+
+        [TestMethod]
+        public void WriteSender_EmptySenderInfo_DoesNotWrite()
+        {
+            // Arrange
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var request = new Mock<ISendRequest>();
+            var converter = new SendRequestConverter();
+
+            request.SetupGet(sr => sr.SenderName).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderAddress).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderReplyTo).Returns(String.Empty);
+
+            writer.Setup(jw => jw.WritePropertyName(It.IsAny<string>()));
+
+            // Act
+            converter.WriteSender(writer.Object, serializer.Object, request.Object);
+
+            // Assert
+            writer.Verify(jw => jw.WritePropertyName(It.IsAny<string>()), Times.Never);
+        }
+
+        [TestMethod]
+        public void WriteSender_WithSenderAddress_WritesSenderObjectWithAddress()
+        {
+            // Arrange
+            var senderAddress = "asymmetrical tofu farm-to-table diy";
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var request = new Mock<ISendRequest>();
+            var converter = new Mock<SendRequestConverter>() { CallBase = true };
+
+            request.SetupGet(sr => sr.SenderName).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderAddress).Returns(senderAddress);
+            request.SetupGet(sr => sr.SenderReplyTo).Returns(String.Empty);
+
+            writer.Setup(jw => jw.WritePropertyName(It.IsAny<string>()));
+            writer.Setup(jw => jw.WriteStartObject());
+            writer.Setup(jw => jw.WriteEndObject());
+
+            // Act
+            converter.Object.WriteSender(writer.Object, serializer.Object, request.Object);
+
+            // Assert
+            writer.Verify(jw => jw.WritePropertyName(Names.Sender), Times.Once);
+            writer.Verify(jw => jw.WriteStartObject(), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Address, senderAddress, false), Times.Once);
+            writer.Verify(jw => jw.WriteEndObject(), Times.Once);
+        }
+
+        [TestMethod]
+        public void WriteSender_WithSenderName_WritesSenderObjectWithName()
+        {
+            // Arrange
+            var senderName = "goth pop-up retro banjo";
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var request = new Mock<ISendRequest>();
+            var converter = new Mock<SendRequestConverter>() { CallBase = true };
+
+            request.SetupGet(sr => sr.SenderName).Returns(senderName);
+            request.SetupGet(sr => sr.SenderAddress).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderReplyTo).Returns(String.Empty);
+
+            writer.Setup(jw => jw.WritePropertyName(It.IsAny<string>()));
+            writer.Setup(jw => jw.WriteStartObject());
+            writer.Setup(jw => jw.WriteEndObject());
+
+            // Act
+            converter.Object.WriteSender(writer.Object, serializer.Object, request.Object);
+
+            // Assert
+            writer.Verify(jw => jw.WritePropertyName(Names.Sender), Times.Once);
+            writer.Verify(jw => jw.WriteStartObject(), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.Name, senderName, false), Times.Once);
+            writer.Verify(jw => jw.WriteEndObject(), Times.Once);
+        }
+
+        [TestMethod]
+        public void WriteSender_WithSenderReplyTo_WritesSenderObjectWithReplyTo()
+        {
+            // Arrange
+            var senderReplyTo = "goth pop-up retro banjo";
+            var writer = new Mock<JsonWriter>();
+            var serializer = new Mock<SerializerProxy>(null);
+            var request = new Mock<ISendRequest>();
+            var converter = new Mock<SendRequestConverter>() { CallBase = true };
+
+            request.SetupGet(sr => sr.SenderName).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderAddress).Returns(String.Empty);
+            request.SetupGet(sr => sr.SenderReplyTo).Returns(senderReplyTo);
+
+            writer.Setup(jw => jw.WritePropertyName(It.IsAny<string>()));
+            writer.Setup(jw => jw.WriteStartObject());
+            writer.Setup(jw => jw.WriteEndObject());
+
+            // Act
+            converter.Object.WriteSender(writer.Object, serializer.Object, request.Object);
+
+            // Assert
+            writer.Verify(jw => jw.WritePropertyName(Names.Sender), Times.Once);
+            writer.Verify(jw => jw.WriteStartObject(), Times.Once);
+            converter.Verify(c => c.WriteProperty(writer.Object, serializer.Object, Names.ReplyTo, senderReplyTo, false), Times.Once);
+            writer.Verify(jw => jw.WriteEndObject(), Times.Once);
         }
 
         [TestMethod]

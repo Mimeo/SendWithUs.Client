@@ -88,7 +88,7 @@ namespace SendWithUs.Client
 
             if (haveName)
             {
-                this.WriteProperty(writer, serializer, PropertyNames.Name, request.SenderName, true);
+                this.WriteProperty(writer, serializer, PropertyNames.Name, request.SenderName, false);
             }
 
             if (haveAddress)

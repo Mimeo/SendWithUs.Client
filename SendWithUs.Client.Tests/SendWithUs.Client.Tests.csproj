@@ -88,19 +88,19 @@
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
-    <Compile Include="Unit\BaseConverterTests.cs" />
-    <Compile Include="Unit\BaseRequestTests.cs" />
-    <Compile Include="Unit\BaseResponseTests.cs" />
-    <Compile Include="Unit\BatchRequestConverterTests.cs" />
-    <Compile Include="Unit\BatchRequestTests.cs" />
-    <Compile Include="Unit\BatchResponseTests.cs" />
-    <Compile Include="Unit\RenderRequestConverterTests.cs" />
-    <Compile Include="Unit\RenderRequestTests.cs" />
+    <Compile Include="Unit\Requests\BaseConverterTests.cs" />
+    <Compile Include="Unit\Requests\BaseRequestTests.cs" />
+    <Compile Include="Unit\Responses\BaseResponseTests.cs" />
+    <Compile Include="Unit\Requests\BatchRequestConverterTests.cs" />
+    <Compile Include="Unit\Requests\BatchRequestTests.cs" />
+    <Compile Include="Unit\Responses\BatchResponseTests.cs" />
+    <Compile Include="Unit\Requests\RenderRequestConverterTests.cs" />
+    <Compile Include="Unit\Requests\RenderRequestTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
-    <Compile Include="Unit\SendRequestConverterTests.cs" />
+    <Compile Include="Unit\Requests\SendRequestConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\SendRequestTests.cs" />
-    <Compile Include="Unit\SendResponseTests.cs" />
+    <Compile Include="Unit\Requests\SendRequestTests.cs" />
+    <Compile Include="Unit\Responses\SendResponseTests.cs" />
     <Compile Include="Unit\SendWithUsClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +133,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
