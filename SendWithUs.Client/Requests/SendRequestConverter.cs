@@ -50,7 +50,7 @@ namespace SendWithUs.Client
             public const string AttachmentId = "id";
             public const string AttachmentData = "data";
         }
-        
+
         protected internal override void WriteJson(JsonWriter writer, ISendRequest request, SerializerProxy serializer)
         {
             writer.WriteStartObject();
@@ -71,21 +71,36 @@ namespace SendWithUs.Client
 
             writer.WriteEndObject();
         }
-
+        
         protected internal virtual void WriteSender(JsonWriter writer, SerializerProxy serializer, ISendRequest request)
         {
-            if (String.IsNullOrEmpty(request.SenderName) &&
-                String.IsNullOrEmpty(request.SenderAddress) &&
-                String.IsNullOrEmpty(request.SenderReplyTo))
+            var haveName = !String.IsNullOrEmpty(request.SenderName);
+            var haveAddress = !String.IsNullOrEmpty(request.SenderAddress);
+            var haveReplyTo = !String.IsNullOrEmpty(request.SenderReplyTo);
+
+            if (!haveAddress && !haveName && !haveReplyTo)
             {
                 return;
             }
-            
+
             writer.WritePropertyName(PropertyNames.Sender);
             writer.WriteStartObject();
-            this.WriteProperty(writer, serializer, PropertyNames.Name, request.SenderName, true);
-            this.WriteProperty(writer, serializer, PropertyNames.Address, request.SenderAddress, true);
-            this.WriteProperty(writer, serializer, PropertyNames.ReplyTo, request.SenderReplyTo, true);
+
+            if (haveName)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.Name, request.SenderName, true);
+            }
+
+            if (haveAddress)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.Address, request.SenderAddress, false);
+            }
+
+            if (haveReplyTo)
+            {
+                this.WriteProperty(writer, serializer, PropertyNames.ReplyTo, request.SenderReplyTo, false);
+            }
+
             writer.WriteEndObject();
         }
 
