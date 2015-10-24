@@ -27,15 +27,15 @@ namespace SendWithUs.Client
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class BaseTemplateRequest : BaseRequest
     {
-        protected static readonly string BaseUriPath = "/api/v1/templates";
+        protected internal static readonly string BaseUriPath = "/api/v1/templates";
         
-        protected abstract bool IsTemplateIdRequired();
+        protected internal abstract bool IsTemplateIdRequired();
 
         #region ITemplateRequest Members
 
         public virtual string TemplateId { get; set; }
 
-        public string Locale { get; set; }
+        public virtual string Locale { get; set; }
 
         #endregion
 

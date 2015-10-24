@@ -22,11 +22,25 @@ namespace SendWithUs.Client.Tests
 {
     using System.Collections.Generic;
 
-    public static class Extensions
+    public static class DictionaryExtensions
     {
         public static IDictionary<TKey, TValue> Upsert<TKey, TValue>(this IDictionary<TKey, TValue> subject, TKey key, TValue value)
         {
             subject[key] = value;
+            return subject;
+        }
+    }
+
+    public static class ListExtensions
+    {
+        public static List<T> Copy<T>(this List<T> subject)
+        {
+            return new List<T>(subject);
+        }
+
+        public static List<T> Append<T>(this List<T> subject, params T[] items)
+        {
+            subject.AddRange(items);
             return subject;
         }
     }

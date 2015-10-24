@@ -30,7 +30,7 @@ namespace SendWithUs.Client
         
         public override Type GetResponseType() => typeof(TemplateResponse);
 
-        protected override bool IsTemplateIdRequired() => true;
+        protected internal override bool IsTemplateIdRequired() => true;
 
         #endregion
     }

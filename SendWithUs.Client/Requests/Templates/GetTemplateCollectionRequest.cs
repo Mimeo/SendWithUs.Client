@@ -41,7 +41,7 @@ namespace SendWithUs.Client
 
         // TemplateId is actually forbidden for this class, but since external code cannot create instances
         // and set the TemplateId property, the distinction between forbidden and not required is moot.
-        protected override bool IsTemplateIdRequired() => false;
+        protected internal override bool IsTemplateIdRequired() => false;
 
         #endregion
     }

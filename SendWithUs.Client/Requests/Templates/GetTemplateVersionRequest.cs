@@ -52,7 +52,7 @@ namespace SendWithUs.Client
             }
         }
 
-        protected override bool IsTemplateIdRequired() => true;
+        protected internal override bool IsTemplateIdRequired() => true;
 
         #endregion
     }
