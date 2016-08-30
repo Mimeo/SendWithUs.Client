@@ -202,6 +202,18 @@ namespace SendWithUs.Client
             where TResponse : class, IResponse
         { 
             var httpResponse = await this.GetHttpResponseAsync(request);
+			if (!httpResponse.IsSuccessStatusCode)
+			{
+				string contentType = httpResponse.Content.Headers.ContentType.MediaType;
+				if (contentType == "text/html")
+				{
+					string content = await httpResponse.Content.ReadAsStringAsync();
+					throw new ErrorResponseException(content);
+				}
+
+				// Fall through. The EnsureSuccessStatusCode will catch it.
+			}
+
             var json = await httpResponse.EnsureSuccessStatusCode().Content.ReadAsAsync<JToken>();
             return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, json);
         }

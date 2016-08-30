@@ -117,5 +117,37 @@ namespace SendWithUs.Client.Tests.EndToEnd
             Assert.AreEqual("OK", response.Status, true);
             Assert.AreEqual(true, response.Success);
         }
+
+		class BigDataClass
+		{
+			public BigDataClass()
+			{
+				var data = new List<string>();
+				for (int i = 0; i < 100000; ++i)
+					data.Add(Guid.NewGuid().ToString());
+				this.Data = data;
+			}
+			public IEnumerable<string> Data { get; set; }
+		}
+
+		[TestMethod]
+		public void SendAsync_WithTooMuchData_Throws()
+		{
+			// Arrange
+			var testData = new TestData("EndToEnd/Data/SendRequest.xml");
+			var request = new SendRequest(testData.TemplateId, testData.RecipientAddress)
+				{
+					Data = new BigDataClass()
+				};
+			var client = new SendWithUsClient(testData.ApiKey);
+
+			request.SenderAddress = testData.SenderAddress;
+			
+			// Act
+			var exception = TestHelper.CaptureException(() => client.SendAsync(request));
+
+			// Assert
+			Assert.IsInstanceOfType(exception, typeof(ErrorResponseException));
+		}
     }
 }
