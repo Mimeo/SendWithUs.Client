@@ -26,7 +26,8 @@ namespace SendWithUs.Client.Tests.Component
     using System.Collections.Generic;
     using RenderNames = SendWithUs.Client.RenderRequestConverter.PropertyNames;
     using SendNames = SendWithUs.Client.SendRequestConverter.PropertyNames;
-
+    using CustomerUpdateNames = SendWithUs.Client.CustomerUpdateRequestConverter.PropertyNames;
+    using System.Linq;
     public abstract class ComponentTestsBase
     {
         protected void ValidateSendRequest(SendRequest request, JObject jsonObject)
@@ -115,7 +116,31 @@ namespace SendWithUs.Client.Tests.Component
             }
 
             Assert.IsTrue(templateIdFound);
+        }
+
+        protected void ValidateCustomerUpdateRequest(CustomerUpdateRequest request, JObject jsonObject)
+        {
+            var emailFound = false;
+
+            foreach(var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case CustomerUpdateNames.Email:
+                        Assert.AreEqual(request.Email, pair.Value.Value<string>());
+                        emailFound = true;
+                        break;
+                    case CustomerUpdateNames.Locale:
+                        Assert.AreEqual(request.Locale, pair.Value.Value<string>());
+                        break;
+                    case CustomerUpdateNames.Groups:
+                        Assert.IsTrue(Enumerable.SequenceEqual(request.Groups, pair.Value.Values<string>()));
+                        break;
+                }
             }
+
+            Assert.IsTrue(emailFound);
+        }
 
         protected void ValidateRequestData(JObject actualData, IDictionary<string, string> expectedData)
         {
@@ -132,7 +157,7 @@ namespace SendWithUs.Client.Tests.Component
         {
             var recipientAddressFound = false;
 
-            foreach(var pair in jsonObject)
+            foreach (var pair in jsonObject)
             {
                 switch (pair.Key)
                 {

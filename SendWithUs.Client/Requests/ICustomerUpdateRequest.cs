@@ -20,14 +20,34 @@
 
 namespace SendWithUs.Client
 {
-    public enum ValidationFailureMode
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Describes the interface of objects used to make API requests to add/update customers.
+    /// </summary>
+    /// <remarks>This interface roughly corresponds to the JSON object used with the /customers route
+    /// in the REST API, with some properties flattened or renamed.</remarks>
+    public interface ICustomerUpdateRequest : IRequest
     {
-        None,
-        MissingTemplateId,
-        MissingRecipientAddress,
-        MissingSenderAddress,
-        MissingCampaignId,
-        MissingData,
-        MissingCustomerAddress
+        /// <summary>
+        /// Gets the email address of the customer.
+        /// </summary>
+        string Email { get; }
+
+        /// <summary>
+        /// Gets the locale of the customer.
+        /// </summary>
+        string Locale { get; }
+
+        /// <summary>
+        /// Gets the data to use for creating the customer.
+        /// </summary>
+        /// <remarks>Corresponds to the "data" property in the SendWithUs API.</remarks>
+        IEnumerable<KeyValuePair<string, object>> Data { get; }
+
+        /// <summary>
+        /// Gets the groups that this customer should belong to
+        /// </summary>
+        IEnumerable<string> Groups { get; }
     }
 }

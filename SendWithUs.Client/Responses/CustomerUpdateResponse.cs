@@ -20,14 +20,37 @@
 
 namespace SendWithUs.Client
 {
-    public enum ValidationFailureMode
+    using Newtonsoft.Json.Linq;
+
+    public class CustomerUpdateResponse : BaseObjectResponse, ICustomerUpdateResponse
     {
-        None,
-        MissingTemplateId,
-        MissingRecipientAddress,
-        MissingSenderAddress,
-        MissingCampaignId,
-        MissingData,
-        MissingCustomerAddress
+        internal static class PropertyNames
+        {
+            public const string Success = "success";
+            public const string Status = "status";
+        }
+
+        #region ISendResponse Members
+
+        public virtual bool Success { get; set; }
+
+        public virtual string Status { get; set; }
+
+        #endregion
+
+        #region Base class overrides
+
+        protected internal override void Populate(JObject json)
+        {
+            if (json == null)
+            {
+                return;
+            }
+
+            this.Success = json.Value<bool>(PropertyNames.Success);
+            this.Status = json.Value<string>(PropertyNames.Status);
+        }
+
+        #endregion
     }
 }

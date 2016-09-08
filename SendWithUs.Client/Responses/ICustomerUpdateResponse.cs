@@ -20,14 +20,10 @@
 
 namespace SendWithUs.Client
 {
-    public enum ValidationFailureMode
+    public interface ICustomerUpdateResponse : IResponse
     {
-        None,
-        MissingTemplateId,
-        MissingRecipientAddress,
-        MissingSenderAddress,
-        MissingCampaignId,
-        MissingData,
-        MissingCustomerAddress
+        bool Success { get; }
+
+        string Status { get; }
     }
 }

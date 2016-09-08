@@ -79,6 +79,7 @@
     <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
     <Compile Include="Component\RenderRequestConverterTests.cs" />
+    <Compile Include="Component\CustomerUpdateRequestConverterTests.cs" />
     <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
     <Compile Include="Component\DripCampaignDeactivateConverterTests.cs" />
