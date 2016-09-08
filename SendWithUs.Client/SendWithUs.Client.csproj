@@ -44,8 +44,10 @@
     <Compile Include="Helpers\SerializerProxy.cs" />
     <Compile Include="Helpers\ValidationException.cs" />
     <Compile Include="ISendWithUsClient.cs" />
-    <Compile Include="Requests\BatchRequestWrapper.cs" />
-    <Compile Include="Requests\BatchRequestWrapperConverter.cs" />
+    <Compile Include="Requests\BaseConverter.cs" />
+    <Compile Include="Requests\BatchRequest.cs" />
+    <Compile Include="Requests\BatchRequestConverter.cs" />
+    <Compile Include="Requests\IRenderRequest.cs" />
     <Compile Include="Requests\DripCampaignActivateRequest.cs" />
     <Compile Include="Requests\DripCampaignActivateRequestConverter.cs" />
     <Compile Include="Requests\DripCampaignDeactivateAllRequest.cs" />
@@ -56,7 +58,10 @@
     <Compile Include="Requests\IDripCampaignDeactivateAllRequest.cs" />
     <Compile Include="Requests\IDripCampaignDeactivateRequest.cs" />
     <Compile Include="Requests\ISendRequest.cs" />
+    <Compile Include="Requests\RenderRequest.cs" />
+    <Compile Include="Requests\RenderRequestConverter.cs" />
     <Compile Include="Requests\SendRequestConverter.cs" />
+    <Compile Include="Responses\BaseObjectResponse.cs" />
     <Compile Include="Responses\BaseResponse.cs" />
     <Compile Include="Responses\BatchResponse.cs" />
     <Compile Include="Helpers\IAttachment.cs" />
@@ -68,9 +73,11 @@
     <Compile Include="Responses\IDripCampaignActivateResponse.cs" />
     <Compile Include="Responses\IDripCampaignDeactivateAllResponse.cs" />
     <Compile Include="Responses\IDripCampaignDeactivateResponse.cs" />
+    <Compile Include="Responses\IRenderResponse.cs" />
     <Compile Include="Responses\IResponse.cs" />
     <Compile Include="Responses\IResponseFactory.cs" />
     <Compile Include="Responses\ISendResponse.cs" />
+    <Compile Include="Responses\RenderResponse.cs" />
     <Compile Include="Responses\ResponseFactory.cs" />
     <Compile Include="Helpers\ValidationFailureMode.cs" />
     <Compile Include="Responses\SendResponse.cs" />

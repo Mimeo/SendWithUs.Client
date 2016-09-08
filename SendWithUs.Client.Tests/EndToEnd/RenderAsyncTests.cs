@@ -1,4 +1,6 @@
-﻿// Permission is hereby granted, free of charge, to any person obtaining a copy
+﻿// Copyright © 2015 Mimeo, Inc.
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -18,33 +20,46 @@
 
 namespace SendWithUs.Client.Tests.EndToEnd
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using System.Net;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
 
     [TestClass]
-    public class DripCampaignDeactivateAsyncTests
+    public class RenderAsyncTests
     {
         [TestMethod]
-        public void DripCampaignDeactivateAsync_MinimalRequest_Succeeds()
+        public void RenderAsync_MinimalRequest_Succeeds()
         {
             // Arrange
-            var testData = new TestData("EndToEnd/Data/DripCampaignDeactivateRequest.xml");
-            var request = new DripCampaignDeactivateRequest(testData.CampaignId, testData.RecipientAddress);
+            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
+            var request = new RenderRequest(testData.TemplateId);
             var client = new SendWithUsClient(testData.ApiKey);
 
             // Act
-            var response = client.SingleAsync<DripCampaignDeactivateResponse>(request).Result;
+            var response = client.RenderAsync(request).Result;
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(typeof(DripCampaignDeactivateResponse), response.GetType());
-            var typedResponse = (DripCampaignDeactivateResponse)response;
-            Assert.AreEqual("OK", typedResponse.Status, true);
-            Assert.AreEqual(true, typedResponse.Success);
+            Assert.AreEqual("OK", response.Status, true);
+            Assert.AreEqual(true, response.Success);
+        }
+
+        [TestMethod]
+        public void RenderAsync_WithData_Succeeds()
+        {
+            // Arrange
+            var testData = new TestData("EndToEnd/Data/RenderRequest.xml");
+            var subject = "RenderAsync_WithData " + TestHelper.GetUniqueId();
+            var request = new RenderRequest(testData.TemplateId, testData.Data);
+            var client = new SendWithUsClient(testData.ApiKey);
+
+            // Act 
+            var response = client.RenderAsync(request).Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("OK", response.Status, true);
+            Assert.AreEqual(true, response.Success);
         }
     }
 }

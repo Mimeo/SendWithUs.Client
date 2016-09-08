@@ -21,12 +21,33 @@
 namespace SendWithUs.Client.Tests.Unit
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SendWithUs.Client;
 
     [TestClass]
     public class SendWithUsClientTests
     {
+        #region RenderAsync
+
+        [TestMethod]
+        public void RenderAsync_NullRequest_Throws()
+        {
+            // Arrange
+            var apiKey = TestHelper.GetUniqueId();
+            var client = new SendWithUsClient(apiKey);
+            var request = null as IRenderRequest;
+
+            // Act
+            var exception = TestHelper.CaptureException(() => client.RenderAsync(request));
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
+        }
+
+        #endregion
+
         #region SendAsync
 
         [TestMethod]
@@ -35,9 +56,10 @@ namespace SendWithUs.Client.Tests.Unit
             // Arrange
             var apiKey = TestHelper.GetUniqueId();
             var client = new SendWithUsClient(apiKey);
+            var request = null as ISendRequest;
 
             // Act
-            var exception = TestHelper.CaptureException(() => client.SendAsync(null));
+            var exception = TestHelper.CaptureException(() => client.SendAsync(request));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
@@ -55,7 +77,7 @@ namespace SendWithUs.Client.Tests.Unit
             var client = new SendWithUsClient(apiKey);
 
             // Act
-            var exception = TestHelper.CaptureException(() => client.SingleAsync(null));
+            var exception = TestHelper.CaptureException(() => client.SingleAsync<SendResponse>(null));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentNullException));
@@ -66,14 +88,30 @@ namespace SendWithUs.Client.Tests.Unit
         #region BatchAsync
 
         [TestMethod]
-        public void BatchAsync_NullRequest_Throws()
+        public void BatchAsync_NullRequests_Throws()
         {
             // Arrange
             var apiKey = TestHelper.GetUniqueId();
             var client = new SendWithUsClient(apiKey);
+            var requests = null as IEnumerable<IRequest>;
 
             // Act
-            var exception = TestHelper.CaptureException(() => client.BatchAsync(null));
+            var exception = TestHelper.CaptureException(() => client.BatchAsync(requests));
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
+        }
+
+        [TestMethod]
+        public void BatchAsync_EmptyRequests_Throws()
+        {
+            // Arrange
+            var apiKey = TestHelper.GetUniqueId();
+            var client = new SendWithUsClient(apiKey);
+            var requests = Enumerable.Empty<IRequest>();
+
+            // Act
+            var exception = TestHelper.CaptureException(() => client.BatchAsync(requests));
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ArgumentException));

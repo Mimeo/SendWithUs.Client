@@ -26,68 +26,39 @@ namespace SendWithUs.Client.Tests.Component
     using SendWithUs.Client;
 
     [TestClass]
-    public class SendRequestConverterTests : ComponentTestsBase
+    public class RenderRequestConverterTests : ComponentTestsBase
     {
         [TestMethod]
         public void WriteJson_MinimalSendRequest_Succeeds()
         {
             var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
-            var request = new SendRequest(templateId, recipientAddress);
+            var request = new RenderRequest(templateId);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = JsonSerializer.Create();
-            var converter = new SendRequestConverter();
+            var converter = new RenderRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(request, jsonObject);
+            this.ValidateRenderRequest(jsonObject, templateId, null);
         }
 
         [TestMethod]
         public void WriteJson_WithData_IncludesAllData()
         {
             var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
             var data = TestHelper.GetRandomDictionary();
-            var request = new SendRequest(templateId, recipientAddress, data);
+            var request = new RenderRequest(templateId, data);
             var writer = BufferedJsonStringWriter.Create();
             var serializer = new JsonSerializer();
-            var converter = new SendRequestConverter();
+            var converter = new RenderRequestConverter();
 
             converter.WriteJson(writer, request, serializer);
             var jsonObject = writer.GetBufferAs<JObject>();
 
             Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(request, jsonObject);
-        }
-
-        [TestMethod]
-        public void WriteJson_FullSenderInfo_WritesSenderJsonObject()
-        {
-            var templateId = "template_1234";
-            var recipientAddress = "tennessee.tuxedo@megapolis.zoo";
-            var senderName = "Phineas J. Whoopee";
-            var senderAddress = "phineas@whoopee.3dbb";
-            var senderReplyTo = "pjwhoop23@gmail.com";
-            var request = new SendRequest
-            {
-                TemplateId = templateId,
-                SenderName = senderName,
-                SenderAddress = senderAddress,
-                SenderReplyTo = senderReplyTo,
-                RecipientAddress = recipientAddress
-            };
-            var writer = BufferedJsonStringWriter.Create();
-            var serializer = new JsonSerializer();
-            var converter = new SendRequestConverter();
-
-            converter.WriteJson(writer, request, serializer);
-            var jsonObject = writer.GetBufferAs<JObject>();
-
-            Assert.IsNotNull(jsonObject);
-            this.ValidateSendRequest(request, jsonObject);
+            this.ValidateRenderRequest(jsonObject, templateId, data);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,12 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SendWithUs.Client
+namespace SendWithUs.Client.Tests.Unit
 {
-    using System.Collections.Generic;
+    using System;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public interface IBatchResponse : IResponse
+    [TestClass]
+    public class BatchRequestTests
     {
-        IEnumerable<IResponse> Items { get; }
+        [TestMethod]
+        public void GetResponseType_Always_Throws()
+        {
+            // Arrange
+            var request = new BatchRequest(null);
+
+            // Act
+            var exception = TestHelper.CaptureException(() => request.GetResponseType());
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+        }
+
+        [TestMethod]
+        public void Validate_Always_Throws()
+        {
+            // Arrange
+            var request = new BatchRequest(null);
+
+            // Act
+            var exception = TestHelper.CaptureException(() => request.Validate());
+
+            // Assert
+            Assert.IsInstanceOfType(exception, typeof(NotSupportedException));
+        }
     }
 }

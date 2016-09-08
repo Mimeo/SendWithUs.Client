@@ -21,7 +21,6 @@
 namespace SendWithUs.Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Reflection;
@@ -45,11 +44,6 @@ namespace SendWithUs.Client
             }
 
             return ((IResponse)Activator.CreateInstance(responseType)).Initialize(statusCode, json);
-        }
-
-        public IBatchResponse Create(IEnumerable<Type> responseSequence, HttpStatusCode statusCode, JToken json)
-        {
-            return new BatchResponse(this, responseSequence).Initialize(statusCode, json) as IBatchResponse;
         }
     }
 }

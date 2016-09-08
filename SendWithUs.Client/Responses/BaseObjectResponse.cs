@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,23 @@
 
 namespace SendWithUs.Client
 {
-    using System.Collections.Generic;
+    using Newtonsoft.Json.Linq;
 
-    public interface IBatchResponse : IResponse
+    public abstract class BaseObjectResponse : BaseResponse<JObject>
     {
-        IEnumerable<IResponse> Items { get; }
+        /// <summary>
+        /// Gets the value of the named property on the specified object.
+        /// </summary>
+        /// <param name="json">The object from which to get the property value.</param>
+        /// <returns>The property value.</returns>
+        /// <remarks>This method exists to aid unit testing of Populate(), because JObject.GetValue()
+        /// is not virtual and therefore cannot be mocked.</remarks>
+        protected internal virtual JToken GetPropertyValue(JObject json, string propertyName)
+        {
+            //var details = json.Property(propertyName);
+            //return (details != null && details.HasValues) ? details.Value : null;
+            return json.GetValue(propertyName);
+        }
+
     }
 }

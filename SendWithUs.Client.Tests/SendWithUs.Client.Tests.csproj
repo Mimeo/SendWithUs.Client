@@ -76,8 +76,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Component\BatchRequestWrapperConverterTests.cs" />
+    <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
+    <Compile Include="Component\RenderRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
     <Compile Include="Component\DripCampaignDeactivateConverterTests.cs" />
     <Compile Include="Component\DripCampaignDeactivateAllConverterTests.cs" />
@@ -92,8 +94,8 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Unit\BaseResponseTests.cs" />
-    <Compile Include="Unit\BatchRequestWrapperConverterTests.cs" />
-    <Compile Include="Unit\BatchRequestWrapperTests.cs" />
+    <Compile Include="Unit\BatchRequestConverterTests.cs" />
+    <Compile Include="Unit\BatchRequestTests.cs" />
     <Compile Include="Unit\BatchResponseTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
     <Compile Include="Unit\SendRequestConverterTests.cs" />
@@ -127,6 +129,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EndToEnd\Data\SendRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EndToEnd\Data\RenderRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

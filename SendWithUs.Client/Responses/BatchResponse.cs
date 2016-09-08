@@ -28,41 +28,48 @@ namespace SendWithUs.Client
 
     public class BatchResponse : BaseResponse<JArray>, IBatchResponse
     {
-        public virtual IList<IResponse> Items { get; set; }
-
-        protected IResponseFactory ResponseFactory { get; set; }
-
-        protected IEnumerable<Type> ResponseSequence { get; set; }
-
-        public BatchResponse(IResponseFactory responseFactory, IEnumerable<Type> responseSequence)
+        internal static class PropertyNames
         {
-            this.ResponseFactory = responseFactory;
-            this.ResponseSequence = responseSequence;
+            public const string StatusCode = "status_code";
+            public const string Body = "body";
         }
+
+        public virtual IEnumerable<IResponse> Items { get; set; }
+
+        protected internal virtual JArray RawItems { get; set; }
 
         #region Base class overrides
 
         protected internal override void Populate(JArray json)
         {
-            if (json == null)
-            {
-                return;
-            }
-
-            this.Items = json.Zip(this.ResponseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt)).ToList();
-        }
-
-        protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType)
-        {
-            EnsureArgument.NotNull(wrapper, "wrapper");
-            EnsureArgument.NotNull(responseType, "responseType");
-
-            var statusCode = (HttpStatusCode)wrapper.Value<int>("status_code");
-            var json = wrapper.GetValue("body") as JObject;
-
-            return this.ResponseFactory.Create(responseType, statusCode, json);
+            this.RawItems = json;
         }
 
         #endregion
+
+        public BatchResponse Inflate(IEnumerable<Type> responseSequence, IResponseFactory responseFactory)
+        {
+            if (this.RawItems == null)
+            {
+                throw new InvalidOperationException("Cannot inflate; the value of RawItems is null.");
+            }
+
+            // Force enumeration of the Items value so we can discard the RawItems.
+            this.Items = this.RawItems.Zip(responseSequence, (jt, rt) => this.BuildResponse(jt as JObject, rt, responseFactory)).ToList();
+            this.RawItems = null;
+            return this;
+        }
+
+        protected internal virtual IResponse BuildResponse(JObject wrapper, Type responseType, IResponseFactory responseFactory)
+        {
+            EnsureArgument.NotNull(wrapper, "wrapper");
+            EnsureArgument.NotNull(responseType, "responseType");
+            EnsureArgument.NotNull(responseFactory, "responseFactory");
+
+            var statusCode = (HttpStatusCode)wrapper.Value<int>(PropertyNames.StatusCode);
+            var json = wrapper.GetValue(PropertyNames.Body) as JObject;
+
+            return responseFactory.Create(responseType, statusCode, json);
+        }
     }
 }

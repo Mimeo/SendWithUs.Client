@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,34 @@
 
 namespace SendWithUs.Client
 {
-    using System;
-
     /// <summary>
-    /// Defines the common interface of objects used to make API requests.
+    /// Describes the interface of objects used to make API requests to render templates.
     /// </summary>
-    public interface IRequest
+    /// <remarks>This interface roughly corresponds to the JSON object used with the /render route
+    /// in the REST API, with some properties flattened or renamed.</remarks>
+    public interface IRenderRequest : IRequest
     {
         /// <summary>
-        /// Gets the HTTP method for the request.
+        /// Gets the unique identifier of an email template.
         /// </summary>
-        /// <returns>The HTTP method for the request.</returns>
-        string GetHttpMethod();
+        /// <remarks>Corresponds to the "template_id" property in the SendWithUs API.</remarks>
+        string TemplateId { get; }
 
         /// <summary>
-        /// Gets the URI path for the request.
+        /// Gets the unique identifier for a version of the template identified by TemplateId.
         /// </summary>
-        /// <returns>The URI path for the request.</returns>
-        string GetUriPath();
+        /// <remarks>Corresponds to the "version_id" property in the SendWithUs API.</remarks>
+        string TemplateVersionId { get; }
 
         /// <summary>
-        /// Gets the type of the corresponding response object for the request.
+        /// Gets the data to use when expanding the message template.
         /// </summary>
-        /// <returns>The type of the corresponding response object for the request.</returns>
-        Type GetResponseType();
+        /// <remarks>Corresponds to the "template_data" property in the SendWithUs API.</remarks>
+        object Data { get; }
 
         /// <summary>
-        /// Validates the current object.
+        /// Gets the language tag for a localized variant of the template identified by TemplateId.
         /// </summary>
-        /// <returns>The current object if valid; throws otherwise.</returns>
-        IRequest Validate();
-
-        /// <summary>
-        /// Gets a value indicating whether the request object is valid (well-formed).
-        /// </summary>
-        bool IsValid { get; }
+        string Locale { get; }
     }
 }

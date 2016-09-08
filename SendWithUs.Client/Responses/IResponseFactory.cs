@@ -30,7 +30,5 @@ namespace SendWithUs.Client
         T Create<T>(HttpStatusCode statusCode, JToken json) where T : class, IResponse;
 
         IResponse Create(Type responseType, HttpStatusCode statusCode, JToken json);
-
-        IBatchResponse Create(IEnumerable<Type> responseSequence, HttpStatusCode statusCode, JToken json);
     }
 }

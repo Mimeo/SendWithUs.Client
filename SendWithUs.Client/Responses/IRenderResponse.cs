@@ -1,4 +1,4 @@
-﻿// Copyright © 2014 Mimeo, Inc.
+﻿// Copyright © 2015 Mimeo, Inc. All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,24 @@
 
 namespace SendWithUs.Client
 {
-    using System.Collections.Generic;
-
-    public interface IBatchResponse : IResponse
+    public interface IRenderResponse : IResponse
     {
-        IEnumerable<IResponse> Items { get; }
+        bool Success { get; }
+
+        string Status { get; }
+
+        string TemplateId { get; }
+
+        string TemplateName { get; }
+
+        string TemplateVersionId { get; }
+
+        string Locale { get; }
+
+        string Subject { get; }
+
+        string Html { get; }
+
+        string Text { get; }
     }
 }

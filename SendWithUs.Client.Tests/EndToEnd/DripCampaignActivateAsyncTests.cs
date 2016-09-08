@@ -37,7 +37,7 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var client = new SendWithUsClient(testData.ApiKey);
 
             // Act
-            var response = client.SingleAsync(request).Result;
+            var response = client.SingleAsync<DripCampaignActivateResponse>(request).Result;
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -57,7 +57,7 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var client = new SendWithUsClient(testData.ApiKey);
 
             // Act 
-            var response = client.SingleAsync(request).Result;
+            var response = client.SingleAsync<DripCampaignActivateResponse>(request).Result;
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);

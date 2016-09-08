@@ -90,7 +90,7 @@ namespace SendWithUs.Client.Tests
 
         public static IDictionary<string, string> GetRandomDictionary()
         {
-            var itemCount = GetRandomInteger(0, 10);
+            var itemCount = GetRandomInteger(1, 10);
             return Generate(itemCount, i => GetUniqueId()).ToDictionary(k => k, k => GetUniqueId());
         }
     }

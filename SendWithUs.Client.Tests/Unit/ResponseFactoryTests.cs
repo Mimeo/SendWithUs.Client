@@ -134,38 +134,5 @@ namespace SendWithUs.Client.Tests.Unit
             // The Initialized property was set by side-effect.
             Assert.IsTrue(response.Initialized);
         }
-
-        [TestMethod]
-        public void BatchCreate_Normally_ReturnsBatchResponseInstance()
-        {
-            // Arrange
-            var responseSequence = (IEnumerable<Type>)null;
-            var statusCode = HttpStatusCode.OK;
-            var json = (JToken)null;
-            var factory = new ResponseFactory();
-
-            // Act
-            var response = factory.Create(responseSequence, statusCode, json);
-
-            // Assert 
-            Assert.IsInstanceOfType(response, typeof(BatchResponse));
-        }
-
-        [TestMethod]
-        public void BatchCreate_Normally_InitializesInstance()
-        {
-            // Arrange
-            var responseSequence = (IEnumerable<Type>)null;
-            var statusCode = HttpStatusCode.OK;
-            var json = (JToken)null;
-            var factory = new ResponseFactory();
-
-            // Act
-            var response = factory.Create(responseSequence, statusCode, json);
-
-            // Assert 
-            // The StatusCode property was set by side-effect.
-            Assert.AreEqual(statusCode, response.StatusCode);
-        }
     }
 }

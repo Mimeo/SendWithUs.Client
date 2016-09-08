@@ -30,22 +30,32 @@ namespace SendWithUs.Client.Tests.EndToEnd
     public class BatchAsyncTests
     {
         [TestMethod]
-        public void BatchAsync_OneSendRequest_Succeeds()
+        public void BatchAsync_TwoRequests_Succeeds()
         {
+            // Arange
             var subject = "BatchAsync " + TestHelper.GetUniqueId();
             var testData = new TestData("EndToEnd/Data/SendRequest.xml");
-            var request = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
+            var sendRequest = new SendRequest(testData.TemplateId, testData.RecipientAddress, testData.Data.Upsert("subject", subject));
+            var renderRequest = new RenderRequest(testData.TemplateId);
+            var requests = new List<IRequest> { sendRequest, renderRequest };
             var client = new SendWithUsClient(testData.ApiKey);
 
-            var batchResponse = client.BatchAsync(new List<IRequest> { request }).Result;
+            // Act
+            var batchResponse = client.BatchAsync(requests).Result;
 
+            // Assert
             Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
-            Assert.AreEqual(1, batchResponse.Items.Count());
+            Assert.AreEqual(requests.Count, batchResponse.Items.Count());
 
-            var sendResponse = batchResponse.Items.First() as ISendResponse;
+            var sendResponse = batchResponse.Items.ElementAt(0) as ISendResponse;
             Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
             Assert.AreEqual("OK", sendResponse.Status, true);
             Assert.AreEqual(true, sendResponse.Success);
+
+            var renderResponse = batchResponse.Items.ElementAt(1) as IRenderResponse;
+            Assert.AreEqual(HttpStatusCode.OK, renderResponse.StatusCode);
+            Assert.AreEqual("OK", renderResponse.Status, true);
+            Assert.AreEqual(true, renderResponse.Success);
         }
 
         [TestMethod]
@@ -64,17 +74,18 @@ namespace SendWithUs.Client.Tests.EndToEnd
             var client = new SendWithUsClient(testData.ApiKey);
 
             var batchResponse = client.BatchAsync(new List<IRequest> { request1, request2 }).Result;
+            var batchItems = batchResponse.Items.ToList();
 
             Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
-            Assert.AreEqual(2, batchResponse.Items.Count());
+            Assert.AreEqual(2, batchItems.Count());
 
-            var dripCampaignActivateResponse = batchResponse.Items.First() as IDripCampaignActivateResponse;
+            var dripCampaignActivateResponse = batchItems.First() as IDripCampaignActivateResponse;
             Assert.AreEqual(HttpStatusCode.OK, dripCampaignActivateResponse.StatusCode);
             Assert.AreEqual("OK", dripCampaignActivateResponse.Status, true);
             Assert.AreEqual(true, dripCampaignActivateResponse.Success);
-            batchResponse.Items.RemoveAt(0);
+            batchItems.RemoveAt(0);
 
-            var sendResponse = batchResponse.Items.First() as ISendResponse;
+            var sendResponse = batchItems.First() as ISendResponse;
             Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
             Assert.AreEqual("OK", sendResponse.Status, true);
             Assert.AreEqual(true, sendResponse.Success);

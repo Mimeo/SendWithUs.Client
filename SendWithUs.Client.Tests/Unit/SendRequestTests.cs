@@ -37,7 +37,7 @@ namespace SendWithUs.Client.Tests.Unit
             var isValid = request.Object.IsValid;
 
             // Assert
-            request.Verify(r => r.Validate(false), Times.Once);
+            request.Verify(r => r.Validate(), Times.Once);
         }
 
         [TestMethod]
@@ -51,19 +51,6 @@ namespace SendWithUs.Client.Tests.Unit
 
             // Assert
             Assert.AreEqual(typeof(SendResponse), responseType);
-        }
-
-        [TestMethod]
-        public void Validate_Always_CallsValidateBool()
-        {
-            // Arrange
-            var request = new Mock<SendRequest>();
-
-            // Act
-            var self = request.Object.Validate();
-
-            // Assert
-            request.Verify(r => r.Validate(true), Times.Once);
         }
 
         [TestMethod]
@@ -82,7 +69,7 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void ValidateBool_Normally_ReturnsTrue()
+        public void Validate_Normally_ReturnsThis()
         {
             // Arrange
             var templateId = TestHelper.GetUniqueId();
@@ -93,14 +80,14 @@ namespace SendWithUs.Client.Tests.Unit
             request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
 
             // Act
-            var isValid = request.Object.Validate(false);
+            var self = request.Object.Validate();
 
             // Assert
-            Assert.IsTrue(isValid);
+            Assert.AreSame(request.Object, self);
         }
 
         [TestMethod]
-        public void ValidateBool_TrueFlagAndEmptyTemplateId_Throws()
+        public void Validate_EmptyTemplateId_Throws()
         {
             // Arrange
             var templateId = String.Empty;
@@ -111,7 +98,7 @@ namespace SendWithUs.Client.Tests.Unit
             request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
 
             // Act
-            var exception = TestHelper.CaptureException(() => request.Object.Validate(true));
+            var exception = TestHelper.CaptureException(() => request.Object.Validate());
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ValidationException));
@@ -120,7 +107,7 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void ValidateBool_TrueFlagAndEmptyRecipientAddress_Throws()
+        public void Validate_EmptyRecipientAddress_Throws()
         {
             // Arrange
             var templateId = TestHelper.GetUniqueId();
@@ -131,7 +118,7 @@ namespace SendWithUs.Client.Tests.Unit
             request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
 
             // Act
-            var exception = TestHelper.CaptureException(() => request.Object.Validate(true));
+            var exception = TestHelper.CaptureException(() => request.Object.Validate());
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ValidationException));
@@ -140,7 +127,7 @@ namespace SendWithUs.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void ValidateBool_TrueFlagAndInconsistentSenderValues_Throws()
+        public void Validate_InconsistentSenderValues_Throws()
         {
             // Arrange
             var templateId = TestHelper.GetUniqueId();
@@ -153,68 +140,12 @@ namespace SendWithUs.Client.Tests.Unit
             request.SetupGet(r => r.SenderName).Returns(senderName);
 
             // Act
-            var exception = TestHelper.CaptureException(() => request.Object.Validate(true));
+            var exception = TestHelper.CaptureException(() => request.Object.Validate());
 
             // Assert
             Assert.IsInstanceOfType(exception, typeof(ValidationException));
             var invalid = exception as ValidationException;
             Assert.AreEqual(ValidationFailureMode.MissingSenderAddress, invalid.FailureMode);
-        }
-
-        [TestMethod]
-        public void ValidateBool_FalseFlagAndEmptyTemplateId_ReturnsFalse()
-        {
-            // Arrange
-            var templateId = String.Empty;
-            var recipientAddress = TestHelper.GetUniqueId();
-            var request = new Mock<SendRequest>() { CallBase = true };
-
-            request.SetupGet(r => r.TemplateId).Returns(templateId);
-            request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
-
-            // Act
-            var isValid =  request.Object.Validate(false);
-
-            // Assert
-            Assert.AreEqual(false, isValid);
-        }
-
-        [TestMethod]
-        public void ValidateBool_FalseFlagAndEmptyRecipientAddress_ReturnsFalse()
-        {
-            // Arrange
-            var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = String.Empty;
-            var request = new Mock<SendRequest>() { CallBase = true };
-
-            request.SetupGet(r => r.TemplateId).Returns(templateId);
-            request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
-
-            // Act
-            var isValid = request.Object.Validate(false);
-
-            // Assert
-            Assert.AreEqual(false, isValid);
-        }
-
-        [TestMethod]
-        public void ValidateBool_FalseFlagAndInconsistentSenderValues_ReturnsFalse()
-        {
-            // Arrange
-            var templateId = TestHelper.GetUniqueId();
-            var recipientAddress = TestHelper.GetUniqueId();
-            var senderName = TestHelper.GetUniqueId();
-            var request = new Mock<SendRequest>() { CallBase = true };
-
-            request.SetupGet(r => r.TemplateId).Returns(templateId);
-            request.SetupGet(r => r.RecipientAddress).Returns(recipientAddress);
-            request.SetupGet(r => r.SenderName).Returns(senderName);
-
-            // Act
-            var isValid = request.Object.Validate(false);
-
-            // Assert
-            Assert.AreEqual(false, isValid);
         }
     }
 }
