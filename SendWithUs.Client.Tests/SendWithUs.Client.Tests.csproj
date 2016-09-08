@@ -80,6 +80,7 @@
     <Compile Include="Component\ComponentTestsBase.cs" />
     <Compile Include="Component\RenderRequestConverterTests.cs" />
     <Compile Include="Component\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\CustomerUpdateAsyncTests.cs" />
     <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
     <Compile Include="Component\DripCampaignDeactivateConverterTests.cs" />
@@ -98,6 +99,9 @@
     <Compile Include="Unit\BatchRequestConverterTests.cs" />
     <Compile Include="Unit\BatchRequestTests.cs" />
     <Compile Include="Unit\BatchResponseTests.cs" />
+    <Compile Include="Unit\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="Unit\CustomerUpdateRequestTests.cs" />
+    <Compile Include="Unit\CustomerUpdateResponseTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
     <Compile Include="Unit\SendRequestConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,6 +143,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="EndToEnd\Data\CustomerUpdateRequest2.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="EndToEnd\Data\DripCampaignActivateRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -148,6 +155,9 @@
     <Content Include="EndToEnd\Data\DripCampaignDeactivateRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="EndToEnd\Data\CustomerUpdateRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

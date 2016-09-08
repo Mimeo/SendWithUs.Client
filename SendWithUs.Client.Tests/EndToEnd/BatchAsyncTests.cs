@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace SendWithUs.Client.Tests.EndToEnd
 {
     using System.Collections.Generic;
@@ -89,6 +90,37 @@ namespace SendWithUs.Client.Tests.EndToEnd
             Assert.AreEqual(HttpStatusCode.OK, sendResponse.StatusCode);
             Assert.AreEqual("OK", sendResponse.Status, true);
             Assert.AreEqual(true, sendResponse.Success);
+        }
+
+        [TestMethod]
+        public void BatchAsync_SendMultipleCustomerWithData_Succeeds()
+        {
+            // Item 1
+            var testData = new TestData("EndToEnd/Data/CustomerUpdateRequest.xml");
+            var request1 = new CustomerUpdateRequest(testData.Email, testData.Data);
+
+            // Item 2
+            testData = new TestData("EndToEnd/Data/CustomerUpdateRequest2.xml");
+            var request2 = new CustomerUpdateRequest(testData.Email, testData.Data);
+
+            var client = new SendWithUsClient(testData.ApiKey);
+
+            var batchResponse = client.BatchAsync(new List<IRequest> { request1, request2 }).Result;
+            var batchItems = batchResponse.Items.ToList();
+
+            Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
+            Assert.AreEqual(2, batchItems.Count());
+
+            var updateCustomerResponse1 = batchItems.First() as ICustomerUpdateResponse;
+            Assert.AreEqual(HttpStatusCode.OK, updateCustomerResponse1.StatusCode);
+            Assert.AreEqual("OK", updateCustomerResponse1.Status, true);
+            Assert.AreEqual(true, updateCustomerResponse1.Success);
+            batchItems.RemoveAt(0);
+
+            var updateCustomerResponse2 = batchItems.First() as ICustomerUpdateResponse;
+            Assert.AreEqual(HttpStatusCode.OK, updateCustomerResponse2.StatusCode);
+            Assert.AreEqual("OK", updateCustomerResponse2.Status, true);
+            Assert.AreEqual(true, updateCustomerResponse2.Success);
         }
     }
 }

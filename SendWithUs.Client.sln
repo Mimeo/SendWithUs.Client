@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendWithUs.Client", "SendWithUs.Client\SendWithUs.Client.csproj", "{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}"
 EndProject
@@ -26,8 +26,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{012B2A9E-8A75-4D6F-8051-EEFBE9F6BAD1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3059E9E-CE97-4E9B-B778-D78EFD1E448A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -74,7 +74,7 @@ namespace SendWithUs.Client
 
         public Type GetResponseType()
         {
-            return typeof(SendResponse);
+            return typeof(CustomerUpdateResponse);
         }
 
         public virtual IRequest Validate()
