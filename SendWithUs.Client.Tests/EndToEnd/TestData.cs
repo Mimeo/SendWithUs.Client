@@ -90,6 +90,11 @@ namespace SendWithUs.Client.Tests.EndToEnd
             }
         }
 
+        public IEnumerable<string> Groups
+        {
+            get { return new List<string> { "grp_PUTGROUPIDHERE" }; }
+        }
+
         public IEnumerable<string> Tags
         {
             get { return null; }

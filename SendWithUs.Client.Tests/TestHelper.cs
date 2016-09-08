@@ -93,5 +93,11 @@ namespace SendWithUs.Client.Tests
             var itemCount = GetRandomInteger(1, 10);
             return Generate(itemCount, i => GetUniqueId()).ToDictionary(k => k, k => GetUniqueId());
         }
+
+        public static IEnumerable<string> GetRandomStringList()
+        {
+            var itemCount = GetRandomInteger(1, 10);
+            return Generate(itemCount, i => GetUniqueId());
+        }
     }
 }

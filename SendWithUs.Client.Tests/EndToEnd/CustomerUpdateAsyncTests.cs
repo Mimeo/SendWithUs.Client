@@ -61,5 +61,24 @@ namespace SendWithUs.Client.Tests.EndToEnd
             Assert.AreEqual("OK", response.Status, true);
             Assert.AreEqual(true, response.Success);
         }
+
+        [TestMethod]
+        public void CustomerUpdateAsync_WithGroups_Succeeds()
+        {
+            // Arrange
+            var testData = new TestData("EndToEnd/Data/CustomerUpdateRequest.xml");
+            var subject = "CustomerUpdateAsync_WithData " + TestHelper.GetUniqueId();
+            var request = new CustomerUpdateRequest(testData.Email);
+            request.Groups = testData.Groups;
+            var client = new SendWithUsClient(testData.ApiKey);
+
+            // Act 
+            var response = client.SingleAsync<CustomerUpdateResponse>(request).Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("OK", response.Status, true);
+            Assert.AreEqual(true, response.Success);
+        }
     }
 }

@@ -93,19 +93,22 @@ namespace SendWithUs.Client.Tests.EndToEnd
         }
 
         [TestMethod]
-        public void BatchAsync_SendMultipleCustomerWithData_Succeeds()
+        public void BatchAsync_SendMultipleCustomerWithGroups_Succeeds()
         {
             // Item 1
             var testData = new TestData("EndToEnd/Data/CustomerUpdateRequest.xml");
             var request1 = new CustomerUpdateRequest(testData.Email, testData.Data);
+            request1.Groups = testData.Groups;
 
             // Item 2
             testData = new TestData("EndToEnd/Data/CustomerUpdateRequest2.xml");
             var request2 = new CustomerUpdateRequest(testData.Email, testData.Data);
+            request2.Groups = testData.Groups;
 
             var client = new SendWithUsClient(testData.ApiKey);
 
-            var batchResponse = client.BatchAsync(new List<IRequest> { request1, request2 }).Result;
+            var batchList = new List<IRequest> { request1, request2 };
+            var batchResponse = client.BatchAsync(batchList).Result;
             var batchItems = batchResponse.Items.ToList();
 
             Assert.AreEqual(HttpStatusCode.OK, batchResponse.StatusCode);
