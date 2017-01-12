@@ -27,6 +27,7 @@ namespace SendWithUs.Client.Tests.Component
     using RenderNames = SendWithUs.Client.RenderRequestConverter.PropertyNames;
     using SendNames = SendWithUs.Client.SendRequestConverter.PropertyNames;
     using CustomerUpdateNames = SendWithUs.Client.CustomerUpdateRequestConverter.PropertyNames;
+    using CustomerDeleteNames = SendWithUs.Client.CustomerDeleteRequestConverter.PropertyNames;
     using System.Linq;
     public abstract class ComponentTestsBase
     {
@@ -135,6 +136,24 @@ namespace SendWithUs.Client.Tests.Component
                         break;
                     case CustomerUpdateNames.Groups:
                         Assert.IsTrue(Enumerable.SequenceEqual(request.Groups, pair.Value.Values<string>()));
+                        break;
+                }
+            }
+
+            Assert.IsTrue(emailFound);
+        }
+
+        protected void ValidateCustomerDeleteRequest(CustomerDeleteRequest request, JObject jsonObject)
+        {
+            var emailFound = false;
+
+            foreach (var pair in jsonObject)
+            {
+                switch (pair.Key)
+                {
+                    case CustomerDeleteNames.Email:
+                        Assert.AreEqual(request.Email, pair.Value.Value<string>());
+                        emailFound = true;
                         break;
                 }
             }

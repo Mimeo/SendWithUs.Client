@@ -78,8 +78,10 @@
   <ItemGroup>
     <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
+    <Compile Include="Component\CustomerDeleteRequestConverterTests.cs" />
     <Compile Include="Component\RenderRequestConverterTests.cs" />
     <Compile Include="Component\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\CustomerDeleteAsyncTests.cs" />
     <Compile Include="EndToEnd\CustomerUpdateAsyncTests.cs" />
     <Compile Include="EndToEnd\RenderAsyncTests.cs" />
     <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
@@ -99,8 +101,11 @@
     <Compile Include="Unit\BatchRequestConverterTests.cs" />
     <Compile Include="Unit\BatchRequestTests.cs" />
     <Compile Include="Unit\BatchResponseTests.cs" />
+    <Compile Include="Unit\CustomerDeleteRequestConverterTests.cs" />
     <Compile Include="Unit\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="Unit\CustomerDeleteRequestTests.cs" />
     <Compile Include="Unit\CustomerUpdateRequestTests.cs" />
+    <Compile Include="Unit\CustomerDeleteResponseTests.cs" />
     <Compile Include="Unit\CustomerUpdateResponseTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
     <Compile Include="Unit\SendRequestConverterTests.cs" />
@@ -144,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EndToEnd\Data\CustomerUpdateRequest2.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="EndToEnd\Data\CustomerDeleteRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="EndToEnd\Data\DripCampaignActivateRequest.xml">

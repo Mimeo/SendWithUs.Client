@@ -47,8 +47,11 @@
     <Compile Include="Requests\BaseConverter.cs" />
     <Compile Include="Requests\BatchRequest.cs" />
     <Compile Include="Requests\BatchRequestConverter.cs" />
+    <Compile Include="Requests\CustomerDeleteRequest.cs" />
     <Compile Include="Requests\CustomerUpdateRequest.cs" />
+    <Compile Include="Requests\CustomerDeleteRequestConverter.cs" />
     <Compile Include="Requests\CustomerUpdateRequestConverter.cs" />
+    <Compile Include="Requests\ICustomerDeleteRequest.cs" />
     <Compile Include="Requests\ICustomerUpdateRequest.cs" />
     <Compile Include="Requests\IRenderRequest.cs" />
     <Compile Include="Requests\DripCampaignActivateRequest.cs" />
@@ -69,11 +72,13 @@
     <Compile Include="Responses\BatchResponse.cs" />
     <Compile Include="Helpers\IAttachment.cs" />
     <Compile Include="Requests\IRequest.cs" />
+    <Compile Include="Responses\CustomerDeleteResponse.cs" />
     <Compile Include="Responses\CustomerUpdateResponse.cs" />
     <Compile Include="Responses\DripCampaignActivateResponse.cs" />
     <Compile Include="Responses\DripCampaignDeactivateAllResponse.cs" />
     <Compile Include="Responses\DripCampaignDeactivateResponse.cs" />
     <Compile Include="Responses\IBatchResponse.cs" />
+    <Compile Include="Responses\ICustomerDeleteResponse.cs" />
     <Compile Include="Responses\ICustomerUpdateResponse.cs" />
     <Compile Include="Responses\IDripCampaignActivateResponse.cs" />
     <Compile Include="Responses\IDripCampaignDeactivateAllResponse.cs" />
