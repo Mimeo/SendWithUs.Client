@@ -36,6 +36,16 @@ namespace SendWithUs.Client.Tests.EndToEnd
             get { return this.GetString("TemplateId"); }
         }
 
+        public string CampaignId
+        {
+            get { return this.GetString("CampaignId"); }
+        }
+
+        public string Email
+        {
+            get { return this.GetString("Email"); }
+        }
+
         public string SenderAddress
         {
             get { return this.GetString("SenderAddress"); }
@@ -78,6 +88,11 @@ namespace SendWithUs.Client.Tests.EndToEnd
                 var rawData = this.DataSource.Root.Element("Data").Descendants("Item");
                 return rawData.ToDictionary<XElement, string, object>(e => e.Attribute("name").Value, e => e.Attribute("value").Value);
             }
+        }
+
+        public IEnumerable<string> Groups
+        {
+            get { return new List<string> { "grp_PUTGROUPIDHERE" }; }
         }
 
         public IEnumerable<string> Tags

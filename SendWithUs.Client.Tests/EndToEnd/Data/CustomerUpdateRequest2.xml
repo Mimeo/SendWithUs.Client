@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RenderRequest>
+    <ApiKey></ApiKey>
+    <Email></Email>
+    <Data>
+          <Item name="subject" value="RenderAsync Test"/>
+          <Item name="firstName" value="Roscoe"/>
+          <Item name="changePasswordUrl" value="http://example.com"/>
+          <Item name="applicationName" value="SendWithUs.Client.Tests"/>
+          <Item name="customerServicePhoneNumber" value="555-1212"/>
+      </Data>
+</RenderRequest>

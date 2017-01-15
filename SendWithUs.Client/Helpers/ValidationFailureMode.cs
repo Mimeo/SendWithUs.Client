@@ -26,6 +26,8 @@ namespace SendWithUs.Client
         MissingTemplateId,
         MissingRecipientAddress,
         MissingSenderAddress,
-        MissingData
+        MissingCampaignId,
+        MissingData,
+        MissingCustomerAddress
     }
 }

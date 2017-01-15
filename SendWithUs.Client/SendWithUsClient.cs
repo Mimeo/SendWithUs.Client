@@ -139,6 +139,22 @@ namespace SendWithUs.Client
         }
 
         /// <summary>
+        /// Sends a request to the API
+        /// </summary>
+        /// <param name="request">A request object describing what you want to do</param>
+        /// <returns>A response object.</returns>
+        /// <exception cref="System.ArgumentNullException">The request argument was null.</exception>
+        public virtual async Task<TResponse> SingleAsync<TResponse>(IRequest request)
+            where TResponse : class, IResponse
+        {
+            EnsureArgument.NotNull(request, "request");
+            return await this.ExecuteAsync<TResponse>(request.Validate()).ConfigureAwait(false);
+            //var httpResponse = await this.PostJsonAsync(request.GetUriPath(), request.Validate()).ConfigureAwait(false);
+            //var json = await this.ReadJsonAsync(httpResponse);
+            //return await this.ResponseFactory.Create(request.GetResponseType(), httpResponse.StatusCode, json);
+        }
+
+        /// <summary>
         /// Submits a batch request comprising the given set of request objects.
         /// </summary>
         /// <param name="requests">A set of request objects to be batched.</param>
@@ -200,7 +216,7 @@ namespace SendWithUs.Client
         /// <returns>A response object of the specified type.</returns>
         protected async Task<TResponse> ExecuteAsync<TResponse>(IRequest request)
             where TResponse : class, IResponse
-        { 
+        {
             var httpResponse = await this.GetHttpResponseAsync(request);
             var json = await httpResponse.EnsureSuccessStatusCode().Content.ReadAsAsync<JToken>();
             return this.ResponseFactory.Create<TResponse>(httpResponse.StatusCode, json);

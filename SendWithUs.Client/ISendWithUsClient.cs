@@ -43,6 +43,14 @@ namespace SendWithUs.Client
         Task<IRenderResponse> RenderAsync(IRenderRequest request);
 
         /// <summary>
+        /// Sends a request to the API
+        /// </summary>
+        /// <param name="request">A request object describing what you want to do</param>
+        /// <returns>A response object.</returns>
+        Task<TResponse> SingleAsync<TResponse>(IRequest request)
+            where TResponse : class, IResponse;
+
+        /// <summary>
         /// Submits a batch request comprising the given set of request objects.
         /// </summary>
         /// <param name="requests">A set of request objects to be batched.</param>

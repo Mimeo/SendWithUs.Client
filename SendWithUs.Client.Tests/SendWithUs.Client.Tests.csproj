@@ -30,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -77,25 +78,50 @@
   <ItemGroup>
     <Compile Include="Component\BatchRequestConverterTests.cs" />
     <Compile Include="Component\ComponentTestsBase.cs" />
+    <Compile Include="Component\CustomerDeleteRequestConverterTests.cs" />
     <Compile Include="Component\RenderRequestConverterTests.cs" />
+    <Compile Include="Component\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="EndToEnd\CustomerDeleteAsyncTests.cs" />
+    <Compile Include="EndToEnd\CustomerUpdateAsyncTests.cs" />
     <Compile Include="EndToEnd\RenderAsyncTests.cs" />
+    <Compile Include="Component\DripCampaignActivateConverterTests.cs" />
+    <Compile Include="Component\DripCampaignDeactivateConverterTests.cs" />
+    <Compile Include="Component\DripCampaignDeactivateAllConverterTests.cs" />
     <Compile Include="EndToEnd\TestData.cs" />
     <Compile Include="Component\BufferedJsonStringWriter.cs" />
     <Compile Include="Component\SendRequestConverterTests.cs" />
     <Compile Include="EndToEnd\SendAsyncTests.cs" />
     <Compile Include="EndToEnd\BatchAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignActivateAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignDeactivateAsyncTests.cs" />
+    <Compile Include="EndToEnd\DripCampaignDeactivateAllAsyncTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Unit\BaseResponseTests.cs" />
     <Compile Include="Unit\BatchRequestConverterTests.cs" />
     <Compile Include="Unit\BatchRequestTests.cs" />
     <Compile Include="Unit\BatchResponseTests.cs" />
+    <Compile Include="Unit\CustomerDeleteRequestConverterTests.cs" />
+    <Compile Include="Unit\CustomerUpdateRequestConverterTests.cs" />
+    <Compile Include="Unit\CustomerDeleteRequestTests.cs" />
+    <Compile Include="Unit\CustomerUpdateRequestTests.cs" />
+    <Compile Include="Unit\CustomerDeleteResponseTests.cs" />
+    <Compile Include="Unit\CustomerUpdateResponseTests.cs" />
     <Compile Include="Unit\ResponseFactoryTests.cs" />
     <Compile Include="Unit\SendRequestConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\SendRequestTests.cs" />
     <Compile Include="Unit\SendResponseTests.cs" />
     <Compile Include="Unit\SendWithUsClientTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignActivateResponseTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllRequestConverterTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllRequestTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateResponseTests.cs" />
+    <Compile Include="Unit\DripCampaignDeactivateAllResponseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -118,6 +144,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EndToEnd\Data\RenderRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EndToEnd\Data\CustomerUpdateRequest2.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="EndToEnd\Data\CustomerDeleteRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="EndToEnd\Data\DripCampaignActivateRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EndToEnd\Data\DripCampaignDeactivateAllRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EndToEnd\Data\DripCampaignDeactivateRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="EndToEnd\Data\CustomerUpdateRequest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
