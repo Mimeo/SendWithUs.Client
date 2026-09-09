@@ -1,3 +1,11 @@
+# DEPRECATED
+> [!NOTE]
+> This repository has been archived and is no longer maintained. Please consider using the official SendwithusClient library:
+> - GitHub: https://github.com/sendwithus/sendwithus_csharp
+> - Nuget.org: https://www.nuget.org/packages/SendwithusClient
+
+----
+----
 SendWithUs.Client
 =================
 
